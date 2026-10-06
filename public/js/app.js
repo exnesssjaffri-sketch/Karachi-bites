@@ -25,7 +25,8 @@ class Router {
 
   handleRoute() {
     const hash = window.location.hash || "#home";
-    const route = this.routes[hash];
+    const routeName = hash.split("?")[0];
+    const route = this.routes[routeName];
 
     if (route) {
       route();
