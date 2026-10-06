@@ -5,6 +5,8 @@ const menuPage = {
   activeCategory: 'All',
 
   async init() {
+    const params = new URLSearchParams(window.location.hash.split('?')[1] || '');
+    this.activeCategory = params.get('category') || 'All';
     await this.loadMenu();
     this.bindEvents();
   },
@@ -59,10 +61,7 @@ const menuPage = {
       ? this.menuItems
       : this.menuItems.filter(i => i.category === this.activeCategory);
 
-    const query = this.searchQuery.toLowerCase().trim();
-    const searchedItems = query
-      ? filteredItems.filter(i => i.name.toLowerCase().includes(query))
-      : filteredItems;
+    const searchedItems = this.getFilteredItems();
 
     container.innerHTML = `
       <section class="pt-28 pb-24 px-6">
@@ -91,12 +90,20 @@ const menuPage = {
     this.bindMenuEvents();
   },
 
+  getFilteredItems() {
+    const filteredItems = this.activeCategory === 'All'
+      ? this.menuItems
+      : this.menuItems.filter(i => i.category === this.activeCategory);
+    const query = this.searchQuery.toLowerCase().trim();
+    return query ? filteredItems.filter(i => i.name.toLowerCase().includes(query)) : filteredItems;
+  },
+
   bindMenuEvents() {
     const searchInput = document.getElementById('menuSearch');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         this.searchQuery = e.target.value;
-        this.render();
+        this.renderItems(this.getFilteredItems());
       });
     }
 
