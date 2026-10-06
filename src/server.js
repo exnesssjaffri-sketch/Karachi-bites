@@ -3,7 +3,7 @@ const rateLimit = require('express-rate-limit');
 const path = require('path');
 require('dotenv').config();
 
-const { initDatabase, seedDatabase } = require('./db');
+const { initDatabase, seedDatabase, databaseReady } = require('./db');
 const apiRoutes = require('./routes');
 
 const app = express();
@@ -29,6 +29,16 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 app.use(limiter);
+
+// Wait for database schema + initial seed before handling API or page requests.
+app.use(async (req, res, next) => {
+  try {
+    await databaseReady;
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 // Serve static files
 app.use(express.static(path.join(__dirname, '..', 'public')));
