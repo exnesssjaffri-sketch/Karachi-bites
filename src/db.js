@@ -5,6 +5,10 @@ require('dotenv').config();
 const DB_PATH = process.env.DATABASE_PATH || path.join(__dirname, '..', 'karachi_bites.db');
 
 let db = null;
+let resolveDatabaseReady;
+const databaseReady = new Promise((resolve) => {
+  resolveDatabaseReady = resolve;
+});
 
 function getDb() {
   if (db) return db;
@@ -85,7 +89,15 @@ function seedDatabase() {
   const bcrypt = require('bcrypt');
 
   database.get('SELECT count(*) as count FROM menu_items', (err, row) => {
-    if (err || row.count > 0) return;
+    if (err) {
+      console.error('Failed to inspect menu seed state:', err.message);
+      resolveDatabaseReady();
+      return;
+    }
+    if (row.count > 0) {
+      resolveDatabaseReady();
+      return;
+    }
 
     const menuItems = [
       { name: 'Chicken Malai Boti', price: 850, category: 'Main Course', tags: 'mild' },
@@ -127,8 +139,9 @@ function seedDatabase() {
           [user.username, hash, user.role]
         );
       });
+      database.run('SELECT 1', () => resolveDatabaseReady());
     });
   });
 }
 
-module.exports = { getDb, initDatabase, seedDatabase };
+module.exports = { getDb, initDatabase, seedDatabase, databaseReady };
