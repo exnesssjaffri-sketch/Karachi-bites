@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Karachi Bites</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "brand-bg": "#181614",
+            "brand-bar": "#211E1B",
+            "brand-card": "#2A2622",
+            "brand-border": "#3A342E",
+            "brand-text-primary": "#F7F3EC",
+            "brand-text-secondary": "#B8B0A6",
+            "brand-text-disabled": "#5c534b",
+            "brand-red": "#B42318",
+            "brand-red-hover": "#9E1C13",
+            "brand-red-dark": "#5c0000",
+            "brand-red-light": "#ffb4a8",
+            "brand-surface-accent": "#342E28",
+            "success": "#2E7D32",
+            "success-bg": "#1B2E20",
+            "warning": "#f59e0b",
+            "error": "#ef4444",
+          },
+          fontFamily: {
+            label: [
+              "Geist",
+              {
+                weight: "500",
+                letterSpacing: "0.02em",
+              }
+            ],
+            headline: [
+              "Newsreader",
+              {
+                weight: "600",
+                letterSpacing: "-0.01em",
+              }
+            ],
+            title: [
+              "Geist",
+              {
+                weight: "600",
+                letterSpacing: "-0.01em",
+              }
+            ],
+            body: [
+              "Geist",
+              {
+                weight: "400",
+              }
+            ],
+            price: [
+              "Geist",
+              {
+                weight: "600",
+                letterSpacing: "-0.02em",
+              }
+            ],
+          },
+          fontSize: {
+            label: ["13px", { lineHeight: "18px" }],
+            headline: ["24px", { lineHeight: "32px" }],
+            title: ["16px", { lineHeight: "24px" }],
+            body: ["14px", { lineHeight: "20px" }],
+            price: ["18px", { lineHeight: "24px" }],
+          },
+          spacing: {
+            space: {
+              xs: "0.25rem",
+              sm: "0.5rem",
+              md: "1rem",
+              lg: "1.5rem",
+              xl: "2rem",
+              "2xl": "3rem",
+              "3xl": "4rem",
+            },
+            margin: {
+              "desktop": "2rem",
+            },
+          },
+          borderRadius: {
+            sm: "0.125rem",
+            lg: "0.25rem",
+            xl: "0.5rem",
+            "2xl": "0.75rem",
+            full: "9999px",
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        overscroll-behavior: none;
+      }
+      main > :first-child {
+        margin-top: 0 !important;
+      }
+      main > :last-child {
+        margin-bottom: 0 !important;
+      }
+    }
+    /* Hide scrollbar for clean UI */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #181614;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3A342E;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2A2622;
+    }
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse-border {
+      0%, 100% { border-color: #B42318; }
+      50% { border-color: #4a1610; }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+    .animate-pulse-border {
+      animation: pulse-border 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-[#181614] text-[#F7F3EC] min-h-screen">
+  <!-- App Container -->
+  <div id="app"></div>
+
+  <!-- JavaScript -->
+  <script src="js/api.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/footer.js"></script>
+  <script src="js/pages-home.js"></script>
+  <script src="js/pages-menu.js"></script>
+  <script src="js/pages-cart.js"></script>
+  <script src="js/pages-checkout.js"></script>
+  <script src="js/pages-order-placed.js"></script>
+  <script src="js/pages-order-tracking.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
