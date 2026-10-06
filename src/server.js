@@ -18,6 +18,9 @@ app.use((req, res, next) => {
 // Body parsing
 app.use(express.json({ limit: '10kb' }));
 
+// Vercel/Express sits behind a trusted reverse proxy. This is required so rate limiting can safely read the client IP.
+app.set('trust proxy', 1);
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
