@@ -69,7 +69,7 @@ const orderTrackingPage = {
 
     const order = this.orderData;
     const status = (order.status || 'pending').toLowerCase();
-    const statusSteps = ['confirmed', 'preparing', 'on-the-way', 'delivered'];
+    const statusSteps = ['received', 'preparing', 'out-for-delivery', 'delivered'];
     const currentStepIndex = statusSteps.indexOf(status);
 
     container.innerHTML = `
@@ -92,7 +92,7 @@ const orderTrackingPage = {
                 <span class="material-symbols-outlined text-2xl text-[#B42318]">motorcycle</span>
               </div>
               <div>
-                <h3 class="font-title text-[#F7F3EC] font-semibold">${status === 'delivered' ? 'Order Delivered' : status === 'on-the-way' ? 'On the Way' : status === 'preparing' ? 'Cooking in Progress' : 'Order Confirmed'}</h3>
+                <h3 class="font-title text-[#F7F3EC] font-semibold">${status === 'delivered' ? 'Order Delivered' : status === 'out-for-delivery' ? 'On the Way' : status === 'preparing' ? 'Cooking in Progress' : 'Order Received'}</h3>
                 <p class="text-[#B8B0A6] text-sm">Estimated delivery: 30-45 minutes</p>
               </div>
             </div>
