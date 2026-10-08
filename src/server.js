@@ -1,5 +1,6 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 const path = require('path');
 require('dotenv').config();
 
@@ -8,6 +9,9 @@ const apiRoutes = require('./routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Security headers via Helmet
+app.use(helmet());
 
 // Debug middleware
 app.use((req, res, next) => {

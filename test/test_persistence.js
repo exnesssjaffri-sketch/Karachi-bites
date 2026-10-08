@@ -56,7 +56,7 @@ async function testPersistence() {
   }
 
   // Stop first server
-  server1.close();
+  await new Promise((resolve) => server1.close(resolve));
   console.log('Server 1 stopped');
 
   // Wait a bit

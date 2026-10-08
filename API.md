@@ -254,7 +254,12 @@ Content-Type: application/json
 - JWT tokens are signed with a secret key and expire in 24 hours
 - Input validation and sanitization on all endpoints
 - Rate limiting: 100 requests per 15 minutes per IP
-- Security headers via Helmet.js
+- Security headers via Helmet.js:
+  - X-Content-Type-Options: nosniff
+  - X-Frame-Options: SAMEORIGIN
+  - X-DNS-Prefetch-Control: off
+  - Strict-Transport-Security: max-age=31536000; includeSubDomains
+  - Referrer-Policy: no-referrer-when-downgrade
 - CORS: Not enabled by default (adjust as needed)
 
 ## Error Format

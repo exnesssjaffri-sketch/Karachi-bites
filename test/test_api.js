@@ -20,11 +20,33 @@ async function runTests() {
   let authToken = '';
   let orderId = '';
 
+  // Helper function to check Helmet headers
+  function checkHelmetHeaders(res) {
+    const expectedHeaders = {
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'SAMEORIGIN',
+      'x-dns-prefetch-control': 'off',
+      'strict-transport-security': /^max-age=\d+/i,
+      'referrer-policy': /^(no-referrer|same-origin|strict-origin)/i
+    };
+    for (const [header, expected] of Object.entries(expectedHeaders)) {
+      const actual = res.headers.get(header);
+      if (!actual) throw new Error(`Missing header: ${header}`);
+      if (typeof expected === 'string' && actual !== expected) {
+        throw new Error(`Header ${header}: expected '${expected}', got '${actual}'`);
+      }
+      if (expected instanceof RegExp && !expected.test(actual)) {
+        throw new Error(`Header ${header}: expected pattern ${expected}, got '${actual}'`);
+      }
+    }
+  }
+
   try {
     // 1. GET /api/menu
     console.log('Testing GET /api/menu...');
     let res = await fetch(`http://localhost:${PORT}/api/menu`);
     if (res.status !== 200) throw new Error('Menu failed: ' + await res.text());
+    checkHelmetHeaders(res);
     console.log('  PASS');
 
     // 2. POST /api/auth/login
@@ -37,6 +59,7 @@ async function runTests() {
     if (res.status !== 200) throw new Error('Login failed: ' + await res.text());
     const loginData = await res.json();
     authToken = loginData.token;
+    checkHelmetHeaders(res);
     console.log('  PASS');
 
     // 3. POST /api/orders
@@ -55,12 +78,14 @@ async function runTests() {
     orderId = orderData.orderId;
     console.log(`  Order created: ${orderId}, Total: ${orderData.total}`);
     if (orderData.total !== 1850) throw new Error(`Total wrong: ${orderData.total}`);
+    checkHelmetHeaders(res);
     console.log('  PASS');
 
     // 4. GET /api/orders/:id
     console.log('Testing GET /api/orders/:id...');
     res = await fetch(`http://localhost:${PORT}/api/orders/${orderId}`);
     if (res.status !== 200) throw new Error('Get order failed: ' + await res.text());
+    checkHelmetHeaders(res);
     console.log('  PASS');
 
     // 5. GET /api/admin/orders
@@ -69,6 +94,7 @@ async function runTests() {
       headers: { 'Authorization': `Bearer ${authToken}` },
     });
     if (res.status !== 200) throw new Error('Admin orders failed: ' + await res.text());
+    checkHelmetHeaders(res);
     console.log('  PASS');
 
     // 6. PATCH /api/admin/orders/:id/status
@@ -82,6 +108,7 @@ async function runTests() {
       body: JSON.stringify({ status: 'Preparing' }),
     });
     if (res.status !== 200) throw new Error('Update status failed: ' + await res.text());
+    checkHelmetHeaders(res);
     console.log('  PASS');
 
     console.log('All API tests PASSED!');
