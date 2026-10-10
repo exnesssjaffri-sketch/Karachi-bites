@@ -68,6 +68,21 @@ async function runTests() {
     const baseUrl = 'http://127.0.0.1:' + server.address().port;
     await waitForServer(baseUrl);
 
+    console.log('Testing customer homepage, preserved app and admin page routes...');
+    let pageResponse = await fetch(baseUrl + '/');
+    assert(pageResponse.status === 200, 'Homepage should return 200');
+    const homeHtml = await pageResponse.text();
+    assert(homeHtml.includes('Charcoal, Clay &amp; Slow Spice'), 'Homepage should serve the Stitch home design');
+    pageResponse = await fetch(baseUrl + '/app.html');
+    assert(pageResponse.status === 200, 'Preserved ordering app should return 200');
+    const appHtml = await pageResponse.text();
+    assert(appHtml.includes('id="app"'), 'Preserved ordering app should contain its app mount');
+    pageResponse = await fetch(baseUrl + '/admin');
+    assert(pageResponse.status === 200, 'Admin dashboard route should return 200');
+    const adminHtml = await pageResponse.text();
+    assert(adminHtml.includes('Staff sign in'), 'Admin route should serve the staff login page');
+    console.log('  PASS');
+
     console.log('Testing GET /api/menu...');
     let response = await fetch(baseUrl + '/api/menu');
     assert(response.status === 200, 'Menu endpoint should return 200');
