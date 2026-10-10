@@ -22,7 +22,7 @@ const orderTrackingPage = {
       const result = await api.getOrder(this.orderId);
       if (result.success) {
         this.orderData = result.data;
-        this.orderId = result.data.id || this.orderId;
+        this.orderId = result.data.orderId || this.orderId;
       } else {
         this.error = result.error || 'Order not found';
       }
@@ -83,7 +83,7 @@ const orderTrackingPage = {
 
           <div class="flex items-center justify-between mb-8">
             <h1 class="font-headline text-2xl font-semibold">Track Your Order</h1>
-            <span class="text-[#B8B0A6] bg-[#2A2622] px-3 py-1 rounded-full text-sm">${order.id || this.orderId}</span>
+            <span class="text-[#B8B0A6] bg-[#2A2622] px-3 py-1 rounded-full text-sm">${order.orderId || this.orderId}</span>
           </div>
 
           <div class="bg-[#2A2622] rounded-xl border border-[#3A342E] p-6 mb-6">
@@ -121,8 +121,8 @@ const orderTrackingPage = {
             <div id="orderItems" class="space-y-3 mb-4">
               ${(order.items || []).map(item => `
                 <div class="flex justify-between text-[#B8B0A6] text-sm">
-                  <span>${item.name || 'Item'} x${item.qty || item.quantity || 1}</span>
-                  <span class="text-[#F7F3EC]">${cartStore.formatPrice(item.price * (item.qty || item.quantity || 1))}</span>
+                  <span>${item.name || 'Item'} x${item.quantity || 'N/A'}</span>
+                  <span class="text-[#F7F3EC]">${cartStore.formatPrice(item.price * (item.quantity || 0))}</span>
                 </div>
               `).join('')}
             </div>

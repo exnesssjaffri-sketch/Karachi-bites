@@ -25,7 +25,7 @@ const orderPlacedPage = {
       const result = await api.getOrder(this.orderId);
       if (result.success) {
         this.orderData = result.data;
-        this.orderId = result.data.id || this.orderId;
+        this.orderId = result.data.orderId || this.orderId;
       } else {
         this.error = result.error || 'Order not found';
       }
@@ -55,7 +55,7 @@ const orderPlacedPage = {
     }
 
     const order = this.orderData;
-    const displayId = order ? (order.id || this.orderId) : this.orderId;
+    const displayId = order ? (order.orderId || this.orderId) : this.orderId;
     const displayTotal = order ? order.total : 0;
     const displayItems = order ? (order.items || []) : [];
 
@@ -86,8 +86,8 @@ const orderPlacedPage = {
               <div class="font-title text-[#F7F3EC] mb-2">Order Items</div>
               ${displayItems.map(item => `
                 <div class="flex justify-between text-[#B8B0A6] text-sm mb-1">
-                  <span>${item.name || 'Item'} x${item.qty || item.quantity || 1}</span>
-                  <span class="text-[#F7F3EC]">${cartStore.formatPrice(item.price * (item.qty || item.quantity || 1))}</span>
+                  <span>${item.name || 'Item'} x${item.quantity || 'N/A'}</span>
+                  <span class="text-[#F7F3EC]">${cartStore.formatPrice(item.price * (item.quantity || 0))}</span>
                 </div>
               `).join('')}
               <div class="flex justify-between text-[#B8B0A6] text-sm mt-2 pt-2 border-t border-[#3A342E]">
