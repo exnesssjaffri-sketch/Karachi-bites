@@ -57,13 +57,28 @@ const orderTrackingPage = {
           <div class="max-w-3xl mx-auto text-center">
             <span class="material-symbols-outlined text-6xl text-[#B42318] mb-4">search_off</span>
             <h2 class="font-headline text-2xl text-[#F7F3EC] mb-2">Order Not Found</h2>
-            <p class="text-[#B8B0A6] mb-6">${this.error || 'No order ID provided.'}</p>
-            <a href="#home" class="bg-[#B42318] hover:bg-[#9E1C13] text-white px-6 py-2 rounded-lg font-title inline-flex items-center gap-2" data-link>
+            <p class="text-[#B8B0A6] mb-6">${this.error || 'Enter the order ID from your confirmation to check its latest status.'}</p>
+            <form id="orderLookupForm" class="max-w-xl mx-auto mb-5 flex flex-col sm:flex-row gap-3 text-left">
+              <label for="orderLookupId" class="sr-only">Order ID</label>
+              <input id="orderLookupId" name="orderId" type="text" required maxlength="80" autocomplete="off" placeholder="e.g. KB-20261010-ABC123" class="flex-1 px-4 py-3 rounded-lg bg-[#211E1B] border border-[#3A342E] text-white placeholder-[#B8B0A6]/60 focus:outline-none focus:border-[#B42318]">
+              <button type="submit" class="bg-[#B42318] hover:bg-[#9E1C13] text-white px-6 py-3 rounded-lg font-title">Track Order</button>
+            </form>
+            <a href="#home" class="text-[#B8B0A6] hover:text-white px-6 py-2 rounded-lg font-title inline-flex items-center gap-2" data-link>
               <span class="material-symbols-outlined text-sm">home</span> Go Home
             </a>
           </div>
         </section>
       `;
+      const lookupForm = container.querySelector('#orderLookupForm');
+      if (lookupForm) {
+        lookupForm.addEventListener('submit', (event) => {
+          event.preventDefault();
+          const input = container.querySelector('#orderLookupId');
+          const orderId = input ? input.value.trim() : '';
+          if (!orderId) return;
+          window.location.hash = '#tracking?order=' + encodeURIComponent(orderId);
+        });
+      }
       return;
     }
 
