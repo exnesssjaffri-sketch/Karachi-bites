@@ -1,6 +1,6 @@
 (() => {
   const destinations = {
-    home: "/stitch/home.html",
+    home: "/",
     menu: "/stitch/menu.html",
     "order-now": "/stitch/menu.html",
     cart: "/stitch/cart.html",
@@ -22,6 +22,13 @@
     const control = event.target.closest("a,button");
     if (!control) return;
     const text = (control.innerText || control.textContent || "").replace(/\s+/g, " ").trim().toLowerCase();
+
+    // The Stitch exports have a header cart button that originally had no navigation.
+    if (control.closest("header") && /shopping_bag\s*cart\b/.test(text)) {
+      event.preventDefault();
+      window.location.assign("/stitch/cart.html");
+      return;
+    }
 
     if (/proceed to checkout/.test(text)) {
       event.preventDefault();
