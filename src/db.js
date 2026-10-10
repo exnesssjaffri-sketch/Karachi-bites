@@ -88,6 +88,63 @@ function initDatabase() {
   });
 }
 
+function seedUsers(database) {
+  const bcrypt = require('bcrypt');
+  const isProduction = process.env.NODE_ENV === 'production';
+  const candidates = isProduction
+    ? [
+        { username: process.env.ADMIN_USERNAME, password: process.env.ADMIN_PASSWORD, role: 'admin' },
+        { username: process.env.STAFF_USERNAME, password: process.env.STAFF_PASSWORD, role: 'staff' },
+      ]
+    : [
+        { username: 'admin', password: 'admin123', role: 'admin' },
+        { username: 'staff', password: 'staff123', role: 'staff' },
+      ];
+  const users = candidates.filter((user) =>
+    typeof user.username === 'string' && user.username.trim() &&
+    typeof user.password === 'string' &&
+    (isProduction ? user.password.length >= 12 : user.password.length > 0)
+  );
+
+  // Remove only the known demo usernames from production when another admin/staff username is configured.
+  const demoCleanup = isProduction
+    ? Promise.all([
+        process.env.ADMIN_USERNAME !== 'admin' ? 'admin' : null,
+        process.env.STAFF_USERNAME !== 'staff' ? 'staff' : null,
+      ].filter(Boolean).map((username) => new Promise((resolve, reject) => {
+        database.get('SELECT id, password_hash FROM users WHERE username = ?', [username], (err, row) => {
+          if (err) return reject(err);
+          if (!row) return resolve();
+          const knownDemoPassword = username === 'admin' ? 'admin123' : 'staff123';
+          bcrypt.compare(knownDemoPassword, row.password_hash).then((isDemo) => {
+            if (!isDemo) return resolve();
+            database.run('DELETE FROM users WHERE id = ?', [row.id], (deleteErr) => deleteErr ? reject(deleteErr) : resolve());
+          }).catch(reject);
+        });
+      })))
+    : Promise.resolve();
+
+  return demoCleanup.then(() => Promise.all(users.map((user) => new Promise((resolve, reject) => {
+    const passwordHash = bcrypt.hashSync(user.password, 10);
+    database.get('SELECT id FROM users WHERE username = ?', [user.username], (err, row) => {
+      if (err) return reject(err);
+      if (row) {
+        database.run(
+          'UPDATE users SET password_hash = ?, role = ? WHERE id = ?',
+          [passwordHash, user.role, row.id],
+          (updateErr) => updateErr ? reject(updateErr) : resolve()
+        );
+      } else {
+        database.run(
+          'INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)',
+          [user.username, passwordHash, user.role],
+          (insertErr) => insertErr ? reject(insertErr) : resolve()
+        );
+      }
+    });
+  }))));
+}
+
 function seedDatabase() {
   const database = getDb();
   const bcrypt = require('bcrypt');
@@ -99,7 +156,12 @@ function seedDatabase() {
       return;
     }
     if (row.count > 0) {
-      resolveDatabaseReady();
+      seedUsers(database)
+        .then(resolveDatabaseReady)
+        .catch((seedErr) => {
+          console.error('Failed to seed configured users:', seedErr.message);
+          resolveDatabaseReady();
+        });
       return;
     }
 
@@ -120,18 +182,6 @@ function seedDatabase() {
 
     const branches = ['Clifton', 'Gulshan-e-Iqbal', 'North Nazimabad'];
 
-    // Public deployments must never receive predictable demo credentials.
-    // Configure production users through encrypted environment variables.
-    const users = process.env.NODE_ENV === 'production'
-      ? [
-          { username: process.env.ADMIN_USERNAME, password: process.env.ADMIN_PASSWORD, role: 'admin' },
-          { username: process.env.STAFF_USERNAME, password: process.env.STAFF_PASSWORD, role: 'staff' },
-        ].filter((user) => typeof user.username === 'string' && user.username.trim() &&
-          typeof user.password === 'string' && user.password.length >= 12)
-      : [
-          { username: 'admin', password: 'admin123', role: 'admin' },
-          { username: 'staff', password: 'staff123', role: 'staff' },
-        ];
 
     database.serialize(() => {
       const menuStmt = database.prepare('INSERT INTO menu_items (name, price, category, tags) VALUES (?, ?, ?, ?)');
@@ -144,14 +194,14 @@ function seedDatabase() {
       branches.forEach((b) => branchStmt.run(b));
       branchStmt.finalize();
 
-      users.forEach((user) => {
-        const hash = bcrypt.hashSync(user.password, 10);
-        database.run(
-          'INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)',
-          [user.username, hash, user.role]
-        );
+      database.run('SELECT 1', () => {
+        seedUsers(database)
+          .then(resolveDatabaseReady)
+          .catch((seedErr) => {
+            console.error('Failed to seed configured users:', seedErr.message);
+            resolveDatabaseReady();
+          });
       });
-      database.run('SELECT 1', () => resolveDatabaseReady());
     });
   });
 }
