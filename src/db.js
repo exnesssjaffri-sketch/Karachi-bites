@@ -120,10 +120,18 @@ function seedDatabase() {
 
     const branches = ['Clifton', 'Gulshan-e-Iqbal', 'North Nazimabad'];
 
-    const users = [
-      { username: 'admin', password: 'admin123', role: 'admin' },
-      { username: 'staff', password: 'staff123', role: 'staff' },
-    ];
+    // Public deployments must never receive predictable demo credentials.
+    // Configure production users through encrypted environment variables.
+    const users = process.env.NODE_ENV === 'production'
+      ? [
+          { username: process.env.ADMIN_USERNAME, password: process.env.ADMIN_PASSWORD, role: 'admin' },
+          { username: process.env.STAFF_USERNAME, password: process.env.STAFF_PASSWORD, role: 'staff' },
+        ].filter((user) => typeof user.username === 'string' && user.username.trim() &&
+          typeof user.password === 'string' && user.password.length >= 12)
+      : [
+          { username: 'admin', password: 'admin123', role: 'admin' },
+          { username: 'staff', password: 'staff123', role: 'staff' },
+        ];
 
     database.serialize(() => {
       const menuStmt = database.prepare('INSERT INTO menu_items (name, price, category, tags) VALUES (?, ?, ?, ?)');
