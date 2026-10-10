@@ -30,7 +30,8 @@ function initDatabase() {
         name TEXT NOT NULL,
         price INTEGER NOT NULL,
         category TEXT,
-        tags TEXT
+        tags TEXT,
+        available INTEGER NOT NULL DEFAULT 1 CHECK (available IN (0, 1))
       )
     `);
 
@@ -166,27 +167,27 @@ function seedDatabase() {
     }
 
     const menuItems = [
-      { name: 'Chicken Malai Boti', price: 850, category: 'Main Course', tags: 'mild' },
-      { name: 'Beef Seekh Kebab', price: 780, category: 'Main Course', tags: '' },
-      { name: 'Mutton Karahi (half)', price: 1650, category: 'Main Course', tags: '' },
-      { name: 'Chicken Karahi (half)', price: 1250, category: 'Main Course', tags: '' },
-      { name: 'Chicken Biryani', price: 550, category: 'Main Course', tags: '' },
-      { name: 'Vegetable Pulao', price: 420, category: 'Main Course', tags: 'veg' },
-      { name: 'Zinger Paratha Roll', price: 450, category: 'Rolls', tags: '' },
-      { name: 'Paneer Tikka Roll', price: 480, category: 'Rolls', tags: 'veg' },
-      { name: 'Mint Margarita', price: 220, category: 'Beverages', tags: 'veg' },
-      { name: 'Doodh Patti Chai', price: 150, category: 'Beverages', tags: 'veg' },
-      { name: 'Gulab Jamun (2 pcs)', price: 250, category: 'Desserts', tags: 'veg' },
-      { name: 'Kheer', price: 300, category: 'Desserts', tags: 'veg' },
+      { name: 'Chicken Malai Boti', price: 850, category: 'BBQ', tags: 'mild', available: 1 },
+      { name: 'Beef Seekh Kebab', price: 780, category: 'BBQ', tags: 'spicy', available: 1 },
+      { name: 'Mutton Karahi (half)', price: 1650, category: 'Karahi', tags: 'spicy', available: 1 },
+      { name: 'Chicken Karahi (half)', price: 1250, category: 'Karahi', tags: 'spicy', available: 1 },
+      { name: 'Chicken Biryani', price: 550, category: 'Rice', tags: 'spicy', available: 1 },
+      { name: 'Vegetable Pulao', price: 420, category: 'Rice', tags: 'veg', available: 1 },
+      { name: 'Zinger Paratha Roll', price: 450, category: 'Rolls', tags: 'spicy', available: 1 },
+      { name: 'Paneer Tikka Roll', price: 480, category: 'Rolls', tags: 'veg', available: 1 },
+      { name: 'Mint Margarita', price: 220, category: 'Drinks', tags: 'veg', available: 1 },
+      { name: 'Doodh Patti Chai', price: 150, category: 'Drinks', tags: 'veg', available: 1 },
+      { name: 'Gulab Jamun (2 pcs)', price: 250, category: 'Desserts', tags: 'veg', available: 1 },
+      { name: 'Kheer', price: 300, category: 'Desserts', tags: 'veg', available: 1 },
     ];
 
     const branches = ['Clifton', 'Gulshan-e-Iqbal', 'North Nazimabad'];
 
 
     database.serialize(() => {
-      const menuStmt = database.prepare('INSERT INTO menu_items (name, price, category, tags) VALUES (?, ?, ?, ?)');
+      const menuStmt = database.prepare('INSERT INTO menu_items (name, price, category, tags, available) VALUES (?, ?, ?, ?, ?)');
       menuItems.forEach((item) => {
-        menuStmt.run(item.name, item.price, item.category || null, item.tags || null);
+        menuStmt.run(item.name, item.price, item.category || null, item.tags || null, item.available ? 1 : 0);
       });
       menuStmt.finalize();
 

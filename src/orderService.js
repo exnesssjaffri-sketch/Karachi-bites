@@ -62,7 +62,7 @@ function createOrder(customer, branch, items) {
 
         items.forEach((item) => {
           if (failed) return;
-          db.get('SELECT id, name, price FROM menu_items WHERE id = ?', [item.id], (err, row) => {
+          db.get('SELECT id, name, price, available FROM menu_items WHERE id = ?', [item.id], (err, row) => {
             if (failed) return;
             if (err) {
               failed = true;
@@ -76,6 +76,13 @@ function createOrder(customer, branch, items) {
               return db.run('ROLLBACK', () => {
                 releaseOrderLock();
                 reject(new Error(`Menu item with id ${item.id} not found`));
+              });
+            }
+            if (!row.available) {
+              failed = true;
+              return db.run('ROLLBACK', () => {
+                releaseOrderLock();
+                reject(new Error(`Menu item with id ${item.id} is currently unavailable`));
               });
             }
             const lineTotal = row.price * item.qty;

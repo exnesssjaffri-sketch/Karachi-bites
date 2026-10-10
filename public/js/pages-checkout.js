@@ -127,7 +127,6 @@ const checkoutPage = {
       customer: { name, phone, address, email: email || undefined },
       branch,
       items: cart.items.map(item => ({ id: item.id, qty: item.quantity })),
-      total: cart.total + 150,
     };
 
     const result = await api.createOrder(orderData);

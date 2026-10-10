@@ -9,7 +9,7 @@ const router = express.Router();
 // GET /api/menu
 router.get('/menu', (req, res) => {
   const db = getDb();
-  db.all('SELECT id, name, price, category, tags FROM menu_items ORDER BY id', (err, rows) => {
+  db.all('SELECT id, name, price, category, tags, available FROM menu_items WHERE available = 1 ORDER BY id', (err, rows) => {
     if (err) {
       return res.status(500).json({ error: 'Internal server error' });
     }
@@ -19,6 +19,7 @@ router.get('/menu', (req, res) => {
       price: row.price,
       category: row.category,
       tags: row.tags,
+      available: !!row.available,
 description: '',
       image: '',
     })));

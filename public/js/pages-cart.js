@@ -68,9 +68,9 @@ const cartPage = {
                 <span class="line-through text-[#5c534b] mr-2">Rs. 150</span>
               </div>
               <div class="h-px bg-[#3A342E] mb-4"></div>
-              <div class="flex justify-between font-title textlg">
+              <div class="flex justify-between font-title text-lg">
                 <span>Total</span>
-                <span class="font-price text-[#B42318]">${cartStore.formatPrice(cart.total + 150 - 150)}</span>
+                <span class="font-price text-[#B42318]">${cartStore.formatPrice(cart.total + 150)}</span>
               </div>
               
               <button id="checkoutBtn" class="w-full mt-6 bg-[#B42318] hover:bg-[#9E1C13] text-white py-3 rounded-lg font-title">Proceed to Checkout</button>
