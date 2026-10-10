@@ -23,14 +23,13 @@
     if (!control) return;
     const text = (control.innerText || control.textContent || "").replace(/\s+/g, " ").trim().toLowerCase();
 
-    // The Stitch exports have a header cart button that originally had no navigation.
-    if (control.closest("header") && /shopping_bag\s*cart\b/.test(text)) {
+    if (control.closest("header") && text.includes("cart")) {
       event.preventDefault();
       window.location.assign("/stitch/cart.html");
       return;
     }
 
-    if (control.closest("header") && text.includes("cart")) {\n      event.preventDefault();\n      window.location.assign("/stitch/cart.html");\n    } else if (/proceed to checkout/.test(text)) {
+    if (/proceed to checkout/.test(text)) {
       event.preventDefault();
       window.location.assign("/stitch/ordersummary.html?preview=1");
     } else if (/view cart/.test(text)) {
