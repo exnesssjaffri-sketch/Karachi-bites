@@ -19,6 +19,8 @@ router.get('/menu', (req, res) => {
       price: row.price,
       category: row.category,
       tags: row.tags,
+description: '',
+      image: '',
     })));
   });
 });

@@ -4,7 +4,7 @@ const helmet = require('helmet');
 const path = require('path');
 require('dotenv').config();
 
-const { initDatabase, seedDatabase } = require('./db');
+const { initDatabase, seedDatabase, databaseReady } = require('./db');
 const apiRoutes = require('./routes');
 
 const app = express();
@@ -22,6 +22,9 @@ app.use((req, res, next) => {
 // Body parsing
 app.use(express.json({ limit: '10kb' }));
 
+// Vercel/Express sits behind a trusted reverse proxy. This is required so rate limiting can safely read the client IP.
+app.set('trust proxy', 1);
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -30,6 +33,16 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 app.use(limiter);
+
+// Wait for database schema + initial seed before handling API or page requests.
+app.use(async (req, res, next) => {
+  try {
+    await databaseReady;
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 // Serve static files
 app.use(express.static(path.join(__dirname, '..', 'public')));
