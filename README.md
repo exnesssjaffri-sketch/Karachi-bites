@@ -54,7 +54,7 @@ The server creates the SQLite schema and seeds the sample menu, supported branch
 | `DATABASE_PATH` | SQLite file path | `./karachi_bites.db` |
 | `DELIVERY_FEE` | Flat delivery charge in rupees | `150` |
 
-Never commit `.env`, access tokens, real passwords or production credentials. Vercel/serverless persistence must be verified in the target runtime before relying on it for real customer orders; a local SQLite persistence test does not by itself prove that production storage survives separate function instances or deployments.
+For production, set `ADMIN_USERNAME` and a strong `ADMIN_PASSWORD` (at least 12 characters) in the hosting provider's encrypted environment-variable settings. Set `STAFF_USERNAME` and `STAFF_PASSWORD` only when a staff account is required. Production does not seed the predictable `admin/admin123` or `staff/staff123` demo credentials; the known demo accounts are only for local development. Never commit `.env`, access tokens, real passwords or production credentials. Vercel/serverless persistence must be verified in the target runtime before relying on it for real customer orders; a local SQLite persistence test does not by itself prove that production storage survives separate function instances or deployments.
 
 ## Branches
 
