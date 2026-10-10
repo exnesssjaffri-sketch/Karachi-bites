@@ -82,7 +82,7 @@ async function runTests() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: 'admin', password: 'admin123' }),
     });
-    assert(response.status === 200, 'Admin login failed: ' + JSON.stringify(await readJson(response)));
+    if (response.status !== 200) throw new Error('Admin login failed: ' + JSON.stringify(await readJson(response)));
     const adminLogin = await readJson(response);
     assert(adminLogin.token, 'Admin login should return a JWT');
     checkHelmetHeaders(response);
@@ -94,7 +94,7 @@ async function runTests() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(makeOrderPayload('Clifton', 2)),
     });
-    assert(response.status === 201, 'Create order failed: ' + JSON.stringify(await readJson(response)));
+    if (response.status !== 201) throw new Error('Create order failed: ' + JSON.stringify(await readJson(response)));
     const created = await readJson(response);
     assert(created.orderId, 'Order response should include orderId');
     assert(created.total === 1850, 'Expected server total 1850, received ' + created.total);
@@ -117,7 +117,7 @@ async function runTests() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(makeOrderPayload(branch)),
       });
-      assert(response.status === 201, 'Expected branch to be accepted: ' + branch + '; response=' + JSON.stringify(await readJson(response)));
+      if (response.status !== 201) throw new Error('Expected branch to be accepted: ' + branch + '; response=' + JSON.stringify(await readJson(response)));
       const branchOrder = await readJson(response);
       assert(branchOrder.total === 1000, 'Unexpected single-item total for ' + branch);
       const branchFetchedResponse = await fetch(baseUrl + '/api/orders/' + encodeURIComponent(branchOrder.orderId));
