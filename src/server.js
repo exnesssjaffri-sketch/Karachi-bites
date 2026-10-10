@@ -58,6 +58,12 @@ app.use(async (req, res, next) => {
 // Serve static files
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
+// Staff dashboard page. API access inside the dashboard remains role-protected.
+// Expose both paths so /admin works with or without a trailing slash.
+app.get(['/admin', '/admin/'], (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'admin.html'));
+});
+
 // API routes
 app.use('/api', apiRoutes);
 
