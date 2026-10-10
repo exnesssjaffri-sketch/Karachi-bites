@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Karachi Bites — Stitch Page Preview</title>
+<style>
+:root{color-scheme:dark;--bg:#181614;--panel:#211e1b;--card:#2a2622;--border:#3a342e;--text:#f7f3ec;--muted:#b8b0a6;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{border-bottom:1px solid var(--border);background:var(--panel);padding:22px 24px}header div{max-width:1100px;margin:auto;display:flex;justify-content:space-between;gap:16px;align-items:center}
+main{max-width:1100px;margin:0 auto;padding:56px 24px 72px}h1{font-size:clamp(30px,5vw,46px);line-height:1.1;letter-spacing:-.03em;margin:0 0 14px}h2{margin:0 0 10px;font-size:20px}
+p{color:var(--muted);max-width:760px}.eyebrow{color:#ffb4a8;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:30px}
+a.card{display:block;text-decoration:none;color:inherit;padding:22px;background:var(--card);border:1px solid var(--border);border-radius:14px;transition:border-color .15s,transform .15s}
+a.card:hover{border-color:var(--red);transform:translateY(-2px)}.number{font-size:12px;color:#ffb4a8;font-weight:700;margin-bottom:12px}
+.small{font-size:13px;color:var(--muted)}.notice{margin-top:28px;border:1px solid var(--border);background:var(--panel);border-radius:12px;padding:16px;color:var(--muted);font-size:14px}a.back{color:#ffb4a8;text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+<header><div><strong>Karachi Bites</strong><a class="back" href="/">Back to live app →</a></div></header>
+<main>
+<div class="eyebrow">Stitch exports · now published</div>
+<h1>Karachi Bites page designs</h1>
+<p>The saved Stitch HTML files were stored outside the folder served by the application. They are now published here as individual pages so you can review them on Vercel.</p>
+<div class="grid">
+<a class="card" href="/stitch/home.html"><div class="number">01 · HOME</div><h2>Home page</h2><div class="small">Brand story, specialties, hero and menu entry points</div></a>
+<a class="card" href="/stitch/menu.html"><div class="number">02 · MENU</div><h2>Menu page</h2><div class="small">Categories, search controls and dish cards</div></a>
+<a class="card" href="/stitch/cart.html"><div class="number">03 · CART</div><h2>Order cart</h2><div class="small">Cart rows, quantities and order summary layout</div></a>
+<a class="card" href="/stitch/ordersummary.html"><div class="number">04 · CHECKOUT</div><h2>Checkout summary</h2><div class="small">Customer, delivery and payment layout</div></a>
+<a class="card" href="/stitch/order-placed.html?preview=1"><div class="number">05 · CONFIRMATION</div><h2>Order placed</h2><div class="small">Order confirmation design</div></a>
+<a class="card" href="/stitch/order-tracking.html?preview=1"><div class="number">06 · TRACKING</div><h2>Order tracking</h2><div class="small">Dispatch timeline and tracking design</div></a>
+</div>
+<div class="notice"><strong>Preview mode:</strong> These are visual Stitch exports and are not yet connected to the live order API. Any customer/order details shown inside them are sample design content, not real orders. The working app remains available at the main site.</div>
+</main>
+</body>
+</html>
