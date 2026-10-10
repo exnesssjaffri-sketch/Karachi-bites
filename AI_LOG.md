@@ -61,3 +61,9 @@ This log records AI-assisted work that can be tied to the available project hist
 - No production order should be created just to make a test appear to pass.
 - A deployment HTTP check is not a substitute for an actual browser test or persistence check.
 - The walkthrough video, mobile browser session, Slow-3G performance budget, production persistence, and all API-connected Stitch transaction flows have not been proven by this log.
+
+## 9. Remove predictable production demo credentials
+
+- **Finding:** The code originally seeded `admin/admin123` and `staff/staff123` without regard to environment, creating a known-credential risk if the public deployment initialized a fresh database.
+- **Change made:** Production user seeding now requires encrypted `ADMIN_USERNAME` / `ADMIN_PASSWORD` and optional staff variables. Existing seeded demo accounts are removed only if their stored bcrypt hashes match the known demo passwords and their usernames are not the configured production usernames.
+- **Verification still required:** Confirm production env variables are available to the new deployment, then verify an authorized admin login, staff denial from admin routes, and that known demo credentials cannot authenticate in production.
