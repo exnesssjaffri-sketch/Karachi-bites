@@ -1,3 +1,5 @@
+const VALID_BRANCHES = ['Clifton', 'Gulshan-e-Iqbal', 'North Nazimabad'];
+
 const VALID_STATUS = ['Received', 'Preparing', 'Out for Delivery', 'Delivered'];
 const VALID_TRANSITIONS = {
   'Received': ['Preparing'],
@@ -15,7 +17,7 @@ function isValidTransition(from, to) {
 }
 
 function isValidBranch(branch) {
-  return branch === 'Clifton';
+  return typeof branch === 'string' && VALID_BRANCHES.includes(branch);
 }
 
 function isValidPhone(phone) {
@@ -37,6 +39,7 @@ function isValidQuantity(qty) {
 }
 
 module.exports = {
+  VALID_BRANCHES,
   VALID_STATUS,
   VALID_TRANSITIONS,
   isValidStatus,

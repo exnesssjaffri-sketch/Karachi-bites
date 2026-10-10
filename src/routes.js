@@ -45,7 +45,7 @@ router.post('/orders', (req, res) => {
 
   // Validate branch
   if (!validate.isValidBranch(branch)) {
-    return res.status(400).json({ error: 'branch is required and must be Clifton' });
+    return res.status(400).json({ error: 'branch is required and must be one of: Clifton, Gulshan-e-Iqbal, North Nazimabad' });
   }
 
   // Validate items

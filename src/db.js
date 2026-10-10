@@ -41,6 +41,10 @@ function initDatabase() {
       )
     `);
 
+    ['Clifton', 'Gulshan-e-Iqbal', 'North Nazimabad'].forEach((branch) => {
+      database.run('INSERT OR IGNORE INTO branches (name) VALUES (?)', [branch]);
+    });
+
     database.run(`
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -114,7 +118,7 @@ function seedDatabase() {
       { name: 'Kheer', price: 300, category: 'Desserts', tags: 'veg' },
     ];
 
-    const branches = ['Clifton'];
+    const branches = ['Clifton', 'Gulshan-e-Iqbal', 'North Nazimabad'];
 
     const users = [
       { username: 'admin', password: 'admin123', role: 'admin' },
@@ -128,7 +132,7 @@ function seedDatabase() {
       });
       menuStmt.finalize();
 
-      const branchStmt = database.prepare('INSERT INTO branches (name) VALUES (?)');
+      const branchStmt = database.prepare('INSERT OR IGNORE INTO branches (name) VALUES (?)');
       branches.forEach((b) => branchStmt.run(b));
       branchStmt.finalize();
 
