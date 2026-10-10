@@ -23,8 +23,8 @@ All customer inputs are validated on the server side. Never trust the client.
 - Reason: Prevent abuse while allowing reasonable bulk orders
 
 **Branch Validation**
-- Only "Clifton" is currently supported
-- Reason: Simplicity for initial deployment; easily extensible
+- Supported branches: "Clifton", "Gulshan-e-Iqbal", and "North Nazimabad"
+- Each supported branch is validated on the server and seeded idempotently into the branches table
 
 ### Authentication and Authorization
 - JWT (JSON Web Tokens) used for stateless authentication

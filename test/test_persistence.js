@@ -1,93 +1,136 @@
-const app = require('../src/server');
-const { getDb } = require('../src/db');
+const assert = require('assert');
+const { spawn } = require('child_process');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const net = require('net');
+const crypto = require('crypto');
 
-function sleep(ms) { return new Promise((res) => setTimeout(res, ms)); }
+const SERVER_PATH = path.join(__dirname, '..', 'src', 'server.js');
+const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'karachi-bites-persistence-'));
+const databasePath = path.join(tempDir, 'persistence.sqlite');
+const jwtSecret = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
+
+function getFreePort() {
+  return new Promise((resolve, reject) => {
+    const server = net.createServer();
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', () => {
+      const address = server.address();
+      const port = address.port;
+      server.close((err) => err ? reject(err) : resolve(port));
+    });
+  });
+}
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function startServer(port) {
+  const child = spawn(process.execPath, [SERVER_PATH], {
+    env: {
+      ...process.env,
+      PORT: String(port),
+      DATABASE_PATH: databasePath,
+      JWT_SECRET: jwtSecret,
+    },
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+
+  let output = '';
+  child.stdout.on('data', (chunk) => { output += chunk.toString(); });
+  child.stderr.on('data', (chunk) => { output += chunk.toString(); });
+
+  const deadline = Date.now() + 15000;
+  while (Date.now() < deadline) {
+    if (child.exitCode !== null) {
+      throw new Error('Server process exited before becoming ready. Output: ' + output);
+    }
+    try {
+      const response = await fetch('http://127.0.0.1:' + port + '/api/menu');
+      if (response.ok) return { child, output: () => output };
+    } catch (_) {
+      // The listener may not be ready yet; retry until the deadline.
+    }
+    await delay(150);
+  }
+
+  child.kill();
+  throw new Error('Server did not become ready within 15 seconds. Output: ' + output);
+}
+
+async function stopServer(server) {
+  if (!server || server.child.exitCode !== null) return;
+  await new Promise((resolve) => {
+    const timeout = setTimeout(() => {
+      server.child.kill('SIGKILL');
+      resolve();
+    }, 4000);
+    server.child.once('exit', () => {
+      clearTimeout(timeout);
+      resolve();
+    });
+    server.child.kill('SIGTERM');
+  });
+}
 
 async function testPersistence() {
-  console.log('--- Persistence Test ---');
-  const PORT1 = 3003;
-  const PORT2 = 3004;
-
-  process.env.PORT = PORT1;
-  process.env.DATABASE_PATH = './persistence_test.db';
-  const testDbPath = process.env.DATABASE_PATH;
-
-  // Clean up
-  const fs = require('fs');
-  if (fs.existsSync(testDbPath)) fs.unlinkSync(testDbPath);
-
-  // First server
-  const server1 = app.listen(PORT1);
-  console.log(`Server 1 listening on ${PORT1}`);
-  await sleep(2000); // DB init and seed
-
-  // Create an order via first server
-  let orderId = '';
-  let authToken = '';
+  let server1;
+  let server2;
   try {
-    // Login
-    let res = await fetch(`http://localhost:${PORT1}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: 'admin', password: 'admin123' }),
-    });
-    if (res.status !== 200) throw new Error('Login failed');
-    const data = await res.json();
-    authToken = data.token;
+    console.log('--- Persistence Test (separate server processes) ---');
 
-    // Create order
-    res = await fetch(`http://localhost:${PORT1}/api/orders`, {
+    const port1 = await getFreePort();
+    server1 = await startServer(port1);
+
+    const createdResponse = await fetch('http://127.0.0.1:' + port1 + '/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        customer: { name: 'Test', phone: '03001234567', address: 'Test address' },
+        customer: {
+          name: 'Persistence Test',
+          phone: '03001234567',
+          address: 'Persistence test address, Karachi',
+        },
         branch: 'Clifton',
         items: [{ id: 1, qty: 1 }],
       }),
     });
-    if (res.status !== 201) throw new Error('Create order failed');
-    const orderData = await res.json();
-    orderId = orderData.orderId;
-    console.log(`Created order: ${orderId}, Total: ${orderData.total}`);
-  } catch (err) {
-    console.error('Setup error:', err.message);
-    server1.close();
-    process.exit(1);
-  }
+    assert.strictEqual(createdResponse.status, 201, 'Order should be created in the first process');
+    const createdOrder = await createdResponse.json();
+    assert.ok(createdOrder.orderId, 'Created order must include a public order ID');
+    assert.strictEqual(createdOrder.total, 1000, 'Total should be item price plus Rs. 150 delivery');
 
-  // Stop first server
-  await new Promise((resolve) => server1.close(resolve));
-  console.log('Server 1 stopped');
+    await stopServer(server1);
+    server1 = null;
 
-  // Wait a bit
-  await sleep(1000);
+    const port2 = await getFreePort();
+    server2 = await startServer(port2);
 
-  // Start second server on same DB
-  process.env.PORT = PORT2;
-  const server2 = app.listen(PORT2);
-  console.log(`Server 2 listening on ${PORT2}`);
-  await sleep(2000);
+    const fetchedResponse = await fetch(
+      'http://127.0.0.1:' + port2 + '/api/orders/' + encodeURIComponent(createdOrder.orderId)
+    );
+    assert.strictEqual(fetchedResponse.status, 200, 'Order should still exist in a new process');
+    const fetchedOrder = await fetchedResponse.json();
+    assert.strictEqual(fetchedOrder.orderId, createdOrder.orderId);
+    assert.strictEqual(fetchedOrder.total, 1000);
+    assert.strictEqual(fetchedOrder.items.length, 1);
+    assert.strictEqual(fetchedOrder.items[0].name, 'Chicken Malai Boti');
+    assert.strictEqual(fetchedOrder.branch, 'Clifton');
 
-  // Retrieve order via second server
-  try {
-    let res = await fetch(`http://localhost:${PORT2}/api/orders/${orderId}`);
-    if (res.status !== 200) throw new Error('Get order failed');
-    const order = await res.json();
-    console.log(`Retrieved order: ${order.orderId}, Status: ${order.status}, Total: ${order.total}`);
-    if (order.orderId !== orderId) throw new Error('Order ID mismatch');
-    if (order.total !== 1000) throw new Error('Total mismatch');
-    console.log('Persistence test PASSED!');
-  } catch (err) {
-    console.error('Persistence test FAILED:', err.message);
+    console.log('Persistence test PASSED: the order was retrieved after the first server process stopped.');
+  } catch (error) {
+    console.error('Persistence test FAILED:', error.message);
+    process.exitCode = 1;
   } finally {
-    server2.close();
-    // Clean up DB
-    if (fs.existsSync(testDbPath)) fs.unlinkSync(testDbPath);
-    process.exit(0);
+    await stopServer(server1);
+    await stopServer(server2);
+    fs.rmSync(tempDir, { recursive: true, force: true });
   }
 }
 
-testPersistence().catch(err => {
-  console.error('Unhandled error:', err);
-  process.exit(1);
+testPersistence().catch((error) => {
+  console.error('Unhandled persistence test error:', error);
+  process.exitCode = 1;
 });

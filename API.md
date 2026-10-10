@@ -68,7 +68,7 @@ Content-Type: application/json
 - `customer.name`: required, string, 2-100 characters
 - `customer.phone`: required, Pakistani mobile format (03XXXXXXXXX)
 - `customer.address`: required, string, 5-500 characters
-- `branch`: required, must be "Clifton"
+- `branch`: required; one of "Clifton", "Gulshan-e-Iqbal", or "North Nazimabad"
 - `items`: required, non-empty array
 - Each item: `id` must exist in menu, `qty` must be positive integer (1-100)
 
