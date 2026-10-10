@@ -1,0 +1,108 @@
+<!doctype html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Karachi Bites — Staff Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,100..700,0..1&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="/js/tailwind-config.js"></script>
+  <style>
+    body{background:#181614;color:#F7F3EC;font-family:Geist,system-ui,sans-serif}
+    .field{background:#211E1B;border:1px solid #3A342E;color:#F7F3EC;border-radius:.6rem;padding:.65rem .8rem;width:100%}
+    .field:focus{outline:2px solid #B42318;outline-offset:1px}
+    .btn{border-radius:.6rem;padding:.65rem 1rem;font-weight:600}
+    .btn-primary{background:#B42318;color:white}
+    .btn-primary:hover{background:#9E1C13}
+    .btn-muted{background:#2A2622;border:1px solid #3A342E}
+    .status{border:1px solid #3A342E;background:#211E1B;border-radius:999px;padding:.25rem .6rem;font-size:.8rem;white-space:nowrap}
+    td,th{padding:.8rem .9rem;text-align:left;vertical-align:top}
+    th{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:#B8B0A6;background:#211E1B}
+    tbody tr+tr{border-top:1px solid #3A342E}
+  </style>
+</head>
+<body class="min-h-screen">
+  <header class="border-b border-[#3A342E] bg-[#211E1B]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex gap-4 items-center justify-between">
+      <div>
+        <a href="/" class="text-xl font-semibold">Karachi Bites</a>
+        <p class="text-sm text-[#B8B0A6]">Staff and order management</p>
+      </div>
+      <div class="flex gap-2 items-center">
+        <a href="/" class="btn btn-muted text-sm">Customer site</a>
+        <button id="logoutBtn" class="btn btn-muted text-sm hidden" type="button">Sign out</button>
+      </div>
+    </div>
+  </header>
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <div id="notice" class="hidden mb-5 rounded-lg border border-[#3A342E] bg-[#211E1B] p-4 text-sm" role="status" aria-live="polite"></div>
+    <section id="loginPanel" class="max-w-md mx-auto bg-[#2A2622] border border-[#3A342E] rounded-2xl p-6 sm:p-8">
+      <p class="text-xs uppercase tracking-[.2em] text-[#B42318] font-semibold mb-2">Restricted access</p>
+      <h1 class="text-3xl mb-2">Staff sign in</h1>
+      <p class="text-[#B8B0A6] text-sm mb-6">Sign in with your assigned Karachi Bites staff account. Admin features require the admin role.</p>
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label for="username" class="block text-sm mb-2">Username</label>
+          <input id="username" name="username" class="field" autocomplete="username" required maxlength="100">
+        </div>
+        <div>
+          <label for="password" class="block text-sm mb-2">Password</label>
+          <input id="password" name="password" class="field" type="password" autocomplete="current-password" required>
+        </div>
+        <button id="loginBtn" class="btn btn-primary w-full" type="submit">Sign in</button>
+      </form>
+    </section>
+
+    <section id="dashboardPanel" class="hidden">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+        <div>
+          <p class="text-xs uppercase tracking-[.2em] text-[#B42318] font-semibold mb-2">Operations</p>
+          <h1 class="text-3xl sm:text-4xl">Order dashboard</h1>
+          <p class="text-[#B8B0A6] mt-2">Orders are loaded from the API. Status updates follow the server's allowed transition rules.</p>
+        </div>
+        <button id="refreshBtn" class="btn btn-muted self-start" type="button">Refresh orders</button>
+      </div>
+      <form id="filters" class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-[#211E1B] border border-[#3A342E] rounded-xl p-4 mb-5">
+        <div>
+          <label for="branchFilter" class="block text-sm mb-2">Branch</label>
+          <select id="branchFilter" class="field">
+            <option value="">All branches</option>
+            <option>Clifton</option>
+            <option>Gulshan-e-Iqbal</option>
+            <option>North Nazimabad</option>
+          </select>
+        </div>
+        <div>
+          <label for="dateFilter" class="block text-sm mb-2">Order date</label>
+          <input id="dateFilter" class="field" type="date">
+        </div>
+        <div class="flex items-end">
+          <button class="btn btn-primary w-full" type="submit">Apply filters</button>
+        </div>
+      </form>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+        <div class="bg-[#211E1B] border border-[#3A342E] rounded-xl p-4"><p class="text-sm text-[#B8B0A6]">Loaded orders</p><p id="orderCount" class="text-2xl font-semibold mt-1">0</p></div>
+        <div class="bg-[#211E1B] border border-[#3A342E] rounded-xl p-4"><p class="text-sm text-[#B8B0A6]">Received</p><p id="receivedCount" class="text-2xl font-semibold mt-1">0</p></div>
+        <div class="bg-[#211E1B] border border-[#3A342E] rounded-xl p-4"><p class="text-sm text-[#B8B0A6]">Preparing</p><p id="preparingCount" class="text-2xl font-semibold mt-1">0</p></div>
+        <div class="bg-[#211E1B] border border-[#3A342E] rounded-xl p-4"><p class="text-sm text-[#B8B0A6]">Out for delivery</p><p id="deliveryCount" class="text-2xl font-semibold mt-1">0</p></div>
+      </div>
+      <div class="bg-[#2A2622] border border-[#3A342E] rounded-xl overflow-hidden">
+        <div class="px-4 py-3 border-b border-[#3A342E] flex items-center justify-between gap-3">
+          <h2 class="font-semibold">Order ledger</h2>
+          <span id="tableHint" class="text-xs text-[#B8B0A6]">Newest orders first</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[850px] text-sm">
+            <thead><tr><th>Order / date</th><th>Customer</th><th>Branch</th><th>Total</th><th>Status</th><th>Next action</th></tr></thead>
+            <tbody id="ordersBody"><tr><td colspan="6" class="text-[#B8B0A6]">Sign in to load orders.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="/js/admin.js"></script>
+</body>
+</html>
