@@ -2,6 +2,7 @@
   'use strict';
 
   const TOKEN_KEY = 'karachi_bites_admin_token';
+  const API_BASE_URL = 'https://rgejphvmnlwcoojkpcje.supabase.co/functions/v1/karachi-bites-api';
   const $ = (selector) => document.querySelector(selector);
   const loginPanel = $('#loginPanel');
   const dashboardPanel = $('#dashboardPanel');
@@ -78,7 +79,7 @@
     if (token) headers.set('Authorization', 'Bearer ' + token);
     if (options.body) headers.set('Content-Type', 'application/json');
 
-    const response = await fetch(url, { ...options, headers });
+    const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
     const body = await response.json().catch(() => ({}));
     if (!response.ok) {
       const error = new Error(body.error || ('Request failed (' + response.status + ')'));
