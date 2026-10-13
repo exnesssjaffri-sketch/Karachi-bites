@@ -1,3 +1,12 @@
+/* Apply shared mobile/tablet layout fixes to the API-backed customer app. */
+if (!document.querySelector('link[data-kb-responsive]')) {
+  const responsiveStyles = document.createElement("link");
+  responsiveStyles.rel = "stylesheet";
+  responsiveStyles.href = "/responsive.css";
+  responsiveStyles.setAttribute("data-kb-responsive", "true");
+  document.head.appendChild(responsiveStyles);
+}
+
 /**
  * Navbar Component
  * Renders the navigation bar with cart count
