@@ -59,6 +59,20 @@
         if (source.getAttribute("aria-current") === "page") link.setAttribute("aria-current", "page");
         panel.appendChild(link);
       });
+      [
+        ["home", "Home"],
+        ["menu", "Menu"],
+        ["cart", "Cart"],
+        ["track-order", "Track Order"]
+      ].forEach(([key, label]) => {
+        if (seen.has(key)) return;
+        seen.add(key);
+        const link = document.createElement("a");
+        link.href = destinations[key];
+        link.setAttribute("data-path", key);
+        link.textContent = label;
+        panel.appendChild(link);
+      });
       if (orderNow) {
         const cta = document.createElement("a");
         cta.href = orderNow.getAttribute("href") || destinations["order-now"];
