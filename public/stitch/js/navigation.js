@@ -55,7 +55,7 @@
         const link = document.createElement("a");
         link.href = source.getAttribute("href") || destinations[key];
         link.setAttribute("data-path", key);
-        link.textContent = (source.textContent || "").replace(/\\s+/g, " ").trim();
+        link.textContent = (source.textContent || "").replace(/\s+/g, " ").trim();
         if (source.getAttribute("aria-current") === "page") link.setAttribute("aria-current", "page");
         panel.appendChild(link);
       });
