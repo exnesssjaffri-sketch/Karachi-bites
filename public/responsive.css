@@ -11,6 +11,10 @@ p, h1, h2, h3, h4, span, a, label { overflow-wrap: break-word; }
 #kbMobileMenuToggle { display: none; }
 #kb-mobile-nav-panel { display: none; }
 #kb-mobile-nav-panel[data-open="true"] { display: grid; }
+@media (min-width: 768px) {
+  #kb-mobile-nav-panel { display: none !important; }
+  #kbMobileMenuToggle { display: none !important; }
+}
 #kb-mobile-nav-panel a { display: block; padding: 13px 16px; color: #F7F3EC; text-decoration: none; border-radius: 8px; font: 500 14px/1.35 Geist, system-ui, sans-serif; }
 #kb-mobile-nav-panel a:hover, #kb-mobile-nav-panel a:focus-visible { background: #332D28; color: #FFB4A8; outline: none; }
 #kb-mobile-nav-panel .kb-mobile-nav-cta { background: #B42318; color: #fff; }
