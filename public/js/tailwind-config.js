@@ -1,3 +1,5 @@
+/* Safe for pages where the Tailwind browser script is deferred. */
+window.tailwind = window.tailwind || {};
 tailwind.config = {
       darkMode: "class",
       theme: {

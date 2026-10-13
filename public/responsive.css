@@ -1,0 +1,113 @@
+/* Karachi Bites responsive layer — shared by Stitch previews, ordering app and staff console. */
+:root { color-scheme: dark; }
+*, *::before, *::after { box-sizing: border-box; }
+html, body { width: 100%; max-width: 100%; overflow-x: clip; }
+body { min-width: 0; }
+img, video, canvas, svg { max-width: 100%; }
+input, select, textarea, button { max-width: 100%; }
+[class~="overflow-x-auto"] { max-width: 100%; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+a, button, input, select, textarea { touch-action: manipulation; }
+p, h1, h2, h3, h4, span, a, label { overflow-wrap: break-word; }
+#kbMobileMenuToggle { display: none; }
+#kb-mobile-nav-panel { display: none; }
+#kb-mobile-nav-panel[data-open="true"] { display: grid; }
+@media (min-width: 768px) {
+  #kb-mobile-nav-panel { display: none !important; }
+  #kbMobileMenuToggle { display: none !important; }
+}
+#kb-mobile-nav-panel a { display: block; padding: 13px 16px; color: #F7F3EC; text-decoration: none; border-radius: 8px; font: 500 14px/1.35 Geist, system-ui, sans-serif; }
+#kb-mobile-nav-panel a:hover, #kb-mobile-nav-panel a:focus-visible { background: #332D28; color: #FFB4A8; outline: none; }
+#kb-mobile-nav-panel .kb-mobile-nav-cta { background: #B42318; color: #fff; }
+#kb-preview-banner { line-height: 1.4; }
+@media (max-width: 1023px) {
+  [class~="md:grid-cols-12"] { grid-template-columns: minmax(0, 1fr) !important; }
+  [class~="md:col-span-7"], [class~="md:col-span-5"] { grid-column: auto / span 1 !important; }
+  [class~="lg:grid-cols-12"] { grid-template-columns: minmax(0, 1fr) !important; }
+  [class~="lg:col-span-5"], [class~="lg:col-span-7"] { grid-column: auto / span 1 !important; }
+}
+@media (max-width: 767px) {
+  html { scroll-padding-top: 76px; }
+  body { padding-bottom: env(safe-area-inset-bottom); }
+  main { width: 100%; max-width: 100%; }
+  main section { min-width: 0; }
+  [class~="px-margin-desktop"], [class~="px-margin"], [class~="px-6"] { padding-left: 16px !important; padding-right: 16px !important; }
+  [class~="py-space-xl"] { padding-top: 28px !important; padding-bottom: 28px !important; }
+  [class~="py-16"] { padding-top: 36px !important; padding-bottom: 36px !important; }
+  [class~="gap-space-lg"], [class~="gap-gutter-desktop"] { gap: 16px !important; }
+  [class~="max-w-7xl"] { max-width: 100%; }
+  [class~="text-display-lg"], [class~="text-display-lg-mobile"] { font-size: clamp(30px, 8.2vw, 42px) !important; line-height: 1.1 !important; }
+  [class~="text-headline-lg"], [class~="text-headline-lg-mobile"] { font-size: clamp(25px, 6.8vw, 32px) !important; line-height: 1.2 !important; }
+  [class~="h-[420px]"] { height: 280px !important; }
+  [class~="h-80"] { height: 250px !important; }
+  [class~="sticky"][class~="top-20"] { top: 68px !important; }
+  [class~="backdrop-blur-md"], [class~="backdrop-blur-sm"] { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  [class~="blur-3xl"] { filter: none !important; opacity: .45; }
+  [class~="hover:scale-105"] { transition: none !important; }
+  header.kb-stitch-header { height: auto; min-height: 68px; }
+  header.kb-stitch-header > .kb-stitch-inner { height: 68px !important; min-height: 68px; padding-left: 12px !important; padding-right: 12px !important; gap: 8px !important; }
+  header.kb-stitch-header > .kb-stitch-inner > div:first-child { gap: 7px !important; min-width: 0; }
+  header.kb-stitch-header > .kb-stitch-inner > div:first-child img { width: 32px !important; height: 32px !important; }
+  header.kb-stitch-header > .kb-stitch-inner > div:first-child a span:first-child { font-size: 17px !important; line-height: 21px !important; white-space: nowrap; }
+  header.kb-stitch-header > .kb-stitch-inner > div:first-child a span:nth-child(2) { font-size: 9px !important; line-height: 12px !important; letter-spacing: .08em !important; }
+  header.kb-stitch-header nav { display: none !important; }
+  header.kb-stitch-header .kb-mobile-hide { display: none !important; }
+  header.kb-stitch-header > .kb-stitch-inner > div:last-child { margin-left: auto; gap: 7px !important; }
+  header.kb-stitch-header > .kb-stitch-inner a[data-path="order-now"], header.kb-stitch-header > .kb-stitch-inner a.kb-order-now { display: inline-flex !important; align-items: center; justify-content: center; padding: 9px 11px !important; font-size: 12px !important; line-height: 16px; white-space: nowrap; }
+  #kbMobileMenuToggle { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 38px; width: 38px; height: 38px; padding: 0; border: 1px solid #3A342E; border-radius: 9px; background: #211E1B; color: #F7F3EC; cursor: pointer; }
+  #kbMobileMenuToggle .material-symbols-outlined { font-size: 22px; line-height: 1; }
+  #kb-mobile-nav-panel { position: absolute; top: 100%; left: 0; right: 0; z-index: 100; padding: 10px 12px 14px; grid-template-columns: minmax(0, 1fr); gap: 4px; background: #211E1B; border-top: 1px solid #3A342E; border-bottom: 1px solid #3A342E; box-shadow: 0 12px 22px rgba(0,0,0,.35); max-height: calc(100dvh - 68px); overflow-y: auto; }
+  #kb-preview-banner { top: 68px !important; padding: 8px 10px !important; font-size: 11px !important; }
+  body:has(#orderSummaryDock) { padding-bottom: 112px !important; }
+  #orderSummaryDock { left: 0 !important; right: 0 !important; bottom: max(6px, env(safe-area-inset-bottom)) !important; transform: none !important; width: 100% !important; max-width: 100% !important; padding: 0 8px !important; }
+  #orderSummaryDock > div { gap: 8px !important; padding: 10px 11px !important; border-radius: 18px !important; }
+  #orderSummaryDock > div > div:first-child { gap: 8px !important; padding-left: 0 !important; min-width: 0; }
+  #orderSummaryDock > div > div:first-child > div:last-child { min-width: 0; }
+  #orderSummaryDock #dockItemsSummaryText { font-size: 12px !important; }
+  #orderSummaryDock #dockTotalPrice { font-size: 13px !important; white-space: nowrap; }
+  #orderSummaryDock #viewCartDrawerBtn { padding: 10px 12px !important; font-size: 12px !important; line-height: 16px; white-space: nowrap; }
+  #orderSummaryDock #viewCartDrawerBtn .material-symbols-outlined { display: none; }
+  #cartModalOverlay > div { width: 100% !important; max-width: 100% !important; max-height: 100dvh; padding-bottom: env(safe-area-inset-bottom); }
+  #cartModalOverlay .overflow-y-auto { overscroll-behavior: contain; }
+  footer { overflow-wrap: anywhere; }
+  footer [class~="grid"] { min-width: 0; }
+  /* API-backed customer app */
+  #app > section { padding-left: 16px !important; padding-right: 16px !important; }
+  #app [class~="p-6"] { padding: 18px !important; }
+  #app [class~="px-6"] { padding-left: 16px !important; padding-right: 16px !important; }
+  #app [class~="gap-8"] { gap: 18px !important; }
+  #app h1 { font-size: clamp(25px, 7vw, 32px); line-height: 1.2; }
+  #app input, #app select, #app textarea { min-width: 0; font-size: 16px; }
+  #app [class~="overflow-x-auto"] { max-width: 100%; }
+  #app .add-to-cart-btn { min-height: 42px; }
+  #app nav[aria-label="Main navigation"] { min-width: 0; }
+  #app .mobile-menu { max-width: 100vw; }
+  /* Floating cart/checkout controls must not hide form actions. */
+  div[class~="fixed"][class~="bottom-0"][class~="z-40"] { padding: 10px 12px calc(10px + env(safe-area-inset-bottom)) !important; }
+  div[class~="fixed"][class~="bottom-0"][class~="z-40"] > div { flex-wrap: wrap; gap: 10px !important; }
+  div[class~="fixed"][class~="bottom-0"][class~="z-40"] > div > div:last-child { gap: 10px !important; }
+  div[class~="fixed"][class~="bottom-0"][class~="z-40"] button { padding: 10px 12px !important; font-size: 12px !important; }
+  /* Staff console */
+  body:has(#loginForm) header > div { padding-left: 12px !important; padding-right: 12px !important; gap: 8px !important; }
+  body:has(#loginForm) header a { gap: 7px !important; font-size: 16px !important; }
+  body:has(#loginForm) header img { width: 32px !important; height: 32px !important; }
+  body:has(#loginForm) header p { font-size: 11px !important; line-height: 15px; }
+  body:has(#loginForm) header .btn { padding: 8px 9px !important; font-size: 11px !important; white-space: nowrap; }
+  body:has(#loginForm) main { padding: 20px 12px !important; }
+  body:has(#loginForm) #loginPanel { padding: 20px 16px !important; }
+  body:has(#loginForm) h1 { font-size: 28px !important; line-height: 1.2; }
+  body:has(#loginForm) #dashboardPanel .overflow-x-auto { width: 100%; }
+  body:has(#loginForm) th, body:has(#loginForm) td { padding: 10px 12px; }
+}
+@media (max-width: 380px) {
+  header.kb-stitch-header > .kb-stitch-inner > div:first-child a span:nth-child(2) { display: none !important; }
+  header.kb-stitch-header > .kb-stitch-inner > div:first-child a span:first-child { font-size: 15px !important; }
+  header.kb-stitch-header > .kb-stitch-inner > div:last-child a[data-path="order-now"] { padding: 8px 9px !important; font-size: 11px !important; }
+  #orderSummaryDock > div { padding: 9px !important; }
+  #orderSummaryDock #dockItemsSummaryText { font-size: 11px !important; }
+  #orderSummaryDock #viewCartDrawerBtn { padding: 9px !important; }
+  #app [class~="grid-cols-2"], #app [class~="grid-cols-3"], #app [class~="grid-cols-4"] { grid-template-columns: minmax(0, 1fr) !important; }
+  #app [class~="px-4"] { padding-left: 12px !important; padding-right: 12px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
