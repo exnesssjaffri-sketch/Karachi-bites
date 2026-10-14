@@ -391,11 +391,11 @@ Deno.serve(async (req: Request) => {
       if (!body || typeof body.challengeId !== "string" || !["email", "sms"].includes(body.method)) {
         return fail(req, 400, "Challenge ID and a valid verification method are required.");
       }
-      if (!await rateAllowed(req, "send-otp", body.challengeId, 10, 900)) return fail(req, 429, "Too many code requests. Try again later.");
       const { data: challenge, error } = await db.from("auth_challenges")
         .select("id, purpose, consumed_at").eq("id", body.challengeId).maybeSingle();
       if (error) throw error;
       if (!challenge || challenge.consumed_at) return fail(req, 410, "This verification request has expired. Start again.");
+      if (!await rateAllowed(req, "send-otp", body.challengeId, 10, 900)) return fail(req, 429, "Too many code requests. Try again later.");
       if (challenge.purpose !== "login" && body.method !== "email") return fail(req, 400, "Account registration and setup must be verified by email.");
       const sent = await issueOtp(body.challengeId, body.method);
       if ("error" in sent) return fail(req, sent.status, sent.error);
@@ -407,7 +407,6 @@ Deno.serve(async (req: Request) => {
       if (!body || typeof body.challengeId !== "string" || typeof body.code !== "string" || !/^\d{6}$/.test(body.code)) {
         return fail(req, 400, "Enter the six-digit verification code.");
       }
-      if (!await rateAllowed(req, "verify-otp", body.challengeId, 10, 900)) return fail(req, 429, "Too many verification attempts. Try again later.");
       const { data: challenge, error } = await db.from("auth_challenges")
         .select("id, user_id, purpose, code_hash, expires_at, code_expires_at, attempts, consumed_at")
         .eq("id", body.challengeId).maybeSingle();
@@ -416,6 +415,7 @@ Deno.serve(async (req: Request) => {
           !challenge.code_expires_at || new Date(challenge.code_expires_at).getTime() <= Date.now() || !challenge.code_hash) {
         return fail(req, 410, "The code has expired. Request a new code.");
       }
+      if (!await rateAllowed(req, "verify-otp", body.challengeId, 10, 900)) return fail(req, 429, "Too many verification attempts. Try again later.");
       if (challenge.attempts >= 5) return fail(req, 429, "Too many incorrect codes. Start again.");
       const suppliedHash = await hashCode(body.challengeId, body.code);
       if (!equalConstantTime(suppliedHash, challenge.code_hash)) {
