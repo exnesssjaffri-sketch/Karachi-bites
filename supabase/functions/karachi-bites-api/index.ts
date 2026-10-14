@@ -381,7 +381,7 @@ Deno.serve(async (req: Request) => {
       const challengeId = await createChallenge(user.id, "login");
       return response(req, {
         challengeId, purpose: "login", methods,
-        maskedEmail: user.maskEmail(email),
+        maskedEmail: maskEmail(user.email),
         maskedPhone: user.phone ? user.phone.replace(/^03(\d{2})\d{5}(\d{2})$/, "03$1•••••$2") : null
       });
     }
