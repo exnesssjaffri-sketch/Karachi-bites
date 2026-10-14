@@ -184,7 +184,7 @@ For a login challenge, a valid code is consumed once and returns `{ "verified": 
 Requires `Authorization: Bearer <token>`; revokes the server-side session.
 
 ### 5. GET /api/admin/orders
-Retrieve orders with optional filtering (admin only).
+Retrieve orders with optional filtering (verified staff/admin session required).
 
 **Request**
 ```
@@ -218,13 +218,13 @@ Authorization: Bearer <token>
 
 **Error Responses**
 - 401 Unauthorized: `{ "error": "Authentication required" }` or `{ "error": "Invalid or expired token" }`
-- 403 Forbidden: `{ "error": "Admin access required" }`
+- 403 Forbidden: `{ "error": "Staff access required" }`
 - 500 Internal Server Error: `{ "error": "Internal server error" }`
 
 ---
 
 ### 6. PATCH /api/admin/orders/:id/status
-Update order status (admin only).
+Update order status (verified staff/admin session required).
 
 **Request**
 ```
