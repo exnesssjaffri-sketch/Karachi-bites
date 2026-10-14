@@ -58,6 +58,18 @@ async function sha256(value: string) {
   const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
   return Array.from(new Uint8Array(bytes), (b) => b.toString(16).padStart(2, "0")).join("");
 }
+
+async function rateAllowed(req: Request, scope: string, identity: string, limit: number, windowSeconds: number) {
+  const forwarded = req.headers.get("cf-connecting-ip") || req.headers.get("x-forwarded-for") || "unknown";
+  const ip = forwarded.split(",")[0].trim().slice(0, 80);
+  const bucketKey = await sha256(scope + ":" + ip + ":" + identity.toLowerCase());
+  const { data, error } = await db.rpc("consume_auth_rate_limit", {
+    p_bucket_key: bucketKey, p_limit: limit, p_window_seconds: windowSeconds
+  });
+  if (error) throw error;
+  const row = Array.isArray(data) ? data[0] : data;
+  return Boolean(row && row.allowed);
+}
 function emailReady() {
   return Boolean(Deno.env.get("RESEND_API_KEY") && Deno.env.get("RESEND_FROM_EMAIL"));
 }
@@ -299,6 +311,7 @@ Deno.serve(async (req: Request) => {
           !validEmail(body.email) || typeof body.phone !== "string" || !normalizePhone(body.phone)) {
         return fail(req, 400, "Enter a valid username, a password of at least 12 characters, email address, and Pakistani mobile number.");
       }
+      if (!await rateAllowed(req, "register", body.username.trim(), 5, 3600)) return fail(req, 429, "Too many account creation attempts. Try again later.");
       const email = body.email.trim().toLowerCase();
       const phone = normalizePhone(body.phone);
       const { data: user, error } = await db.from("users").insert({
@@ -322,6 +335,7 @@ Deno.serve(async (req: Request) => {
           !validEmail(body.email) || typeof body.phone !== "string" || !normalizePhone(body.phone)) {
         return fail(req, 400, "Username, password, valid email, and Pakistani mobile number are required.");
       }
+      if (!await rateAllowed(req, "enroll", body.username.trim(), 5, 3600)) return fail(req, 429, "Too many account setup attempts. Try again later.");
       const { data: user, error } = await db.from("users")
         .select("id, username, password_hash, email_verified")
         .eq("username", body.username.trim()).maybeSingle();
@@ -347,6 +361,7 @@ Deno.serve(async (req: Request) => {
       if (!body || typeof body.username !== "string" || typeof body.password !== "string" || !body.username.trim() || !body.password) {
         return fail(req, 400, "Username and password are required");
       }
+      if (!await rateAllowed(req, "login", body.username.trim(), 10, 900)) return fail(req, 429, "Too many sign-in attempts. Wait 15 minutes and try again.");
       const { data: user, error } = await db.from("users")
         .select("id, username, password_hash, role, email, phone, email_verified")
         .eq("username", body.username.trim()).maybeSingle();
@@ -371,6 +386,7 @@ Deno.serve(async (req: Request) => {
       if (!body || typeof body.challengeId !== "string" || !["email", "sms"].includes(body.method)) {
         return fail(req, 400, "Challenge ID and a valid verification method are required.");
       }
+      if (!await rateAllowed(req, "send-otp", body.challengeId, 10, 900)) return fail(req, 429, "Too many code requests. Try again later.");
       const { data: challenge, error } = await db.from("auth_challenges")
         .select("id, purpose, consumed_at").eq("id", body.challengeId).maybeSingle();
       if (error) throw error;
@@ -386,6 +402,7 @@ Deno.serve(async (req: Request) => {
       if (!body || typeof body.challengeId !== "string" || typeof body.code !== "string" || !/^\d{6}$/.test(body.code)) {
         return fail(req, 400, "Enter the six-digit verification code.");
       }
+      if (!await rateAllowed(req, "verify-otp", body.challengeId, 10, 900)) return fail(req, 429, "Too many verification attempts. Try again later.");
       const { data: challenge, error } = await db.from("auth_challenges")
         .select("id, user_id, purpose, code_hash, expires_at, code_expires_at, attempts, consumed_at")
         .eq("id", body.challengeId).maybeSingle();
@@ -397,8 +414,8 @@ Deno.serve(async (req: Request) => {
       if (challenge.attempts >= 5) return fail(req, 429, "Too many incorrect codes. Start again.");
       const suppliedHash = await hashCode(body.challengeId, body.code);
       if (!equalConstantTime(suppliedHash, challenge.code_hash)) {
-        await db.from("auth_challenges").update({ attempts: challenge.attempts + 1 })
-          .eq("id", challenge.id).eq("attempts", challenge.attempts).is("consumed_at", null);
+        const { error: attemptError } = await db.rpc("increment_auth_challenge_attempts", { p_challenge_id: challenge.id });
+        if (attemptError) throw attemptError;
         return fail(req, 401, "Incorrect verification code.");
       }
       const { data: consumed, error: consumeError } = await db.from("auth_challenges").update({ consumed_at: new Date().toISOString() })
