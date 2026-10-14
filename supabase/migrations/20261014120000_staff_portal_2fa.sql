@@ -88,3 +88,6 @@ END;
 $$;
 REVOKE ALL ON FUNCTION public.increment_auth_challenge_attempts(uuid) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.increment_auth_challenge_attempts(uuid) TO service_role;
+
+-- Revoke pre-2FA sessions so existing browser tokens cannot bypass the new second factor.
+DELETE FROM public.admin_sessions;
