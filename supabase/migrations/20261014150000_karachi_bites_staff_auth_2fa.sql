@@ -41,3 +41,50 @@ CREATE INDEX IF NOT EXISTS auth_challenges_expiry_idx
 ALTER TABLE public.auth_challenges ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON TABLE public.auth_challenges FROM PUBLIC, anon, authenticated;
 GRANT ALL ON TABLE public.auth_challenges TO service_role;
+
+-- Atomic, one-time OTP consumption. Only the Edge Function service role may call this.
+CREATE OR REPLACE FUNCTION public.consume_auth_challenge(
+  p_preauth_token_hash text,
+  p_code_hash text
+) RETURNS bigint
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_challenge public.auth_challenges%ROWTYPE;
+BEGIN
+  SELECT * INTO v_challenge
+  FROM public.auth_challenges
+  WHERE preauth_token_hash = p_preauth_token_hash
+  FOR UPDATE;
+
+  IF NOT FOUND
+     OR v_challenge.purpose <> 'login'
+     OR v_challenge.consumed_at IS NOT NULL
+     OR v_challenge.expires_at <= now()
+     OR v_challenge.attempts >= v_challenge.max_attempts THEN
+    RETURN NULL;
+  END IF;
+
+  IF v_challenge.code_hash <> p_code_hash THEN
+    UPDATE public.auth_challenges
+      SET attempts = attempts + 1,
+          consumed_at = CASE
+            WHEN attempts + 1 >= max_attempts THEN now()
+            ELSE consumed_at
+          END
+      WHERE id = v_challenge.id;
+    RETURN NULL;
+  END IF;
+
+  UPDATE public.auth_challenges
+    SET consumed_at = now()
+    WHERE id = v_challenge.id;
+
+  RETURN v_challenge.user_id;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.consume_auth_challenge(text, text) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.consume_auth_challenge(text, text) TO service_role;
