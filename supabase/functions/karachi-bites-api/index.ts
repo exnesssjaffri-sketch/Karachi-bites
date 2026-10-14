@@ -252,7 +252,7 @@ Deno.serve(async (req: Request) => {
       const expectedHash = await sha256(challenge.id + ":" + body.code + ":" + otpPepper);
       if (expectedHash !== challenge.code_hash) {
         const nextAttempts = Number(challenge.attempts) + 1;
-        const update = { attempts: nextAttempts };
+        const update: Record<string, unknown> = { attempts: nextAttempts };
         if (nextAttempts >= Number(challenge.max_attempts)) update.consumed_at = new Date().toISOString();
         await db.from("auth_challenges").update(update).eq("id", challenge.id).is("consumed_at", null);
         return fail(req, 401, "Invalid or expired verification code");
