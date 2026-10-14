@@ -83,6 +83,11 @@ function normalizePhone(value: string) {
   if (/^923\\d{9}$/.test(compact)) return "0" + compact.slice(2);
   return "";
 }
+function maskEmail(email: string) {
+  const parts = email.split("@");
+  if (parts.length !== 2) return "••••";
+  return (parts[0].slice(0, 1) || "•") + "••••@" + parts[1];
+}
 function validEmail(value: unknown): value is string {
   return typeof value === "string" && value.length <= 254 && /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value.trim());
 }
@@ -325,7 +330,7 @@ Deno.serve(async (req: Request) => {
       const challengeId = await createChallenge(user.id, "register");
       const sent = await issueOtp(challengeId, "email");
       if ("error" in sent) return fail(req, sent.status, sent.error);
-      return response(req, { challengeId, purpose: "register", methods: ["email"], maskedEmail: email.replace(/^(.).+(@.*)$/, "$1••••$2") }, 201);
+      return response(req, { challengeId, purpose: "register", methods: ["email"], maskedEmail: maskEmail(email) }, 201);
     }
 
     if (req.method === "POST" && route === "/auth/enroll") {
@@ -353,7 +358,7 @@ Deno.serve(async (req: Request) => {
       const challengeId = await createChallenge(user.id, "enroll");
       const sent = await issueOtp(challengeId, "email");
       if ("error" in sent) return fail(req, sent.status, sent.error);
-      return response(req, { challengeId, purpose: "enroll", methods: ["email"], maskedEmail: email.replace(/^(.).+(@.*)$/, "$1••••$2") }, 201);
+      return response(req, { challengeId, purpose: "enroll", methods: ["email"], maskedEmail: maskEmail(email) }, 201);
     }
 
     if (req.method === "POST" && route === "/auth/login") {
@@ -376,7 +381,7 @@ Deno.serve(async (req: Request) => {
       const challengeId = await createChallenge(user.id, "login");
       return response(req, {
         challengeId, purpose: "login", methods,
-        maskedEmail: user.email.replace(/^(.).+(@.*)$/, "$1••••$2"),
+        maskedEmail: user.maskEmail(email),
         maskedPhone: user.phone ? user.phone.replace(/^03(\d{2})\d{5}(\d{2})$/, "03$1•••••$2") : null
       });
     }
