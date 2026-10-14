@@ -120,8 +120,7 @@ async function sendEmailOtp(to: string, code: string) {
     })
   });
   if (!response.ok) {
-    const detail = await response.text().catch(() => "");
-    console.error("Resend delivery failed:", response.status, detail.slice(0, 300));
+    console.error("Resend delivery failed:", response.status);
     throw new Error("Email delivery failed");
   }
 }
@@ -143,8 +142,7 @@ async function sendSmsOtp(to: string, code: string) {
     body: params.toString()
   });
   if (!response.ok) {
-    const detail = await response.text().catch(() => "");
-    console.error("Twilio delivery failed:", response.status, detail.slice(0, 300));
+    console.error("Twilio delivery failed:", response.status);
     throw new Error("SMS delivery failed");
   }
 }
