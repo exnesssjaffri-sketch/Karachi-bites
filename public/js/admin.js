@@ -469,9 +469,9 @@
       if (error.status === 401 || error.status === 403) {
         clearToken();
         showLogin();
-        emptyTable('Sign in with an admin account to view orders.');
+        emptyTable('Sign in with a verified staff account to view orders.');
         showNotice(error.status === 403
-          ? 'This user is not authorized to manage orders. An admin account is required.'
+          ? 'This account is not authorized to manage staff orders.'
           : 'Your session has expired. Please sign in again.', true);
         return;
       }
