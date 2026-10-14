@@ -7,6 +7,7 @@ const files = [
   'test_api.js',
   'test_failures.js',
   'test_persistence.js',
+  'test_staff_2fa_contract.js',
 ];
 
 let allPassed = true;
