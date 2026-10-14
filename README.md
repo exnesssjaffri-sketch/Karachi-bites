@@ -83,6 +83,8 @@ Allowed transitions: `Received → Preparing → Out for Delivery → Delivered`
 
 See [API.md](./API.md) for requests, responses and error cases, and [DECISIONS.md](./DECISIONS.md) for design decisions.
 
+Staff portal 2FA implementation and release prerequisites are documented in [docs/STAFF_PORTAL_2FA.md](./docs/STAFF_PORTAL_2FA.md). The new flow requires Resend secrets and a database migration before the Edge Function can be safely deployed; do not deploy it with missing email configuration.
+
 ## Run tests
 
 ```bash
