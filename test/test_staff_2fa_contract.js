@@ -30,7 +30,7 @@ const sendStart = source.indexOf('if (req.method === "POST" && route === "/auth/
 assert.ok(loginStart >= 0 && sendStart > loginStart, 'Login route must exist before OTP delivery route');
 const loginBlock = source.slice(loginStart, sendStart);
 assert.ok(loginBlock.includes('createChallenge(user.id, "login")'), 'Password login must create a pending OTP challenge');
-assert.ok(!loginBlock.includes('admin_sessions').includes('insert'), 'Password login must not issue a session directly');
+assert.ok(!loginBlock.includes('admin_sessions'), 'Password login must not issue a session directly');
 
 const verifyStart = source.indexOf('if (req.method === "POST" && route === "/auth/verify-otp")');
 const logoutStart = source.indexOf('if (req.method === "POST" && route === "/auth/logout")', verifyStart);
@@ -38,6 +38,6 @@ assert.ok(verifyStart >= 0 && logoutStart > verifyStart, 'OTP verification route
 const verifyBlock = source.slice(verifyStart, logoutStart);
 assert.ok(verifyBlock.includes('code_expires_at'), 'OTP expiry must be checked');
 assert.ok(verifyBlock.includes('consumed_at'), 'OTP must be single-use');
-assert.ok(verifyBlock.includes('admin_sessions').includes('insert'), 'A session may only be created after OTP verification');
+assert.ok(verifyBlock.includes('db.from("admin_sessions").insert'), 'A session may only be created after OTP verification');
 
 console.log('Staff 2FA source contract checks passed.');
