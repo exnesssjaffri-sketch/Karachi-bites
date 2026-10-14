@@ -139,6 +139,22 @@
       button.addEventListener('click', () => sendOtp(method));
       otpMethods.appendChild(button);
     });
+    if (!alreadySent && !pendingMethods.includes('sms')) {
+      const smsUnavailable = document.createElement('button');
+      smsUnavailable.type = 'button';
+      smsUnavailable.disabled = true;
+      smsUnavailable.className = 'btn btn-muted w-full opacity-60 cursor-not-allowed';
+      smsUnavailable.textContent = 'SMS unavailable — provider not configured';
+      otpMethods.appendChild(smsUnavailable);
+    }
+    if (!alreadySent && !pendingMethods.includes('email')) {
+      const emailUnavailable = document.createElement('button');
+      emailUnavailable.type = 'button';
+      emailUnavailable.disabled = true;
+      emailUnavailable.className = 'btn btn-muted w-full opacity-60 cursor-not-allowed';
+      emailUnavailable.textContent = 'Email unavailable — administrator setup required';
+      otpMethods.appendChild(emailUnavailable);
+    }
     if (!pendingMethods.length) {
       otpInstructions.textContent = 'No verification delivery method is configured. The site administrator must configure Resend email delivery; SMS also requires an SMS provider.';
     }
