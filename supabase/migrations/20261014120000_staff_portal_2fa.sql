@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.auth_challenges (
   code_hash text NOT NULL,
   expires_at timestamptz NOT NULL,
   attempts integer NOT NULL DEFAULT 0 CHECK (attempts BETWEEN 0 AND 5),
-  send_count integer NOT NULL DEFAULT 1 CHECK (send_count BETWEEN 1 AND 5),
+  send_count integer NOT NULL DEFAULT 0 CHECK (send_count BETWEEN 0 AND 5),
   last_sent_at timestamptz NOT NULL DEFAULT now(),
   consumed_at timestamptz,
   created_at timestamptz NOT NULL DEFAULT now()
