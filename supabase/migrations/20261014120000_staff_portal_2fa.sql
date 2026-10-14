@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS public.auth_challenges (
   method text NOT NULL CHECK (method IN ('email', 'sms')),
   code_hash text NOT NULL,
   expires_at timestamptz NOT NULL,
+  code_expires_at timestamptz,
   attempts integer NOT NULL DEFAULT 0 CHECK (attempts BETWEEN 0 AND 5),
   send_count integer NOT NULL DEFAULT 0 CHECK (send_count BETWEEN 0 AND 5),
   last_sent_at timestamptz NOT NULL DEFAULT now(),
