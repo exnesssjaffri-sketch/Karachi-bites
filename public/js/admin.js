@@ -128,6 +128,7 @@
       ? 'Enter the code sent to ' + (challenge.maskedEmail || 'your registered email') + '.'
       : 'Choose where to receive your one-time code.';
     otpMethods.replaceChildren();
+    otpMethods.classList.toggle('hidden', alreadySent);
     pendingMethods.forEach((method) => {
       const button = document.createElement('button');
       button.type = 'button';
@@ -156,6 +157,7 @@
         body: JSON.stringify({ challengeId: pendingChallengeId, method })
       });
       selectedMethod = method;
+      otpMethods.classList.add('hidden');
       otpInstructions.textContent = method === 'email'
         ? 'Enter the six-digit code sent to your email. It expires in 5 minutes.'
         : 'Enter the six-digit SMS code. It expires in 5 minutes.';
