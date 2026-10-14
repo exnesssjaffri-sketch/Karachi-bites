@@ -43,6 +43,33 @@ img[src*="images.unsplash.com"]{background:#2a2622}
   section>div.grid>div:nth-child(2){grid-column:span 5}
 }
 
+
+/* Prevent mobile action controls from colliding or touching. */
+.flex{min-width:0}
+.flex-wrap{flex-wrap:wrap}
+button,a{overflow-wrap:anywhere}
+button,.inline-flex.items-center.justify-center{white-space:normal;text-align:center;min-height:44px}
+@media(max-width:767px){
+  /* Hero actions: stack vertically with a visible gap on narrow screens. */
+  .flex.flex-wrap.items-center.gap-space-md.pt-space-xs{display:flex;flex-direction:column;align-items:stretch;gap:10px!important;width:100%}
+  .flex.flex-wrap.items-center.gap-space-md.pt-space-xs>a{display:flex;width:100%;max-width:100%;min-height:48px;justify-content:center;align-items:center;margin:0}
+  /* Keep price and Add to Cart controls from overlapping inside menu cards. */
+  .pt-space-md.flex.items-center.justify-between,
+  .pt-space-md.mt-auto.flex.items-center.justify-between{display:flex;flex-wrap:wrap;align-items:center;gap:10px!important}
+  .pt-space-md.flex.items-center.justify-between>button,
+  .pt-space-md.mt-auto.flex.items-center.justify-between>button{flex:0 1 auto;max-width:100%;margin-left:auto}
+  /* Any other paired actions wrap instead of colliding. */
+  section .flex.items-center.justify-between{flex-wrap:wrap;row-gap:12px}
+  section .flex.items-center.justify-between>*{min-width:0}
+  /* Header controls remain on-screen on small Android devices. */
+  header>div{gap:8px!important}
+  header>div>div:first-child{flex:1 1 auto;min-width:0}
+  header>div>div:nth-child(3){flex:0 1 auto;min-width:0}
+  header>div>div:nth-child(3)>button,
+  header>div>div:nth-child(3)>a{min-width:0;padding-left:10px;padding-right:10px}
+  .grid-cols-3{min-width:0}
+}
+
 </style>
 </head><body class="bg-[#181614] font-body-md text-body-md text-[#F7F3EC] min-h-screen"><header class="fixed top-0 left-0 right-0 z-50 bg-[#181614]/95 backdrop-blur-md border-b border-[#3A342E] shadow-[0_2px_12px_rgba(0,0,0,0.35)]"><div class="h-20 w-full px-margin-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md shrink-0"><img alt="Karachi Bites logo" class="h-9 w-9 object-contain shrink-0" width="36" height="36" src="/logo.svg"/ decoding="async" loading="eager"><a class="flex flex-col" data-path="home" href="/stitch/home.html"><span class="font-headline-sm text-headline-sm text-[#F7F3EC] tracking-tight font-semibold">Karachi Bites</span><span class="font-label-sm text-label-sm text-[#B8B0A6] tracking-wider uppercase">Burns Road Kitchen</span></a></div><nav class="hidden xl:flex items-center gap-space-lg" data-active-classes="text-[#B42318] font-semibold border-b-2 border-[#B42318]"><a aria-current="page" class="py-2 transition-colors text-[#B42318] font-semibold border-b-2 border-[#B42318]" data-path="home" href="/stitch/home.html">Home</a><a class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors" data-path="menu" href="/stitch/menu.html">Menu</a><a class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors" data-path="track-order" href="/stitch/order-tracking.html">Track Order</a><a class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors" data-path="about-burns-rd" href="#">About Burns Rd</a></nav><div class="flex items-center gap-space-md shrink-0"><button aria-label="Search menu items" class="w-10 h-10 flex items-center justify-center rounded-lg border border-[#3A342E] bg-[#211E1B] text-[#B8B0A6] hover:bg-[#2A2622] hover:text-[#F7F3EC] transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">search</span></button><a class="hidden md:inline-flex items-center gap-space-xs px-2.5 py-1.5 rounded-lg border border-[#3A342E] bg-[#211E1B] hover:bg-[#2A2622] text-[#B8B0A6] hover:text-[#F7F3EC] transition-colors" data-path="staff-portal" href="#"><span class="font-label-sm text-label-sm text-[#B8B0A6]">Staff Portal</span><span class="px-1.5 py-0.5 rounded bg-[#3A211E] text-[#B42318] font-label-sm text-label-sm font-semibold border border-[#B42318]/30">KDS</span></a><a class="hidden lg:inline-flex font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] transition-colors px-space-xs py-2" data-path="login" href="#">Account / Login</a><button class="relative inline-flex items-center gap-space-xs px-3 py-2 rounded-lg border border-[#3A342E] bg-[#211E1B] hover:bg-[#2A2622] text-[#F7F3EC] transition-colors" type="button"><span class="material-symbols-outlined text-[20px] text-[#B8B0A6]">shopping_bag</span><span class="font-label-md text-label-md font-semibold text-[#F7F3EC]">Cart</span><span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#B42318] text-[#ffffff] font-label-sm text-label-sm font-semibold">3</span></button><a class="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-[#B42318] hover:bg-[#C93627] text-[#ffffff] font-label-md text-label-md font-semibold shadow-sm transition-all" data-path="order-now" href="/stitch/menu.html">Order Now</a><div class="w-8 h-8 rounded-full bg-[#2A2622] border border-[#3A342E] flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[#F7F3EC] text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-[#181614]"><div class="flex flex-col w-full">
 <!-- HERO SECTION: Asymmetric 55/45 Desktop Composition -->
