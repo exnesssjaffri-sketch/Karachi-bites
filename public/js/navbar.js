@@ -1,3 +1,12 @@
+/* Apply shared mobile/tablet layout fixes to the API-backed customer app. */
+if (!document.querySelector('link[data-kb-responsive]')) {
+  const responsiveStyles = document.createElement("link");
+  responsiveStyles.rel = "stylesheet";
+  responsiveStyles.href = "/responsive.css";
+  responsiveStyles.setAttribute("data-kb-responsive", "true");
+  document.head.appendChild(responsiveStyles);
+}
+
 /**
  * Navbar Component
  * Renders the navigation bar with cart count
@@ -38,11 +47,9 @@ const navbar = {
       <nav class="fixed top-0 left-0 right-0 z-50 bg-[#211E1B] border-b border-[#3A342E] shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
         <div class="h-20 max-w-7xl mx-auto px-6 flex items-center justify-between">
           <!-- Logo -->
-          <a href="#home" class="flex items-center gap-2" data-link>
-            <div class="w-10 h-10 rounded-lg bg-[#B42318] flex items-center justify-center">
-              <span class="material-symbols-outlined text-white">restaurant</span>
-            </div>
-            <span class="font-headline text-[#F7F3EC] font-semibold text-xl hidden sm:inline">Karachi Bites</span>
+          <a href="#home" class="flex items-center gap-2" data-link aria-label="Karachi Bites home">
+            <img src="/logo.svg" alt="Karachi Bites logo" class="w-10 h-10 object-contain shrink-0" width="40" height="40" decoding="async" />
+            <span class="font-headline text-[#F7F3EC] font-semibold text-xl">Karachi Bites</span>
           </a>
 
           <!-- Desktop Navigation -->
@@ -56,7 +63,7 @@ const navbar = {
           </div>
 
           <!-- Mobile Menu Button -->
-          <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-[#2A2622] text-[#B8B0A6]">
+          <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-[#2A2622] text-[#B8B0A6]" aria-label="Open navigation menu">
             <span class="material-symbols-outlined">menu</span>
           </button>
         </div>
