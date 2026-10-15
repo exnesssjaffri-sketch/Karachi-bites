@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { getDb } = require('./db');
+const { getOne } = require('./db');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -22,17 +22,11 @@ function verifyToken(token) {
 }
 
 async function authenticateUser(username, password) {
-  const db = getDb();
-  return new Promise((resolve, reject) => {
-    db.get('SELECT * FROM users WHERE username = ?', [username], (err, row) => {
-      if (err) return reject(err);
-      if (!row) return resolve(null);
-      bcrypt.compare(password, row.password_hash).then((match) => {
-        if (!match) return resolve(null);
-        resolve({ id: row.id, username: row.username, role: row.role });
-      }).catch(reject);
-    });
-  });
+  const row = await getOne('SELECT * FROM users WHERE username = ?', [username]);
+  if (!row) return null;
+  const match = await bcrypt.compare(password, row.password_hash);
+  if (!match) return null;
+  return { id: row.id, username: row.username, role: row.role };
 }
 
 function authMiddleware(req, res, next) {

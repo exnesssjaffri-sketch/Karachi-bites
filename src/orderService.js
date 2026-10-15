@@ -1,7 +1,27 @@
-const { getDb } = require('./db');
-const { isValidTransition } = require('./validate');
+const crypto = require('crypto');
+const { getOne, getAll, run, withTransaction, isSqlite } = require('./db');
+const { isValidTransition, isValidNotes, sanitizeString } = require('./validate');
 
 const DELIVERY_FEE = parseInt(process.env.DELIVERY_FEE || '150', 10);
+
+function generatePublicOrderId() {
+  const date = new Date();
+  const dateStr = date.getFullYear().toString() +
+    String(date.getMonth() + 1).padStart(2, '0') +
+    String(date.getDate()).padStart(2, '0');
+  const random = crypto.randomBytes(4).toString('hex').toUpperCase();
+  return `KB-${dateStr}-${random}`;
+}
+
+async function generateUniquePublicOrderId() {
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const candidate = generatePublicOrderId();
+    const existing = await getOne('SELECT 1 FROM orders WHERE public_order_id = ?', [candidate]);
+    if (!existing) return candidate;
+  }
+  const fallback = `KB-${Date.now()}-${crypto.randomBytes(6).toString('hex').toUpperCase()}`;
+  return fallback;
+}
 
 function generatePublicOrderId() {
   const date = new Date();
@@ -35,209 +55,233 @@ function releaseOrderLock() {
   }
 }
 
-function createOrder(customer, branch, items) {
-  return acquireOrderLock().then(() => {
-    const db = getDb();
-    return new Promise((resolve, reject) => {
-      const { name, phone, address } = customer;
+async function createOrder(customer, branch, items, notes, idempotencyKey) {
+  await acquireOrderLock();
+  try {
+    const { name, phone, address } = customer;
+    if (!items || items.length === 0) {
+      throw new Error('No items in order');
+    }
+    const safeNotes = notes === undefined || notes === null ? null : sanitizeString(String(notes), 500);
+    if (safeNotes && !isValidNotes(safeNotes)) {
+      throw new Error('customer.notes must be 500 characters or fewer');
+    }
 
-      db.run('BEGIN TRANSACTION', (beginErr) => {
-        if (beginErr) {
-          releaseOrderLock();
-          return reject(beginErr);
+    if (idempotencyKey) {
+      const existing = await getOne('SELECT public_order_id FROM orders WHERE idempotency_key = ?', [idempotencyKey]);
+      if (existing) {
+        return { orderId: existing.public_order_id, deduplicated: true };
+      }
+    }
+
+    return await withTransaction(async (client) => {
+      let subtotal = 0;
+      const orderItems = [];
+
+      for (const item of items) {
+        const row = await getOne('SELECT id, name, price, available FROM menu_items WHERE id = ?', [item.id]);
+        if (!row) {
+          throw new Error(`Menu item with id ${item.id} not found`);
         }
-
-        const totalItems = items.length;
-        if (totalItems === 0) {
-          return db.run('ROLLBACK', () => {
-            releaseOrderLock();
-            reject(new Error('No items in order'));
-          });
+        if (!row.available) {
+          throw new Error(`Menu item with id ${item.id} is currently unavailable`);
         }
-
-        let processed = 0;
-        let subtotal = 0;
-        const orderItems = [];
-        let failed = false;
-
-        items.forEach((item) => {
-          if (failed) return;
-          db.get('SELECT id, name, price, available FROM menu_items WHERE id = ?', [item.id], (err, row) => {
-            if (failed) return;
-            if (err) {
-              failed = true;
-              return db.run('ROLLBACK', () => {
-                releaseOrderLock();
-                reject(err);
-              });
-            }
-            if (!row) {
-              failed = true;
-              return db.run('ROLLBACK', () => {
-                releaseOrderLock();
-                reject(new Error(`Menu item with id ${item.id} not found`));
-              });
-            }
-            if (!row.available) {
-              failed = true;
-              return db.run('ROLLBACK', () => {
-                releaseOrderLock();
-                reject(new Error(`Menu item with id ${item.id} is currently unavailable`));
-              });
-            }
-            const lineTotal = row.price * item.qty;
-            subtotal += lineTotal;
-            orderItems.push({
-              menu_item_id: row.id,
-              quantity: item.qty,
-              price_at_order: row.price,
-              name_at_order: row.name,
-            });
-
-            processed++;
-            if (processed === totalItems) {
-              const total = subtotal + DELIVERY_FEE;
-              const publicId = generatePublicOrderId();
-
-              db.run(
-                'INSERT INTO orders (public_order_id, customer_name, customer_phone, customer_address, branch, status, total) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                [publicId, name, phone, address, branch, 'Received', total],
-                function (insertErr) {
-                  if (failed) return;
-                  if (insertErr) {
-                    failed = true;
-                    return db.run('ROLLBACK', () => {
-                      releaseOrderLock();
-                      reject(insertErr);
-                    });
-                  }
-                  const orderId = this.lastID;
-                  const stmt = db.prepare('INSERT INTO order_items (order_id, menu_item_id, quantity, price_at_order, name_at_order) VALUES (?, ?, ?, ?, ?)');
-                  orderItems.forEach((oi) => {
-                    stmt.run(orderId, oi.menu_item_id, oi.quantity, oi.price_at_order, oi.name_at_order);
-                  });
-                  stmt.finalize(() => {
-                    db.run('COMMIT', (commitErr) => {
-                      if (commitErr) {
-                        failed = true;
-                        return db.run('ROLLBACK', () => {
-                          releaseOrderLock();
-                          reject(commitErr);
-                        });
-                      }
-                      releaseOrderLock();
-                      resolve({
-                        orderId: publicId,
-                        total,
-                        status: 'Received',
-                      });
-                    });
-                  });
-                }
-              );
-            }
-          });
+        const lineTotal = row.price * item.qty;
+        subtotal += lineTotal;
+        orderItems.push({
+          menu_item_id: row.id,
+          quantity: item.qty,
+          price_at_order: row.price,
+          name_at_order: row.name,
         });
-      });
+      }
+
+      const total = subtotal + DELIVERY_FEE;
+      const publicId = await generateUniquePublicOrderId();
+
+      const orderResult = await run(
+        'INSERT INTO orders (public_order_id, customer_name, customer_phone, customer_address, branch, status, total, customer_notes, idempotency_key) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [publicId, name, phone, address, branch, 'Received', total, safeNotes, idempotencyKey || null]
+      );
+      const orderId = orderResult.lastID;
+
+      for (const oi of orderItems) {
+        await run(
+          'INSERT INTO order_items (order_id, menu_item_id, quantity, price_at_order, name_at_order) VALUES (?, ?, ?, ?, ?)',
+          [orderId, oi.menu_item_id, oi.quantity, oi.price_at_order, oi.name_at_order]
+        );
+      }
+
+      return {
+        orderId: publicId,
+        total,
+        status: 'Received',
+      };
     });
-  });
+  } finally {
+    releaseOrderLock();
+  }
 }
 
-function rollbackAndReject(reject, err) {
-  const db = getDb();
-  db.run('ROLLBACK');
-  reject(err);
+async function trackOrder(orderId, phone) {
+  const cleanedPhone = typeof phone === 'string' ? phone.replace(/[\s-]/g, '') : '';
+  const order = await getOne('SELECT * FROM orders WHERE public_order_id = ?', [orderId]);
+  if (!order) {
+    const err = new Error('Order not found');
+    err.statusCode = 404;
+    throw err;
+  }
+  if (order.customer_phone !== cleanedPhone) {
+    const err = new Error('Phone number does not match this order');
+    err.statusCode = 403;
+    throw err;
+  }
+  const items = await getAll(
+    'SELECT oi.id, oi.menu_item_id, oi.quantity, oi.price_at_order, oi.name_at_order FROM order_items oi WHERE oi.order_id = ?',
+    [order.id]
+  );
+  return {
+    orderId: order.public_order_id,
+    status: order.status,
+    items: items.map((i) => ({
+      id: i.menu_item_id,
+      name: i.name_at_order,
+      quantity: i.quantity,
+      price: i.price_at_order,
+      lineTotal: i.price_at_order * i.quantity,
+    })),
+    total: order.total,
+    branch: order.branch,
+    createdAt: order.created_at,
+  };
+}
+
+async function getKitchenTicket(orderId) {
+  const order = await getOne('SELECT * FROM orders WHERE public_order_id = ?', [orderId]);
+  if (!order) {
+    const err = new Error('Order not found');
+    err.statusCode = 404;
+    throw err;
+  }
+  const items = await getAll(
+    'SELECT oi.id, oi.menu_item_id, oi.quantity, oi.price_at_order, oi.name_at_order FROM order_items oi WHERE oi.order_id = ?',
+    [order.id]
+  );
+  return {
+    orderId: order.public_order_id,
+    branch: order.branch,
+    createdAt: order.created_at,
+    status: order.status,
+    items: items.map((i) => ({
+      id: i.menu_item_id,
+      name: i.name_at_order,
+      quantity: i.quantity,
+      price: i.price_at_order,
+      lineTotal: i.price_at_order * i.quantity,
+    })),
+    notes: order.customer_notes || '',
+    total: order.total,
+  };
 }
 
 function getOrderById(orderId) {
-  const db = getDb();
-  return new Promise((resolve, reject) => {
-    db.get('SELECT * FROM orders WHERE public_order_id = ?', [orderId], (err, order) => {
-      if (err) return reject(err);
-      if (!order) return resolve(null);
-
-      db.all(
+  return getOne('SELECT * FROM orders WHERE public_order_id = ?', [orderId])
+    .then((order) => {
+      if (!order) return null;
+      return getAll(
         'SELECT oi.id, oi.menu_item_id, oi.quantity, oi.price_at_order, oi.name_at_order FROM order_items oi WHERE oi.order_id = ?',
-        [order.id],
-        (err2, items) => {
-          if (err2) return reject(err2);
-          resolve({
-            orderId: order.public_order_id,
-            status: order.status,
-            items: items.map((i) => ({
-              id: i.menu_item_id,
-              name: i.name_at_order,
-              quantity: i.quantity,
-              price: i.price_at_order,
-              lineTotal: i.price_at_order * i.quantity,
-            })),
-            total: order.total,
-            customer: {
-              name: order.customer_name,
-              phone: order.customer_phone,
-              address: order.customer_address,
-            },
-            branch: order.branch,
-            createdAt: order.created_at,
-          });
-        }
-      );
+        [order.id]
+      ).then((items) => ({
+        orderId: order.public_order_id,
+        status: order.status,
+        items: items.map((i) => ({
+          id: i.menu_item_id,
+          name: i.name_at_order,
+          quantity: i.quantity,
+          price: i.price_at_order,
+          lineTotal: i.price_at_order * i.quantity,
+        })),
+        total: order.total,
+        customer: {
+          name: order.customer_name,
+          phone: order.customer_phone,
+          address: order.customer_address,
+        },
+        branch: order.branch,
+        createdAt: order.created_at,
+      }));
     });
-  });
 }
 
 function updateOrderStatus(orderId, newStatus) {
-  const db = getDb();
-  return new Promise((resolve, reject) => {
-    db.get('SELECT * FROM orders WHERE public_order_id = ?', [orderId], (err, order) => {
-      if (err) return reject(err);
-      if (!order) return resolve(null);
-
+  return getOne('SELECT * FROM orders WHERE public_order_id = ?', [orderId])
+    .then((order) => {
+      if (!order) return null;
       if (!isValidTransition(order.status, newStatus)) {
-        return reject(new Error(`Invalid status transition from ${order.status} to ${newStatus}`));
+        throw new Error(`Invalid status transition from ${order.status} to ${newStatus}`);
       }
-
-      db.run('UPDATE orders SET status = ? WHERE public_order_id = ?', [newStatus, orderId], (err2) => {
-        if (err2) return reject(err2);
-        resolve({ orderId, status: newStatus });
-      });
+      return run('UPDATE orders SET status = ? WHERE public_order_id = ?', [newStatus, orderId])
+        .then(() => ({ orderId, status: newStatus }));
     });
-  });
 }
 
 function getAllOrders(branch, date) {
-  const db = getDb();
-  return new Promise((resolve, reject) => {
-    let query = 'SELECT * FROM orders WHERE 1=1';
-    const params = [];
+  let query = 'SELECT * FROM orders WHERE 1=1';
+  const params = [];
 
-    if (branch) {
-      query += ' AND branch = ?';
-      params.push(branch);
-    }
-    if (date) {
-      query += ' AND DATE(created_at) = ?';
-      params.push(date);
-    }
+  if (branch) {
+    query += ' AND branch = ?';
+    params.push(branch);
+  }
+  if (date) {
+    query += ' AND DATE(created_at) = ?';
+    params.push(date);
+  }
 
-    query += ' ORDER BY created_at DESC';
+  query += ' ORDER BY created_at DESC';
 
-    db.all(query, params, (err, rows) => {
-      if (err) return reject(err);
-      resolve(rows.map((row) => ({
-        orderId: row.public_order_id,
-        status: row.status,
-        total: row.total,
-        branch: row.branch,
-        customer: {
-          name: row.customer_name,
-          phone: row.customer_phone,
-          address: row.customer_address,
-        },
-        createdAt: row.created_at,
-      })));
-    });
-  });
+  return getAll(query, params).then((rows) =>
+    rows.map((row) => ({
+      orderId: row.public_order_id,
+      status: row.status,
+      total: row.total,
+      branch: row.branch,
+      customer: {
+        name: row.customer_name,
+        phone: row.customer_phone,
+        address: row.customer_address,
+      },
+      createdAt: row.created_at,
+    }))
+  );
+}
+
+async function reorderFromOrder(originalOrderId, customer) {
+  const original = await getOne('SELECT * FROM orders WHERE public_order_id = ?', [originalOrderId]);
+  if (!original) {
+    const err = new Error('Original order not found');
+    err.statusCode = 404;
+    throw err;
+  }
+  const items = await getAll(
+    'SELECT oi.menu_item_id, oi.quantity FROM order_items oi WHERE oi.order_id = ?',
+    [original.id]
+  );
+  if (items.length === 0) {
+    const err = new Error('Original order has no items');
+    err.statusCode = 400;
+    throw err;
+  }
+  const { name, phone, address } = customer || {};
+  const notes = customer && customer.notes;
+  const idempotencyKey = `reorder:${originalOrderId}:${phone || ''}:${Date.now()}`;
+  return createOrder(
+    { name, phone, address },
+    original.branch,
+    items.map((i) => ({ id: i.menu_item_id, qty: i.quantity })),
+    notes,
+    idempotencyKey
+  );
 }
 
 module.exports = {
@@ -246,4 +290,8 @@ module.exports = {
   updateOrderStatus,
   getAllOrders,
   generatePublicOrderId,
+  generateUniquePublicOrderId,
+  trackOrder,
+  getKitchenTicket,
+  reorderFromOrder,
 };
