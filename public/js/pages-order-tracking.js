@@ -154,4 +154,3 @@ const orderTrackingPage = {
   },
 };
 
-window.addEventListener('DOMContentLoaded', () => orderTrackingPage.init());
