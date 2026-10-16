@@ -17,7 +17,7 @@ for (const file of files) {
   const filePath = path.join(testDir, file);
   console.log(`\n=== Running ${file} ===\n`);
   try {
-    execSync(`node "${filePath}"`, { stdio: 'inherit', cwd: path.join(testDir, '..') });
+    execSync(`"${process.execPath}" "${filePath}"`, { stdio: 'inherit', cwd: path.join(testDir, '..') });
     console.log(`\n=== ${file} PASSED ===\n`);
   } catch (err) {
     allPassed = false;
@@ -32,3 +32,4 @@ if (!allPassed) {
   console.log('All test suites passed.');
   process.exit(0);
 }
+
