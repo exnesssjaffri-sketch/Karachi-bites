@@ -275,3 +275,98 @@ No HTML error pages are returned from API routes.
 - Uses SQLite database
 - Data persists across server restarts
 - Orders store prices at time of order (not affected by future menu price changes)
+
+---
+
+## Admin Menu CRUD (S1)
+
+### POST /api/admin/menu
+Create a new menu item (admin only).
+
+**Request**
+```json
+{
+  "name": "Chicken Tikka",
+  "price": 750,
+  "category": "BBQ",
+  "tags": "spicy",
+  "available": true
+}
+```
+
+**Validation**
+- `name`: required, 2-100 characters
+- `price`: required integer, 0-100000
+- `category`: required, one of BBQ, Karahi, Rice, Rolls, Drinks, Desserts
+- `tags`: optional, one of veg, spicy, mild
+- `available`: optional boolean
+
+**Response**
+- Status: 201 Created
+- Body: `{ "id": 13, "name": "Chicken Tikka", "price": 750, "category": "BBQ", "tags": "spicy", "available": true }`
+
+**Error Responses**
+- 400 Bad Request: `{ "error": "Invalid menu item data" }`
+- 401 Unauthorized: `{ "error": "Authentication required" }` or `{ "error": "Invalid or expired token" }`
+- 403 Forbidden: `{ "error": "Admin access required" }`
+- 500 Internal Server Error: `{ "error": "Internal server error" }`
+
+### PUT /api/admin/menu/:id
+Update an existing menu item (admin only).
+
+**Request**
+```json
+{
+  "name": "Chicken Tikka (Half)",
+  "price": 800,
+  "category": "BBQ",
+  "tags": "mild",
+  "available": false
+}
+```
+
+**Response**
+- Status: 200 OK
+- Body: `{ "id": 13, "name": "Chicken Tikka (Half)", "price": 800, "category": "BBQ", "tags": "mild", "available": false }`
+
+**Error Responses**
+- 404 Not Found: `{ "error": "Item not found" }`
+- 400 Bad Request: `{ "error": "Invalid menu item data" }`
+- 401 Unauthorized, 403 Forbidden, 500 Internal Server Error
+
+### DELETE /api/admin/menu/:id
+Delete a menu item (admin only). Hard delete.
+
+**Response**
+- Status: 204 No Content
+
+**Error Responses**
+- 404 Not Found: `{ "error": "Item not found" }`
+- 401 Unauthorized, 403 Forbidden, 500 Internal Server Error
+
+---
+
+## CSV Order Export (S2)
+
+### GET /api/admin/orders/export
+Export all orders as CSV file (admin only).
+
+**Query Parameters**
+- `date_from`: optional, filter orders from this date (YYYY-MM-DD)
+- `date_to`: optional, filter orders until this date (YYYY-MM-DD)
+
+**Response**
+- Status: 200 OK
+- Headers:
+  - `Content-Type: text/csv`
+  - `Content-Disposition: attachment; filename="orders.csv"`
+- Body: CSV with columns: Order ID, Customer, Phone, Total, Status, Date
+
+**Error Responses**
+- 401 Unauthorized: `{ "error": "Authentication required" }` or `{ "error": "Invalid or expired token" }`
+- 403 Forbidden: `{ "error": "Admin access required" }`
+- 500 Internal Server Error: `{ "error": "Internal server error" }`
+
+**Security Notes**
+- CSV values are properly quoted and escaped to prevent CSV injection
+- Only non-sensitive fields are exported (no password hashes, tokens, or secrets)

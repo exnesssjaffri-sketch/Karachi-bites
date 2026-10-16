@@ -1,16 +1,35 @@
 const express = require('express');
-const { getAll } = require('./db');
+const { getAll, run, getOne } = require('./db');
 const orderService = require('./orderService');
 const auth = require('./auth');
 const validate = require('./validate');
 
 const router = express.Router();
+const { isSqlite } = require('./db');
+
+// CSV injection protection: quote every field and prefix dangerous formula
+// characters (= + - @) with a single quote so spreadsheets treat them as text.
+// Leading whitespace and control characters are stripped first so that
+// values like "  =SUM(1,2)" or "\t+cmd" are also neutralised.
+function csvCell(value) {
+  let str = value === undefined || value === null ? '' : String(value);
+  // Strip leading whitespace and control characters before checking for formula chars
+  const stripped = str.replace(/^[\s\x00-\x1F\x7F]+/, '');
+  if (/^[=+\-@]/.test(stripped)) str = `'${str}`;
+  return `"${str.replace(/"/g, '""')}"`;
+}
+
+// SQLite stores booleans as 0/1 integers; PostgreSQL uses true/false.
+// Always pass the correct literal for the active driver to stay cross-DB compatible.
+function boolLiteral(value) {
+  return isSqlite() ? (value ? 1 : 0) : !!value;
+}
 
 // GET /api/menu
 router.get('/menu', async (req, res) => {
   try {
     const rows = await getAll(
-      'SELECT id, name, price, category, tags, available FROM menu_items WHERE available = 1 ORDER BY id'
+      'SELECT id, name, price, category, tags, available FROM menu_items WHERE available = ' + boolLiteral(true) + ' ORDER BY id'
     );
     res.json(rows.map((row) => ({
       id: row.id,
@@ -152,6 +171,104 @@ router.patch('/admin/orders/:id/status', auth.authMiddleware, auth.requireAdmin,
     if (err.message && err.message.includes('Invalid status transition')) {
       return res.status(400).json({ error: err.message });
     }
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+// POST /api/admin/menu
+router.post('/admin/menu', auth.authMiddleware, auth.requireAdmin, async (req, res) => {
+  const { name, price, category, tags, available } = req.body;
+  if (!validate.isValidName(name) || !validate.isValidPrice(price) || !validate.isValidCategory(category)) {
+    return res.status(400).json({ error: 'Invalid menu item data' });
+  }
+  try {
+    const result = await run(
+      'INSERT INTO menu_items (name, price, category, tags, available) VALUES (?, ?, ?, ?, ?)',
+      [name, price, category, tags || null, boolLiteral(available)]
+    );
+    res.status(201).json({ id: result.lastID, name, price, category, tags, available });
+  } catch (err) {
+    console.error('Add menu item error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// PUT /api/admin/menu/:id
+router.put('/admin/menu/:id', auth.authMiddleware, auth.requireAdmin, async (req, res) => {
+  const id = req.params.id;
+  const { name, price, category, tags, available } = req.body;
+  try {
+    const exists = await getOne('SELECT 1 FROM menu_items WHERE id = ?', [id]);
+    if (!exists) return res.status(404).json({ error: 'Item not found' });
+    
+    await run(
+      'UPDATE menu_items SET name = ?, price = ?, category = ?, tags = ?, available = ? WHERE id = ?',
+      [name, price, category, tags, boolLiteral(available), id]
+    );
+    res.json({ id, name, price, category, tags, available });
+  } catch (err) {
+    console.error('Update menu item error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// DELETE /api/admin/menu/:id
+// S1 requirement: hide, not permanently delete. Soft-delete by setting available=0
+// so historical order_items references remain intact. Unhide via PUT available=true.
+router.delete('/admin/menu/:id', auth.authMiddleware, auth.requireAdmin, async (req, res) => {
+  const id = req.params.id;
+  try {
+    const exists = await getOne('SELECT 1 FROM menu_items WHERE id = ?', [id]);
+    if (!exists) return res.status(404).json({ error: 'Item not found' });
+    await run('UPDATE menu_items SET available = ' + boolLiteral(false) + ', updated_at = datetime("now") WHERE id = ?', [id]);
+    res.status(204).send();
+  } catch (err) {
+    console.error('Delete menu item error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// PATCH /api/admin/menu/:id/availability — explicit hide/unhide (admin only)
+router.patch('/admin/menu/:id/availability', auth.authMiddleware, auth.requireAdmin, async (req, res) => {
+  const id = req.params.id;
+  const { available } = req.body || {};
+  if (available === undefined || typeof available !== 'boolean') {
+    return res.status(400).json({ error: 'available boolean is required' });
+  }
+  try {
+    const row = await getOne('SELECT id, available FROM menu_items WHERE id = ?', [id]);
+    if (!row) return res.status(404).json({ error: 'Item not found' });
+    await run('UPDATE menu_items SET available = ' + boolLiteral(available) + ', updated_at = datetime("now") WHERE id = ?',
+      [id]);
+    res.json({ id, available: !!available });
+  } catch (err) {
+    console.error('Update availability error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// GET /api/admin/orders/export
+router.get('/admin/orders/export', auth.authMiddleware, auth.requireAdmin, async (req, res) => {
+  try {
+    const dateFrom = req.query.date_from || null;
+    const dateTo = req.query.date_to || null;
+    const orders = await orderService.getAllOrders(null, null, dateFrom, dateTo);
+    const headers = ['Order ID', 'Customer', 'Phone', 'Total', 'Status', 'Date'];
+    const rows = orders.map(o => [
+      csvCell(o.orderId),
+      csvCell(o.customer.name),
+      csvCell(o.customer.phone),
+      csvCell(o.total),
+      csvCell(o.status),
+      csvCell(o.createdAt),
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    res.header('Content-Type', 'text/csv');
+    res.attachment('orders.csv');
+    res.send(csv);
+  } catch (err) {
+    console.error('Export error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

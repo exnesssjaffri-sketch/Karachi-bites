@@ -16,8 +16,8 @@ Karachi Bites is a Node.js/Express-based backend application designed for a rest
 | F3 | JWT Auth | Implemented |
 | F4 | Admin Orders View | Implemented |
 | F5 | Status Transitions | Implemented |
-| S1 | Admin Menu CRUD | Planned/In-Progress |
-| S2 | CSV Export (Injection Safe) | Pending |
+| S1 | Admin Menu CRUD | Implemented |
+| S2 | CSV Export (Injection Safe) | Implemented |
 | S3 | Security hardening | Implemented |
 | S4 | API Error Standards | Implemented |
 
@@ -32,12 +32,17 @@ See `API.md` for detailed endpoint descriptions, including request/response form
 5. Visit `http://localhost:3000`.
 
 ## 5. Test Report
-All 4 test suites (`test_db.js`, `test_api.js`, `test_failures.js`, `test_persistence.js`) passed successfully as of 10/15/2026.
+All 6 test suites passed successfully as of 10/15/2026:
+- `test_db.js` — Database, branch seed and validation tests
+- `test_api.js` — API tests (menu, orders, auth, admin filters, status transitions)
+- `test_failures.js` — API failure and authorization tests
+- `test_persistence.js` — Persistence test (separate server processes)
+- `test_admin_menu.js` — Admin Menu CRUD tests (S1)
+- `test_csv_export.js` — CSV Export tests (S2)
 
 ## 6. Remaining Work
-- Implement CSV export endpoint with proper sanitization to prevent injection.
-- Complete Admin Menu CRUD features (S1).
 - Perform manual browser E2E testing.
+- Verify production database persistence and deployment configuration.
 
 ## 7. Git Status
 Project is at v1.0.0. Current local state matches the requirements specified in the student brief.

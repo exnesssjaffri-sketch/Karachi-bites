@@ -23,15 +23,6 @@ async function generateUniquePublicOrderId() {
   return fallback;
 }
 
-function generatePublicOrderId() {
-  const date = new Date();
-  const dateStr = date.getFullYear().toString() +
-    String(date.getMonth() + 1).padStart(2, '0') +
-    String(date.getDate()).padStart(2, '0');
-  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
-  return `KB-${dateStr}-${random}`;
-}
-
 let orderCreationLock = false;
 const orderCreationQueue = [];
 
@@ -225,7 +216,7 @@ function updateOrderStatus(orderId, newStatus) {
     });
 }
 
-function getAllOrders(branch, date) {
+function getAllOrders(branch, date, dateFrom, dateTo) {
   let query = 'SELECT * FROM orders WHERE 1=1';
   const params = [];
 
@@ -236,6 +227,14 @@ function getAllOrders(branch, date) {
   if (date) {
     query += ' AND DATE(created_at) = ?';
     params.push(date);
+  }
+  if (dateFrom) {
+    query += ' AND DATE(created_at) >= ?';
+    params.push(dateFrom);
+  }
+  if (dateTo) {
+    query += ' AND DATE(created_at) <= ?';
+    params.push(dateTo);
   }
 
   query += ' ORDER BY created_at DESC';

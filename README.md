@@ -78,6 +78,10 @@ Base URL: `/api`
 | POST | `/api/auth/login` | Issue a JWT for a valid staff/admin account |
 | GET | `/api/admin/orders` | Admin-only order list; optional `branch` and `date` filters |
 | PATCH | `/api/admin/orders/:id/status` | Admin-only status update with transition validation |
+| POST | `/api/admin/menu` | Admin-only create menu item |
+| PUT | `/api/admin/menu/:id` | Admin-only update menu item |
+| DELETE | `/api/admin/menu/:id` | Admin-only delete menu item |
+| GET | `/api/admin/orders/export` | Admin-only CSV export of all orders |
 
 Allowed transitions: `Received → Preparing → Out for Delivery → Delivered`. The server calculates totals using item prices from the database plus the configured delivery fee.
 
@@ -89,7 +93,7 @@ See [API.md](./API.md) for requests, responses and error cases, and [DECISIONS.m
 npm test
 ```
 
-This invokes the repository's current test runner, which runs the database, API, failure and persistence suites. Review each suite's final exit status and output. Browser-based end-to-end tests, real mobile-device tests, and the homepage performance requirement (<3 seconds on Slow 3G and <1.5 MB) still need explicit verification; they should not be treated as passed based only on the API tests.
+This invokes the repository's current test runner, which runs the database, API, failure, persistence, admin menu CRUD, and CSV export suites. Review each suite's final exit status and output. Browser-based end-to-end tests, real mobile-device tests, and the homepage performance requirement (<3 seconds on Slow 3G and <1.5 MB) still need explicit verification; they should not be treated as passed based only on the API tests.
 
 ## Project structure
 

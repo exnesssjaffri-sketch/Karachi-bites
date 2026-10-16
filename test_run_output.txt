@@ -1,0 +1,155 @@
+
+=== Running test_db.js ===
+
+◇ injected env (3) from .env
+--- Database, branch seed and validation tests ---
+Database test PASSED: 12 menu items and all three branches exist.
+Migration warning: SQLITE_MISUSE: Database handle is closed
+
+=== test_db.js PASSED ===
+
+
+=== Running test_api.js ===
+
+◇ injected env (3) from .env
+◇ injected env (0) from .env
+--- API Tests ---
+[2026-10-15T18:52:50.384Z] GET /api/menu
+Testing customer homepage, preserved app and admin page routes...
+[2026-10-15T18:52:51.391Z] GET /
+[2026-10-15T18:52:51.420Z] GET /app.html
+[2026-10-15T18:52:51.447Z] GET /admin
+  PASS
+Testing GET /api/menu...
+[2026-10-15T18:52:51.478Z] GET /api/menu
+  PASS
+Testing POST /api/auth/login for admin...
+[2026-10-15T18:52:51.496Z] POST /api/auth/login
+  PASS
+Testing POST /api/orders and server-calculated totals...
+[2026-10-15T18:52:51.672Z] POST /api/orders
+  PASS
+Testing order retrieval...
+[2026-10-15T18:52:51.726Z] GET /api/orders/KB-20261015-WMRAI3
+  PASS
+Testing order creation for branch Gulshan-e-Iqbal...
+[2026-10-15T18:52:51.765Z] POST /api/orders
+[2026-10-15T18:52:51.804Z] GET /api/orders/KB-20261015-MLWP3A
+  PASS
+Testing order creation for branch North Nazimabad...
+[2026-10-15T18:52:51.816Z] POST /api/orders
+[2026-10-15T18:52:51.877Z] GET /api/orders/KB-20261015-GSB9LA
+  PASS
+Testing rejection of an unsupported branch...
+[2026-10-15T18:52:51.886Z] POST /api/orders
+  PASS
+Testing admin order filters...
+[2026-10-15T18:52:51.910Z] GET /api/admin/orders
+[2026-10-15T18:52:51.935Z] GET /api/admin/orders
+[2026-10-15T18:52:51.951Z] GET /api/admin/orders
+  PASS
+Testing valid and invalid status transitions...
+[2026-10-15T18:52:51.968Z] PATCH /api/admin/orders/KB-20261015-WMRAI3/status
+[2026-10-15T18:52:51.998Z] PATCH /api/admin/orders/KB-20261015-WMRAI3/status
+Update status error: Invalid status transition from Preparing to Delivered
+  PASS
+Testing staff cannot access admin endpoints...
+[2026-10-15T18:52:52.015Z] POST /api/auth/login
+[2026-10-15T18:52:52.110Z] GET /api/admin/orders
+  PASS
+Testing unknown orders return 404...
+[2026-10-15T18:52:52.126Z] GET /api/orders/KB-NOT-FOUND
+  PASS
+All API tests PASSED.
+
+=== test_api.js PASSED ===
+
+
+=== Running test_failures.js ===
+
+◇ injected env (3) from .env
+◇ injected env (0) from .env
+--- API failure and authorization tests ---
+[2026-10-15T18:52:53.695Z] GET /api/menu
+[2026-10-15T18:52:54.854Z] POST /api/orders
+  PASS: Missing customer.name is rejected
+[2026-10-15T18:52:54.900Z] POST /api/orders
+  PASS: Invalid phone is rejected
+[2026-10-15T18:52:54.907Z] POST /api/orders
+  PASS: Unsupported branch is rejected
+[2026-10-15T18:52:54.912Z] GET /api/admin/orders
+  PASS: Missing admin token returns 401
+[2026-10-15T18:52:54.921Z] POST /api/auth/login
+[2026-10-15T18:52:55.066Z] POST /api/orders
+[2026-10-15T18:52:55.132Z] PATCH /api/admin/orders/KB-20261015-HEOO3M/status
+Update status error: Invalid status transition from Received to Delivered
+  PASS: Invalid status jump is rejected
+[2026-10-15T18:52:55.158Z] POST /api/auth/login
+[2026-10-15T18:52:55.265Z] GET /api/admin/orders
+  PASS: Staff login cannot access admin endpoints
+
+Failure tests: 6/6 passed
+
+=== test_failures.js PASSED ===
+
+
+=== Running test_persistence.js ===
+
+--- Persistence Test (separate server processes) ---
+Persistence test PASSED: the order was retrieved after the first server process stopped.
+
+=== test_persistence.js PASSED ===
+
+
+=== Running test_admin_menu.js ===
+
+◇ injected env (3) from .env
+◇ injected env (0) from .env
+--- Admin Menu CRUD Tests ---
+[2026-10-15T18:53:01.321Z] GET /api/menu
+Logging in as admin...
+[2026-10-15T18:53:02.148Z] POST /api/auth/login
+Testing POST /api/admin/menu...
+[2026-10-15T18:53:02.386Z] POST /api/admin/menu
+  PASS
+Testing PUT /api/admin/menu/:id...
+[2026-10-15T18:53:02.432Z] PUT /api/admin/menu/13
+  PASS
+Testing DELETE /api/admin/menu/:id...
+[2026-10-15T18:53:02.509Z] DELETE /api/admin/menu/13
+  PASS
+[2026-10-15T18:53:02.567Z] PUT /api/admin/menu/13
+  PASS
+Testing unauthorized access...
+[2026-10-15T18:53:02.615Z] POST /api/admin/menu
+[2026-10-15T18:53:02.673Z] POST /api/admin/menu
+  PASS
+Testing validation failure...
+[2026-10-15T18:53:02.708Z] POST /api/admin/menu
+  PASS
+Admin Menu CRUD tests PASSED.
+
+=== test_admin_menu.js PASSED ===
+
+
+=== Running test_csv_export.js ===
+
+◇ injected env (3) from .env
+◇ injected env (0) from .env
+--- CSV Export Tests ---
+[2026-10-15T18:53:04.237Z] GET /api/menu
+Logging in as admin...
+[2026-10-15T18:53:05.015Z] POST /api/auth/login
+Creating test order...
+[2026-10-15T18:53:05.219Z] POST /api/orders
+Testing GET /api/admin/orders/export...
+[2026-10-15T18:53:05.348Z] GET /api/admin/orders/export
+  PASS
+Testing unauthorized export...
+[2026-10-15T18:53:05.396Z] GET /api/admin/orders/export
+  PASS
+CSV Export tests PASSED.
+
+=== test_csv_export.js PASSED ===
+
+All test suites passed.
