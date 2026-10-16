@@ -2,7 +2,7 @@
   'use strict';
 
   const TOKEN_KEY = 'karachi_bites_admin_token';
-  const API_BASE_URL = 'https://rgejphvmnlwcoojkpcje.supabase.co/functions/v1/karachi-bites-api';
+  const API_BASE_URL = '';
   const $ = (selector) => document.querySelector(selector);
   const loginPanel = $('#loginPanel');
   const dashboardPanel = $('#dashboardPanel');
