@@ -104,16 +104,50 @@ async function runTests() {
     console.log('  PASS');
 
     console.log('Testing POST /api/orders and server-calculated totals...');
+    const firstOrderPayload = makeOrderPayload('Clifton', 2);
+    firstOrderPayload.customer.notes = 'Ring the doorbell, please.';
     response = await fetch(baseUrl + '/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(makeOrderPayload('Clifton', 2)),
+      body: JSON.stringify(firstOrderPayload),
     });
     if (response.status !== 201) throw new Error('Create order failed: ' + JSON.stringify(await readJson(response)));
     const created = await readJson(response);
     assert(created.orderId, 'Order response should include orderId');
     assert(created.total === 1850, 'Expected server total 1850, received ' + created.total);
     checkHelmetHeaders(response);
+    console.log('  PASS');
+
+    console.log('Testing order tracking by ID and matching phone...');
+    response = await fetch(baseUrl + '/api/orders/' + encodeURIComponent(created.orderId) + '/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: firstOrderPayload.customer.phone }),
+    });
+    assert(response.status === 200, 'Correct order ID + phone should return 200');
+    const tracked = await readJson(response);
+    assert(tracked.orderId === created.orderId, 'Tracking should return the requested order ID');
+    assert(tracked.status === 'Received', 'New order should start in Received status');
+    assert(tracked.total === 1850, 'Tracking should return the server total');
+    assert(!Object.prototype.hasOwnProperty.call(tracked, 'customer'), 'Tracking must not expose customer PII');
+    response = await fetch(baseUrl + '/api/orders/' + encodeURIComponent(created.orderId) + '/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: '03007654321' }),
+    });
+    assert(response.status === 403, 'Wrong phone must not reveal order details');
+    response = await fetch(baseUrl + '/api/orders/' + encodeURIComponent(created.orderId) + '/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: 'not-a-phone' }),
+    });
+    assert(response.status === 400, 'Invalid tracking phone must be rejected');
+    response = await fetch(baseUrl + '/api/orders/KB-NOT-FOUND/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: firstOrderPayload.customer.phone }),
+    });
+    assert(response.status === 404, 'Unknown tracking order must return 404');
     console.log('  PASS');
 
     console.log('Testing order retrieval...');
