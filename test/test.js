@@ -9,19 +9,23 @@ const files = [
   'test_persistence.js',
   'test_admin_menu.js',
   'test_csv_export.js',
+  'test_frontend_wiring.js',
 ];
 
 let allPassed = true;
 
 for (const file of files) {
   const filePath = path.join(testDir, file);
-  console.log(`\n=== Running ${file} ===\n`);
+  console.log('\n=== Running ' + file + ' ===\n');
   try {
-    execSync(`node "${filePath}"`, { stdio: 'inherit', cwd: path.join(testDir, '..') });
-    console.log(`\n=== ${file} PASSED ===\n`);
+    execSync('"' + process.execPath + '" "' + filePath + '"', {
+      stdio: 'inherit',
+      cwd: path.join(testDir, '..'),
+    });
+    console.log('\n=== ' + file + ' PASSED ===\n');
   } catch (err) {
     allPassed = false;
-    console.error(`\n=== ${file} FAILED ===\n`);
+    console.error('\n=== ' + file + ' FAILED ===\n');
   }
 }
 
