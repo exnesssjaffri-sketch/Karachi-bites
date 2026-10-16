@@ -50,6 +50,11 @@ const checkoutPage = {
                   <label class="block text-[#B8B0A6] text-sm mb-2">Email (Optional)</label>
                   <input id="customerEmail" type="email" placeholder="you@example.com" class="w-full px-4 py-2.5 rounded-lg bg-[#211E1B] border border-[#3A342E] text-white placeholder-[#B8B0A6]/60 focus:outline-none focus:border-[#B42318] text-sm"/>
                 </div>
+                <div>
+                  <label for="customerNotes" class="block text-[#B8B0A6] text-sm mb-2">Order notes (Optional)</label>
+                  <textarea id="customerNotes" rows="3" maxlength="500" placeholder="Delivery instructions or special requests (max 500 characters)" class="w-full px-4 py-2.5 rounded-lg bg-[#211E1B] border border-[#3A342E] text-white placeholder-[#B8B0A6]/60 focus:outline-none focus:border-[#B42318] text-sm"></textarea>
+                  <p class="mt-1 text-xs text-[#B8B0A6]">Please avoid sharing sensitive personal information.</p>
+                </div>
               </div>
             </div>
 
@@ -103,6 +108,7 @@ const checkoutPage = {
     const address = document.getElementById('customerAddress').value.trim();
     const branch = document.getElementById('customerBranch').value;
     const email = document.getElementById('customerEmail').value.trim();
+    const notes = document.getElementById('customerNotes').value.trim();
     
     if (!name) {
       alert('Please enter your name');
@@ -124,7 +130,7 @@ const checkoutPage = {
     }
     
     const orderData = {
-      customer: { name, phone, address, email: email || undefined },
+      customer: { name, phone, address, email: email || undefined, notes: notes || undefined },
       branch,
       items: cart.items.map(item => ({ id: item.id, qty: item.quantity })),
     };
