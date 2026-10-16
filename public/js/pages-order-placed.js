@@ -113,4 +113,3 @@ const orderPlacedPage = {
   },
 };
 
-window.addEventListener('DOMContentLoaded', () => orderPlacedPage.init());
