@@ -19,7 +19,7 @@ jobs:
           node-version: 24
       - name: Install dependencies
         run: npm install --no-audit --no-fund
-      - name: Run database, API, failure and persistence tests
+      - name: Run all backend and frontend regression tests
         env:
           JWT_SECRET: ci-only-not-a-production-secret-value
         run: npm test
