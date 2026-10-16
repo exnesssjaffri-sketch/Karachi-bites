@@ -51,5 +51,7 @@ assert.match(rootHtml, /<script src="\/js\/store\.js"><\/script>/, 'Stitch homep
 assert.match(stitchHome, /window\.api\.getMenu\(\)/, 'Stitch homepage reads menu items from the API client');
 assert.match(stitchHome, /window\.cartStore\.addItem/, 'Stitch homepage adds real items to the shared cart');
 assert.match(stitchNavigation, /data-kb-live-cart/, 'Stitch navigation lets live add-to-cart events reach their handler');
+assert.match(read('public/js/pages-order-tracking.js'), /window\.api\.trackOrder\(this\.orderId, String\(phone \|\| ""\)\.trim\(\)\)/, 'tracking verifies order ID with checkout phone');
+assert.doesNotMatch(read('public/js/pages-order-tracking.js'), /api\.getOrder\(/, 'tracking must not reveal an order by ID alone');
 
 console.log('Frontend wiring checks passed.');
