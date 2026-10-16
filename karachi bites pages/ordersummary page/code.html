@@ -1,36 +1,461 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_standard" name="shell-type"><title>Karachi Bites</title><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{
-  "bg-main": "#181614",
-  "card-bg": "#2A2622",
-  "input-bg": "#211E1B",
-  "card-border": "#3A342E",
-  "text-main": "#F7F3EC",
-  "text-subtle": "#B8B0A6",
-  "brand-red": "#B42318",
-  "brand-red-hover": "#981B12",
-  "surface-container-lowest":"#2A2622",
-  "surface":"#181614",
-  "background":"#181614",
-  "on-surface":"#F7F3EC",
-  "on-surface-variant":"#B8B0A6",
-  "primary":"#B42318",
-  "primary-container":"#981B12",
-  "on-primary":"#F7F3EC",
-  "primary-fixed":"#B42318",
-  "on-primary-fixed":"#F7F3EC",
-  "secondary":"#e05d4b",
-  "outline-variant":"#3A342E",
-  "surface-container":"#211E1B",
-  "surface-container-high":"#332E29",
-  "surface-container-low":"#211E1B",
-  "surface-container-highest":"#3A342E"
-},borderRadius:{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},spacing:{"margin-desktop":"2rem","space-md":"1rem","gutter":"1rem","gutter-desktop":"1.5rem","space-lg":"1.5rem","margin":"1rem","space-sm":"0.5rem","space-xs":"0.25rem","space-xl":"2.5rem"},fontFamily:{"label-md":["Geist"],"display-lg-mobile":["Newsreader"],"body-md":["Geist"],"title-md":["Geist"],"body-sm":["Geist"],"headline-md":["Newsreader"],"label-sm":["Geist"],"headline-sm":["Newsreader"],"body-lg":["Geist"],"headline-lg":["Newsreader"],"headline-lg-mobile":["Newsreader"],"display-lg":["Newsreader"],"price-display":["Geist"]},fontSize:{"label-md":["13px",{"lineHeight":"18px","letterSpacing":"0.02em","fontWeight":"500"}],"display-lg-mobile":["32px",{"lineHeight":"40px","letterSpacing":"-0.01em","fontWeight":"500"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],"title-md":["16px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"600"}],"body-sm":["12px",{"lineHeight":"16px","fontWeight":"400"}],"headline-md":["24px",{"lineHeight":"32px","fontWeight":"600"}],"label-sm":["11px",{"lineHeight":"16px","letterSpacing":"0.04em","fontWeight":"600"}],"headline-sm":["20px",{"lineHeight":"28px","fontWeight":"600"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"headline-lg":["32px",{"lineHeight":"40px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-lg-mobile":["26px",{"lineHeight":"34px","letterSpacing":"-0.01em","fontWeight":"600"}],"display-lg":["48px",{"lineHeight":"56px","letterSpacing":"-0.02em","fontWeight":"500"}],"price-display":["18px",{"lineHeight":"24px","letterSpacing":"-0.02em","fontWeight":"600"}]}}}};</script></head><body class="bg-[#181614] font-body-md text-body-md text-[#F7F3EC] min-h-screen"><header class="fixed top-0 left-0 right-0 z-50 bg-[#2A2622] border-b border-[#3A342E] shadow-[0_2px_12px_rgba(0,0,0,0.35)]"><div class="h-20 w-full max-w-7xl mx-auto px-6 flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md shrink-0"><img alt="Karachi Bites Brand Logo" class="h-8 w-auto object-contain brightness-95" src="https://lh3.googleusercontent.com/aida/AEtjO1WlHoBi4Ro0CqGkPGqDUYC1XW_TSxqITPbrU1q0oN3EFZBjeJON3gqc62ZPB-0uVqA0nRmUiyUmstr8N8-HqQWcZ6g70KuIRAAap79kkKnGjptl0eixxAgYW_rwZG7AaF6UuS0DHtjRPMcC7Fx48SuvyuYrwjdJXpAKn35N1JKulOMXVAvq2JMCwzzVK9fAudSwyaWB7K4boADp8D5miTW8fhLsm4feE1JbnZUUf_u8fYq6kKYc06JFbhJ6"><a class="flex flex-col" data-path="home" href="#"><span class="font-headline-sm text-headline-sm text-[#F7F3EC] tracking-tight font-semibold">Karachi Bites</span><span class="font-label-sm text-label-sm text-[#B8B0A6] tracking-wider uppercase">Burns Road Kitchen</span></a></div><nav class="hidden xl:flex items-center gap-space-lg"><a class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors" data-path="home" href="#">Home</a><a class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors" data-path="menu" href="#">Menu</a><a class="relative inline-flex items-center gap-space-xs font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors" data-path="cart" href="#"><span class="material-symbols-outlined text-[18px]">shopping_bag</span><span class="">Cart</span><span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#B42318] text-[#F7F3EC] font-label-sm text-label-sm font-semibold">3</span></a><a class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors" data-path="track-order" href="#">Track Order</a></nav><div class="flex items-center gap-space-md shrink-0"><button aria-label="Search menu items" class="w-10 h-10 flex items-center justify-center rounded-lg border border-[#3A342E] bg-[#211E1B] text-[#B8B0A6] hover:bg-[#332E29] hover:text-[#F7F3EC] transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">search</span></button><a class="hidden md:inline-flex items-center gap-space-xs px-2.5 py-1.5 rounded-lg border border-[#3A342E] bg-[#211E1B] hover:bg-[#332E29] hover:text-[#F7F3EC] transition-colors" data-path="staff-portal" href="#"><span class="font-label-sm text-label-sm text-[#B8B0A6]">Staff Portal</span><span class="px-1.5 py-0.5 rounded bg-[#B42318] text-[#F7F3EC] font-label-sm text-label-sm font-semibold">KDS</span></a><a class="hidden lg:inline-flex font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] transition-colors px-space-xs py-2" data-path="login" href="#">Account / Login</a><a class="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-[#B42318] hover:bg-[#981B12] text-[#F7F3EC] font-label-md text-label-md font-semibold shadow-sm transition-all" data-path="order-now" href="#">Order Now</a><div class="w-8 h-8 rounded-full bg-[#B42318] flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[#F7F3EC] text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-[#181614]"><div class="flex flex-col w-full">
-<!-- Progress Stepper Header -->
-<section class="w-full bg-[#2A2622] border-b border-[#3A342E] shadow-sm">
-<div class="w-full max-w-7xl mx-auto px-6 py-space-md"><div class="mb-3"><a href="#" data-path="cart" class="inline-flex items-center gap-1.5 font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] transition-colors"><span class="material-symbols-outlined text-[18px]">arrow_back</span><span class="">Back to Cart / Checkout</span></a></div><div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-full bg-[#211E1B] border border-[#3A342E] flex items-center justify-center text-[#B42318]"><span class="material-symbols-outlined text-[20px]">lock</span></div><div><h1 class="font-headline-sm text-headline-sm text-[#F7F3EC] font-semibold tracking-tight">Secure Checkout</h1><p class="font-body-sm text-body-sm text-[#B8B0A6]">Encrypted transactional channel • Burns Road Central Dispatch</p></div></div><ol class="flex items-center gap-space-xs sm:gap-space-sm"><li class="flex items-center gap-1.5 text-[#B8B0A6] font-label-sm text-label-sm"><span class="w-6 h-6 rounded-full bg-[#B42318] text-[#F7F3EC] flex items-center justify-center font-bold"><span class="material-symbols-outlined text-[14px]">check</span></span><span class="hidden sm:inline">Cart</span></li><span class="w-6 h-0.5 bg-[#B42318]/50"></span><li class="flex items-center gap-1.5 text-[#F7F3EC] font-label-sm text-label-sm font-semibold"><span class="w-6 h-6 rounded-full bg-[#B42318] text-[#F7F3EC] flex items-center justify-center font-bold shadow-sm ring-2 ring-[#B42318]/40">2</span><span class="">Delivery &amp; Contact</span></li><span class="w-6 h-0.5 bg-[#3A342E]"></span><li class="flex items-center gap-1.5 text-[#B8B0A6] opacity-70 font-label-sm text-label-sm"><span class="w-6 h-6 rounded-full bg-[#211E1B] border border-[#3A342E] text-[#B8B0A6] flex items-center justify-center">3</span><span class="hidden sm:inline">Payment</span></li><span class="w-6 h-0.5 bg-[#3A342E]"></span><li class="flex items-center gap-1.5 text-[#B8B0A6] opacity-70 font-label-sm text-label-sm"><span class="w-6 h-6 rounded-full bg-[#211E1B] border border-[#3A342E] text-[#B8B0A6] flex items-center justify-center">4</span><span class="hidden sm:inline">Confirmation</span></li></ol></div></div>
-</section>
-<!-- Main Content Stage: 60/40 Split -->
-<div class="w-full max-w-7xl mx-auto px-6 py-space-lg"><div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start"><div class="lg:col-span-7 flex flex-col gap-space-md"><div class="p-space-md bg-[#211E1B] border border-[#3A342E] rounded-xl flex items-start sm:items-center justify-between gap-space-sm shadow-sm"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[#B42318] text-[22px]">flash_on</span><div><p class="font-label-md text-label-md text-[#F7F3EC] font-semibold">Guest Checkout Enabled</p><p class="font-body-sm text-body-sm text-[#B8B0A6]">No account required. Quick checkout with phone number.</p></div></div><button class="shrink-0 px-3 py-1.5 rounded-lg bg-[#2A2622] border border-[#3A342E] text-[#F7F3EC] font-label-sm text-label-sm font-semibold hover:border-[#B42318] hover:text-[#B42318] transition-colors shadow-sm" type="button">Have an account? Log in</button></div><div class="bg-[#2A2622] border border-[#3A342E] p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md"><div class="flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="w-6 h-6 rounded bg-[#B42318] text-[#F7F3EC] font-label-sm text-label-sm flex items-center justify-center font-bold">1</span><h2 class="font-headline-sm text-headline-sm text-[#F7F3EC]">Customer Contact</h2></div><span class="font-label-sm text-label-sm text-[#B8B0A6] uppercase tracking-wider">Required for Ledger</span></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md"><div class="sm:col-span-2 flex flex-col gap-1"><label class="font-label-md text-label-md text-[#F7F3EC] font-semibold flex items-center justify-between"><span class="">Full Name <span class="text-[#B42318]">*</span></span><span class="text-emerald-400 font-label-sm text-label-sm flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px]">check_circle</span> Verified</span></label><div class="relative"><input class="w-full h-11 px-3.5 pr-10 rounded-lg bg-[#211E1B] border border-[#3A342E] text-[#F7F3EC] placeholder-[#B8B0A6] font-body-md text-body-md focus:outline-none focus:border-[#B42318] focus:ring-1 focus:ring-[#B42318] shadow-sm" placeholder="Enter recipient full name" type="text" value="Bilal Ahmed"><span class="material-symbols-outlined absolute right-3 top-3 text-[18px] text-emerald-400">check_circle</span></div></div><div class="sm:col-span-2 flex flex-col gap-1"><label class="font-label-md text-label-md text-[#F7F3EC] font-semibold flex items-center justify-between"><span class="">Phone Number (Pakistani Mobile) <span class="text-[#B42318]">*</span></span><span class="text-emerald-400 font-label-sm text-label-sm flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px]">check_circle</span> Validated format</span></label><div class="relative flex"><span class="inline-flex items-center px-3 rounded-l-lg bg-[#181614] border-y border-l border-[#3A342E] text-[#B8B0A6] font-label-md text-label-md">+92</span><input class="w-full h-11 px-3.5 pr-10 rounded-r-lg bg-[#211E1B] border border-[#3A342E] text-[#F7F3EC] placeholder-[#B8B0A6] font-body-md text-body-md focus:outline-none focus:border-[#B42318] focus:ring-1 focus:ring-[#B42318] shadow-sm" type="tel" value="300 1234567"><span class="material-symbols-outlined absolute right-3 top-3 text-[18px] text-emerald-400">check_circle</span></div><div class="flex items-center gap-1.5 pt-1 text-[#B8B0A6]"><span class="material-symbols-outlined text-[16px] text-emerald-400">chat</span><p class="font-body-sm text-body-sm">We'll send live WhatsApp &amp; SMS order tracking updates &amp; rider ETA.</p></div></div><div class="sm:col-span-2 flex flex-col gap-1"><label class="font-label-md text-label-md text-[#F7F3EC] font-semibold flex items-center justify-between"><span class="">Email Address <span class="text-[#B42318]">*</span></span><span class="text-emerald-400 font-label-sm text-label-sm flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px]">check_circle</span> Valid</span></label><div class="relative"><input class="w-full h-11 px-3.5 pr-10 rounded-lg bg-[#211E1B] border border-[#3A342E] text-[#F7F3EC] placeholder-[#B8B0A6] font-body-md text-body-md focus:outline-none focus:border-[#B42318] focus:ring-1 focus:ring-[#B42318] shadow-sm" type="email" value="bilal.ahmed@example.com"><span class="material-symbols-outlined absolute right-3 top-3 text-[18px] text-emerald-400">check_circle</span></div></div></div></div><div class="bg-[#2A2622] border border-[#3A342E] p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md"><div class="flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="w-6 h-6 rounded bg-[#B42318] text-[#F7F3EC] font-label-sm text-label-sm flex items-center justify-center font-bold">2</span><h2 class="font-headline-sm text-headline-sm text-[#F7F3EC]">Delivery Location</h2></div><span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-[#211E1B] border border-[#3A342E] text-[#B8B0A6]">Hot Box Seal Guaranteed</span></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md"><div class="flex flex-col gap-1"><label class="font-label-md text-label-md text-[#F7F3EC] font-semibold">City</label><div class="relative"><input class="w-full h-11 px-3.5 rounded-lg bg-[#181614] border border-[#3A342E] text-[#B8B0A6] font-body-md text-body-md cursor-not-allowed shadow-inner" readonly="" type="text" value="Karachi"><span class="material-symbols-outlined absolute right-3 top-3 text-[18px] text-[#B8B0A6]">lock</span></div></div><div class="flex flex-col gap-1"><label class="font-label-md text-label-md text-[#F7F3EC] font-semibold">Delivery Area / Zone <span class="text-[#B42318]">*</span></label><div class="relative"><select class="w-full h-11 px-3.5 pr-10 rounded-lg bg-[#211E1B] border border-[#3A342E] text-[#F7F3EC] font-body-md text-body-md focus:outline-none focus:border-[#B42318] focus:ring-1 focus:ring-[#B42318] appearance-none shadow-sm cursor-pointer"><option selected="">DHA Phase 6</option><option>Clifton</option><option>PECHS</option><option>Gulshan-e-Iqbal</option><option>Saddar / Burns Rd</option></select><span class="material-symbols-outlined absolute right-3 top-3 text-[20px] pointer-events-none text-[#B8B0A6]">expand_more</span></div></div><div class="sm:col-span-2 flex flex-col gap-1"><label class="font-label-md text-label-md text-[#F7F3EC] font-semibold flex items-center justify-between"><span class="">Street Address &amp; House / Apartment No. <span class="text-[#B42318]">*</span></span><span class="text-rose-400 font-label-sm text-label-sm flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px]">warning</span> Incomplete Unit</span></label><input class="w-full h-11 px-3.5 rounded-lg bg-[#211E1B] border border-rose-500/70 text-[#F7F3EC] font-body-md text-body-md focus:outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400 shadow-sm" type="text" value="Plot 42-C, 7th Commercial Street"><div class="flex items-center gap-2 p-2.5 rounded-lg bg-rose-950/40 border border-rose-900/60 text-rose-300"><span class="material-symbols-outlined text-[18px] text-rose-400 shrink-0">error</span><p class="font-body-sm text-body-sm text-rose-300 font-medium">Please provide a complete street address including floor or flat number for rider access.</p></div></div><div class="sm:col-span-2 flex flex-col gap-1"><label class="font-label-md text-label-md text-[#F7F3EC] font-semibold">Nearby Landmark</label><div class="relative"><input class="w-full h-11 px-3.5 pr-10 rounded-lg bg-[#211E1B] border border-[#3A342E] text-[#F7F3EC] placeholder-[#B8B0A6] font-body-md text-body-md focus:outline-none focus:border-[#B42318] focus:ring-1 focus:ring-[#B42318] shadow-sm" placeholder="e.g. Near Defence Library, opposite bakery" type="text" value="Near Defence Library"><span class="material-symbols-outlined absolute right-3 top-3 text-[18px] text-emerald-400">check_circle</span></div></div></div></div><div class="bg-[#2A2622] border border-[#3A342E] p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md"><div class="flex items-center gap-space-xs"><span class="w-6 h-6 rounded bg-[#B42318] text-[#F7F3EC] font-label-sm text-label-sm flex items-center justify-center font-bold">3</span><h2 class="font-headline-sm text-headline-sm text-[#F7F3EC]">Timing &amp; Rider Instructions</h2></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm"><label class="p-space-md rounded-xl bg-[#211E1B] border-2 border-[#B42318] cursor-pointer flex items-start gap-space-sm shadow-sm transition-all"><input checked="" class="mt-1 accent-[#B42318] w-4 h-4 cursor-pointer" name="timing_preference" type="radio"><div class="flex flex-col"><span class="font-label-md text-label-md text-[#F7F3EC] font-semibold flex items-center gap-1">Standard Delivery <span class="px-1.5 py-0.5 rounded bg-[#B42318] text-[#F7F3EC] font-label-sm text-label-sm">Hot</span></span><span class="font-body-sm text-body-sm text-[#B8B0A6]">30–45 mins • Live GPS tracking</span></div></label><label class="p-space-md rounded-xl bg-[#211E1B] border border-[#3A342E] cursor-pointer flex items-start gap-space-sm shadow-sm hover:border-[#B8B0A6]/60 transition-all opacity-85 hover:opacity-100"><input class="mt-1 accent-[#B42318] w-4 h-4 cursor-pointer" name="timing_preference" type="radio"><div class="flex flex-col"><span class="font-label-md text-label-md text-[#F7F3EC] font-semibold">Schedule for Later</span><span class="font-body-sm text-body-sm text-[#B8B0A6]">Select custom time slot today</span></div></label></div><div class="flex flex-col gap-1"><label class="font-label-md text-label-md text-[#F7F3EC] font-semibold">Delivery Instructions / Gate Notes</label><textarea class="w-full p-3 rounded-lg bg-[#211E1B] border border-[#3A342E] text-[#F7F3EC] placeholder-[#B8B0A6] font-body-md text-body-md focus:outline-none focus:border-[#B42318] focus:ring-1 focus:ring-[#B42318] shadow-sm" rows="2">Contactless delivery: Leave at security gate</textarea></div></div><div class="bg-[#2A2622] border border-[#3A342E] p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md"><div class="flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="w-6 h-6 rounded bg-[#B42318] text-[#F7F3EC] font-label-sm text-label-sm flex items-center justify-center font-bold">4</span><h2 class="font-headline-sm text-headline-sm text-[#F7F3EC]">Payment Method</h2></div><span class="font-label-sm text-label-sm text-emerald-400 font-semibold flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">verified_user</span> 100% Safe Checkout</span></div><div class="flex flex-col gap-space-sm"><label class="p-space-md rounded-xl bg-[#211E1B] border-2 border-[#B42318] cursor-pointer flex items-start justify-between gap-space-sm shadow-sm transition-all"><div class="flex items-start gap-space-sm"><input checked="" class="mt-1 accent-[#B42318] w-4 h-4 cursor-pointer" name="payment_choice" type="radio"><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-label-md text-label-md text-[#F7F3EC] font-semibold">Cash on Delivery (COD)</span><span class="px-2 py-0.5 rounded-full bg-[#B42318] text-[#F7F3EC] font-label-sm text-label-sm font-semibold">Most Popular in Karachi</span></div><p class="font-body-sm text-body-sm text-[#B8B0A6] mt-0.5">Pay exact cash or rider QR scan upon receiving hot sealed food parcel.</p></div></div><span class="material-symbols-outlined text-[#B42318] text-[24px]">payments</span></label><label class="p-space-md rounded-xl bg-[#211E1B] border border-[#3A342E] cursor-pointer flex items-start justify-between gap-space-sm shadow-sm hover:border-[#B8B0A6]/60 transition-all"><div class="flex items-start gap-space-sm"><input class="mt-1 accent-[#B42318] w-4 h-4 cursor-pointer" name="payment_choice" type="radio"><div class="flex flex-col"><span class="font-label-md text-label-md text-[#F7F3EC] font-semibold">Online Debit / Credit Card (Visa / Mastercard)</span><p class="font-body-sm text-body-sm text-[#B8B0A6] mt-0.5">Secure 3D-Secure payment via local Pakistani banking gateway.</p></div></div><div class="flex items-center gap-1 text-[#B8B0A6]"><span class="material-symbols-outlined text-[24px]">credit_card</span></div></label><label class="p-space-md rounded-xl bg-[#211E1B] border border-[#3A342E] cursor-pointer flex items-start justify-between gap-space-sm shadow-sm hover:border-[#B8B0A6]/60 transition-all"><div class="flex items-start gap-space-sm"><input class="mt-1 accent-[#B42318] w-4 h-4 cursor-pointer" name="payment_choice" type="radio"><div class="flex flex-col"><span class="font-label-md text-label-md text-[#F7F3EC] font-semibold">JazzCash / EasyPaisa QR / Direct Mobile Account</span><p class="font-body-sm text-body-sm text-[#B8B0A6] mt-0.5">Instant mobile wallet prompt authorization right from your phone.</p></div></div><span class="material-symbols-outlined text-[#B8B0A6] text-[24px]">account_balance_wallet</span></label></div></div></div><div class="lg:col-span-5 flex flex-col gap-space-md sticky top-24"><div class="bg-[#2A2622] border border-[#3A342E] p-space-lg rounded-xl shadow-xl flex flex-col gap-space-md"><div class="flex items-center justify-between pb-space-sm border-b border-[#3A342E]"><div class="flex flex-col"><h2 class="font-headline-sm text-headline-sm text-[#F7F3EC]">Order Summary</h2><span class="font-body-sm text-body-sm text-[#B8B0A6]">3 Curated Burns Road Specialties</span></div><a class="font-label-sm text-label-sm text-[#B42318] hover:text-[#e05d4b] hover:underline font-semibold flex items-center gap-0.5 transition-colors" href="#"><span class="material-symbols-outlined text-[14px]">edit</span> Edit Cart</a></div><div class="flex flex-col gap-space-sm divide-y-0"><div class="flex items-center justify-between gap-space-sm p-space-xs rounded-lg hover:bg-[#211E1B] transition-colors"><div class="flex items-center gap-space-sm min-w-0"><img class="w-14 h-14 rounded-lg object-cover shrink-0 shadow-sm border border-[#3A342E]" data-alt="Traditional Pakistani Shahi Mutton Nihari slow cooked rich aromatic gravy with fresh ginger slices, green chilies and bone marrow in rustic copper serveware" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBT52zNERN2LWrixi2tnzUyk5bD88oHrcsB9o62piCVcwTT8FaMClB5FPx4d74EpsF1cl5W_LmBXKQovPO66q6NpoROLqP4z5CFFAQGqgRxLsx6LzO6QPQS9eMqYmoGebPsQUl102Q8oHmcTKRapKAzuOdINCWwMAuYADn6Qzh_fTmkLOBbHW5P8Ia-FwoWa6x49xaRygOTlafMxrcBALbb0sAapg3ddhRgt8wsddsDWF4loNGtxJAYWQ"><div class="flex flex-col min-w-0"><div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-[#B42318] text-[#F7F3EC] font-label-sm text-label-sm flex items-center justify-center font-bold">1×</span><h3 class="font-title-md text-title-md text-[#F7F3EC] truncate">Shahi Mutton Nihari</h3></div><span class="font-body-sm text-body-sm text-[#B8B0A6] truncate">With Bone Marrow Nalli • Medium Spicy</span></div></div><span class="font-price-display text-price-display text-[#F7F3EC] whitespace-nowrap">Rs. 1,450</span></div><div class="flex items-center justify-between gap-space-sm p-space-xs rounded-lg hover:bg-[#211E1B] transition-colors"><div class="flex items-center gap-space-sm min-w-0"><img class="w-14 h-14 rounded-lg object-cover shrink-0 shadow-sm border border-[#3A342E]" data-alt="Authentic Karachi Burns Road charcoal grilled beef seekh kebabs on skewers served with fresh mint raita and red onion rings on vintage wooden banquet table" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZDQvhMgvlXLZE47ML9p1GN2ZsygZQ_Vyxyj3Z-8a7U6n3Qpb8QF2hg1JB0tEcTBq0hv8qzvA-ALGnlXE3-8oQCx4N5hk1D4O8zUKwA61nU7CanBbzoXPfG3TJRYsZCFh0FCCNBmYAE8c3AuY_u8nMWjiOVIqeRL8XjPFNZZaBEKVNecJ2qsXCVqZUPZcrjZ_UFfOFIB7NzKHP3b32Il8CBXm6yX4W_uiOFGqs_GRa9maGmbP8RVzs8Q"><div class="flex flex-col min-w-0"><div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-[#B42318] text-[#F7F3EC] font-label-sm text-label-sm flex items-center justify-center font-bold">2×</span><h3 class="font-title-md text-title-md text-[#F7F3EC] truncate">Burns Road Seekh Kebabs</h3></div><span class="font-body-sm text-body-sm text-[#B8B0A6] truncate">Charcoal Smoked • Chutney included</span></div></div><span class="font-price-display text-price-display text-[#F7F3EC] whitespace-nowrap">Rs. 1,840</span></div><div class="flex items-center justify-between gap-space-sm p-space-xs rounded-lg hover:bg-[#211E1B] transition-colors"><div class="flex items-center gap-space-sm min-w-0"><img class="w-14 h-14 rounded-lg object-cover shrink-0 shadow-sm border border-[#3A342E]" data-alt="Golden oven-baked tandoori Rogheni Naan glazed with clarified butter and sprinkled with white sesame seeds and fresh coriander leaves" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcaG7XLt_l3Mi0fYiqmN9hbqaDCUPeZ2JdmiGdbZB1q8Tvwnqu13zJ_loQKeYLLFVKMN4GrawGWdT5JW3MOWdKBvo0lDZImWGkfu9YQuBWptjZhCCC2fZTHnJiz_-Vmw8Eahja5DIQ5T9AMh68xVHOFRoPGrKj51HlDE4OoOiPy5J8Im0sP6zgzhR55U84Yl2u-JszXaUt2TgT0xx6nOX5h1oIkA1uhYyMp8rqzNWEel0Q0X28dW_Aqw"><div class="flex flex-col min-w-0"><div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-[#B42318] text-[#F7F3EC] font-label-sm text-label-sm flex items-center justify-center font-bold">2×</span><h3 class="font-title-md text-title-md text-[#F7F3EC] truncate">Rogheni Naan</h3></div><span class="font-body-sm text-body-sm text-[#B8B0A6] truncate">Clay Tandoor baked with Sesame</span></div></div><span class="font-price-display text-price-display text-[#F7F3EC] whitespace-nowrap">Rs. 180</span></div></div><div class="p-2 rounded-lg bg-[#211E1B] border border-[#3A342E] flex items-center gap-2"><span class="material-symbols-outlined text-[18px] text-[#B8B0A6] ml-1">loyalty</span><input class="w-full bg-transparent font-label-sm text-label-sm text-[#F7F3EC] font-semibold focus:outline-none uppercase border-0 p-0" placeholder="Promo code applied: BURNS10" readonly="" type="text" value="BURNS10"><span class="px-2 py-0.5 rounded bg-[#B42318] text-[#F7F3EC] font-label-sm text-label-sm font-semibold">10% OFF</span></div><div class="flex flex-col gap-2 pt-space-xs text-[#B8B0A6]"><div class="flex items-center justify-between font-body-md text-body-md"><span class="">Subtotal (3 items)</span><span class="text-[#F7F3EC] font-medium">Rs. 3,470</span></div><div class="flex items-center justify-between font-body-md text-body-md text-[#e05d4b]"><span class="flex items-center gap-1">Discount (BURNS10)</span><span class="">-Rs. 347</span></div><div class="flex items-center justify-between font-body-md text-body-md"><span class="flex items-center gap-1">Delivery Fee (DHA Phase 6)<span class="material-symbols-outlined text-[14px] text-[#B8B0A6]" title="Standard distance fee">info</span></span><span class="text-[#F7F3EC] font-medium">Rs. 150</span></div><div class="flex items-center justify-between font-body-md text-body-md"><span class="flex items-center gap-1">Sindh Sales Tax (5%)</span><span class="text-[#F7F3EC] font-medium">Rs. 174</span></div><div class="h-px bg-[#3A342E] my-1"></div><div class="flex items-baseline justify-between pt-1"><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-[#F7F3EC] font-semibold">Total Payable</span><span class="font-body-sm text-body-sm text-[#B8B0A6]">Includes all direct taxes</span></div><div class="text-right"><span class="font-display-lg text-display-lg-mobile text-[#B42318] font-bold leading-none">Rs. 3,497</span></div></div></div><a href="#" data-path="order-confirmation" class="w-full h-12 rounded-lg bg-[#B42318] hover:bg-[#981B12] text-[#F7F3EC] font-title-md text-title-md font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-space-xs cursor-pointer active:scale-[0.99]"><span class="material-symbols-outlined text-[20px]">shopping_bag</span><span class="">Place Order (Rs. 3,497)</span></a><div class="flex items-start gap-space-xs p-space-sm rounded-lg bg-[#211E1B] border border-[#3A342E] text-[#B8B0A6]"><span class="material-symbols-outlined text-[#B42318] text-[18px] shrink-0 mt-0.5">local_fire_department</span><p class="font-body-sm text-body-sm leading-relaxed">By placing this order, you agree to Karachi Bites service terms. <strong class="text-[#F7F3EC] font-semibold">Hot delivery guaranteed</strong> from clay oven tandoors direct to your doorstep.</p></div></div><div class="p-space-md rounded-xl bg-[#211E1B] border border-[#3A342E] shadow-sm flex items-center justify-around gap-2 text-center text-[#B8B0A6]"><div class="flex flex-col items-center gap-1"><span class="material-symbols-outlined text-[#B42318] text-[20px]">timer</span><span class="font-label-sm text-label-sm font-semibold text-[#F7F3EC]">30-45 Min ETA</span><span class="font-body-sm text-[10px] text-[#B8B0A6]">Burns Rd Express</span></div><div class="w-px h-8 bg-[#3A342E]"></div><div class="flex flex-col items-center gap-1"><span class="material-symbols-outlined text-emerald-400 text-[20px]">verified</span><span class="font-label-sm text-label-sm font-semibold text-[#F7F3EC]">100% Halal</span><span class="font-body-sm text-[10px] text-[#B8B0A6]">Certified Kitchen</span></div><div class="w-px h-8 bg-[#3A342E]"></div><div class="flex flex-col items-center gap-1"><span class="material-symbols-outlined text-[#B42318] text-[20px]">shield</span><span class="font-label-sm text-label-sm font-semibold text-[#F7F3EC]">Tamper Evident</span><span class="font-body-sm text-[10px] text-[#B8B0A6]">Wax Thermal Seal</span></div></div></div></div></div>
-</div></main><footer class="w-full bg-[#2A2622] border-t border-[#3A342E] mt-space-xl"><div class="w-full max-w-7xl mx-auto px-6 py-space-xl"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-space-lg"><div class="lg:col-span-2 flex flex-col gap-space-md"><div class="flex items-center gap-space-sm"><span class="font-headline-md text-headline-md text-[#B42318] font-semibold">Karachi Bites</span><span class="inline-flex items-center px-2 py-0.5 rounded bg-[#211E1B] border border-[#3A342E] text-[#B8B0A6] font-label-sm text-label-sm uppercase tracking-wide">Est. 1952</span></div><p class="font-body-md text-body-md text-[#B8B0A6] max-w-md">Rooted in Burns Road, Karachi's legendary food district. Slow-cooked, charcoal-grilled, passionately spiced culinary heritage brought straight to your dining ledger.</p><div class="flex items-center gap-space-xs pt-space-xs"><span class="inline-flex items-center justify-center w-2 h-2 rounded-full bg-emerald-400"></span><span class="font-label-sm text-label-sm text-[#B8B0A6] font-medium">Kitchen Status:</span><span class="font-label-sm text-label-sm text-[#F7F3EC] font-semibold">Open &amp; Delivering across City Limits</span></div></div><div class="flex flex-col gap-space-sm"><h3 class="font-title-md text-title-md text-[#F7F3EC]">Menu Categories</h3><ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-[#B8B0A6]"><li class="hover:text-[#B42318] transition-colors cursor-pointer">Biryani &amp; Pulao</li><li class="hover:text-[#B42318] transition-colors cursor-pointer">Nihari &amp; Haleem</li><li class="hover:text-[#B42318] transition-colors cursor-pointer">Karahi &amp; Curries</li><li class="hover:text-[#B42318] transition-colors cursor-pointer">Charcoal BBQ &amp; Kebabs</li><li class="hover:text-[#B42318] transition-colors cursor-pointer">Paratha Rolls</li><li class="hover:text-[#B42318] transition-colors cursor-pointer">Desserts &amp; Beverages</li></ul></div><div class="flex flex-col gap-space-sm"><h3 class="font-title-md text-title-md text-[#F7F3EC]">Hospitality &amp; Standards</h3><ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-[#B8B0A6]"><li class="hover:text-[#B42318] transition-colors cursor-pointer">Online Ordering Policy</li><li class="hover:text-[#B42318] transition-colors cursor-pointer">Halal Certification</li><li class="hover:text-[#B42318] transition-colors cursor-pointer">Allergen &amp; Spice Guide</li><li class="hover:text-[#B42318] transition-colors cursor-pointer">Delivery Zones &amp; Timers</li><li class="hover:text-[#B42318] transition-colors cursor-pointer">Catering &amp; Bulk Degs</li></ul></div><div class="flex flex-col gap-space-sm"><h3 class="font-title-md text-title-md text-[#F7F3EC]">Burns Road Kitchen</h3><p class="font-body-sm text-body-sm text-[#B8B0A6]">11:30 AM – 1:30 AM Daily<br>Burns Road, Saddar Town, Karachi</p><div class="flex flex-col gap-space-xs pt-space-xs"><span class="font-label-sm text-label-sm text-[#B8B0A6] uppercase tracking-wider">Direct Contact</span><span class="font-body-sm text-body-sm font-semibold text-[#F7F3EC]">+92 (21) 3262-5000</span><span class="font-body-sm text-body-sm text-[#B8B0A6]">support@karachibites.pk</span></div></div></div><div class="mt-space-xl pt-space-lg border-t border-[#3A342E] flex flex-col sm:flex-row items-center justify-between gap-space-md"><p class="font-body-sm text-body-sm text-[#B8B0A6]">© 2024 Karachi Bites Hospitality Group. Authentic Burns Road Heritage. All rights reserved.</p><div class="flex items-center gap-space-md font-label-sm text-label-sm text-[#B8B0A6]"><a class="hover:text-[#F7F3EC] transition-colors" href="#">Privacy Policy</a><a class="hover:text-[#F7F3EC] transition-colors" href="#">Terms of Order</a><a class="hover:text-[#F7F3EC] transition-colors" href="#">Dispatch Ledger</a></div></div></div></footer>
+<!DOCTYPE html>
 
-</body></html>
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>Karachi Bites — Culinary Heritage</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&amp;family=Hanken+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { 'colors': { 'tertiary-container': '#515054', 'inverse-surface': '#31302d', 'surface-container-low': '#f6f3ee', 'on-tertiary-fixed-variant': '#47464a', 'outline': '#8e706c', 'on-background': '#1c1c19', 'surface-variant': '#e5e2dd', 'inverse-on-surface': '#f3f0eb', 'tertiary': '#3a393d', 'surface-tint': '#b22b20', 'surface-container-highest': '#e5e2dd', 'on-primary-fixed-variant': '#8f0f0b', 'on-tertiary': '#ffffff', 'surface-dim': '#dcdad5', 'tertiary-fixed-dim': '#c8c5ca', 'on-primary-fixed': '#410001', 'on-secondary-fixed': '#1a1b22', 'surface-bright': '#fcf9f4', 'error': '#ba1a1a', 'primary-fixed-dim': '#ffb4a9', 'on-error-container': '#93000a', 'surface-container-lowest': '#ffffff', 'inverse-primary': '#ffb4a9', 'primary-fixed': '#ffdad5', 'on-surface': '#1c1c19', 'tertiary-fixed': '#e4e1e6', 'background': '#fcf9f4', 'on-primary-container': '#ffb0a4', 'secondary': '#5d5e66', 'secondary-container': '#e3e1ec', 'primary': '#7b0002', 'on-tertiary-fixed': '#1b1b1e', 'secondary-fixed-dim': '#c6c5cf', 'on-tertiary-container': '#c5c2c7', 'on-secondary-fixed-variant': '#46464e', 'secondary-fixed': '#e3e1ec', 'on-secondary': '#ffffff', 'outline-variant': '#e2bfb9', 'error-container': '#ffdad6', 'surface-container': '#f0ede9', 'on-primary': '#ffffff', 'on-surface-variant': '#5a413d', 'surface-container-high': '#ebe8e3', 'on-error': '#ffffff', 'primary-container': '#9e1c14', 'on-secondary-container': '#63646c', 'surface': '#fcf9f4' }, 'borderRadius': { 'DEFAULT': '0.25rem', 'lg': '0.5rem', 'xl': '0.75rem', 'full': '9999px' }, 'spacing': { 'space-md': '1rem', 'space-sm': '0.5rem', 'margin-mobile': '1.25rem', 'margin': '3rem', 'space-xs': '0.25rem', 'space-lg': '1.5rem', 'space-xl': '2.5rem', 'gutter': '1.5rem', 'gutter-mobile': '1rem' }, 'fontFamily': { 'label-sm': ['Hanken Grotesk'], 'headline-lg-mobile': ['EB Garamond'], 'body-lg': ['Hanken Grotesk'], 'headline-lg': ['EB Garamond'], 'body-sm': ['Hanken Grotesk'], 'headline-sm': ['EB Garamond'], 'label-lg': ['Hanken Grotesk'], 'display-lg': ['EB Garamond'], 'headline-md': ['EB Garamond'], 'label-md': ['Hanken Grotesk'], 'display-lg-mobile': ['EB Garamond'], 'body-md': ['Hanken Grotesk'] }, 'fontSize': { 'label-sm': ['0.6875rem', { 'lineHeight': '1.2', 'letterSpacing': '0.06em', 'fontWeight': '500' }], 'headline-lg-mobile': ['1.75rem', { 'lineHeight': '1.25', 'letterSpacing': '0em', 'fontWeight': '400' }], 'body-lg': ['1.125rem', { 'lineHeight': '1.6', 'letterSpacing': '0em', 'fontWeight': '400' }], 'headline-lg': ['2.25rem', { 'lineHeight': '1.2', 'letterSpacing': '-0.01em', 'fontWeight': '400' }], 'body-sm': ['0.8125rem', { 'lineHeight': '1.4', 'letterSpacing': '0.01em', 'fontWeight': '400' }], 'headline-sm': ['1.25rem', { 'lineHeight': '1.4', 'letterSpacing': '0em', 'fontWeight': '500' }], 'label-lg': ['0.875rem', { 'lineHeight': '1.2', 'letterSpacing': '0.05em', 'fontWeight': '600' }], 'display-lg': ['3.5rem', { 'lineHeight': '1.1', 'letterSpacing': '-0.02em', 'fontWeight': '400' }], 'headline-md': ['1.75rem', { 'lineHeight': '1.3', 'letterSpacing': '0em', 'fontWeight': '500' }], 'label-md': ['0.75rem', { 'lineHeight': '1.2', 'letterSpacing': '0.08em', 'fontWeight': '600' }], 'display-lg-mobile': ['2.25rem', { 'lineHeight': '1.2', 'letterSpacing': '-0.01em', 'fontWeight': '400' }], 'body-md': ['0.9375rem', { 'lineHeight': '1.5', 'letterSpacing': '0em', 'fontWeight': '400' }] } } } };</script></head><body class="bg-background font-body-md text-on-surface antialiased"><header class="fixed top-0 w-full z-50 bg-surface-container-lowest/95 backdrop-blur-md border-b border-surface-variant"><div class="h-20 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between"><div class="flex items-center gap-8"><a class="flex items-center gap-3.5 group" data-path="home" href="#"><img alt="Karachi Bites Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VTFoxorX86duzmJJooo00uS87sb3OxCnCi2BKdswTvx6YPb7ywJ3V1hH_ZdGpM7l1QqfhzgXcI-CURCeN68pxq4p1mPYJbopgkMxOhg0O--ooam1Vz3lAuk8BEfD7TChxs61XYzub0E_hQfjRUfFlgayXTyAUfXh_UDyPIYOMe9nuM3aSCVR-WELFa2n7mVOFt9GGCc1SMWXqzabo72xksrdTOedlbOdMhDf-rp4pVd7b7_C0TPKBOExbJ"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm font-semibold tracking-tight text-on-surface group-hover:text-primary transition-colors">Karachi Bites</span><span class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Burns Rd. Est. 1952</span></div></a><div class="h-6 w-px bg-surface-variant hidden lg:block"></div><nav class="hidden lg:flex items-center gap-7" data-active-classes="text-primary font-semibold border-b-2 border-primary"><a class="font-label-lg text-label-lg tracking-wider uppercase text-on-surface-variant hover:text-on-surface py-2 transition-colors" data-path="home" href="#">Home</a><a class="font-label-lg text-label-lg tracking-wider uppercase text-on-surface-variant hover:text-on-surface py-2 transition-colors" data-path="menu" href="#">Menu</a><a aria-current="page" class="tracking-wider uppercase py-2 transition-colors relative flex items-center gap-2 text-primary font-semibold border-b-2 border-primary" data-path="cart" href="#">Cart<span class="bg-primary text-on-primary text-[10px] font-label-sm px-1.5 py-0.5 rounded-none font-bold">2</span></a><a class="font-label-lg text-label-lg tracking-wider uppercase text-on-surface-variant hover:text-on-surface py-2 transition-colors" data-path="track-order" href="#">Track Order</a><a class="font-label-lg text-label-lg tracking-wider uppercase text-on-surface-variant hover:text-on-surface py-2 transition-colors" data-path="staff-portal" href="#">Staff Portal</a></nav></div><div class="flex items-center gap-5"><a class="bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg tracking-wider uppercase px-6 py-3 transition-colors duration-150 shadow-sm" data-path="menu" href="#"><span class="block">Order Now</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-background min-h-screen"><div class="flex flex-col w-full pb-20">
+<!-- Progress Header Tracker -->
+<div class="w-full bg-surface-container-lowest shadow-sm mb-8">
+<div class="max-w-7xl mx-auto px-6 lg:px-12 py-6">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-primary font-bold">Checkout Register</span>
+<h1 class="font-headline-md text-headline-md text-on-surface"> Burns Road Hearth Dispatch</h1>
+</div>
+<!-- 4-Step Stepper -->
+<nav aria-label="Checkout Progress" class="w-full md:w-auto">
+<ol class="flex items-center gap-2 sm:gap-4 text-left">
+<!-- Step 1: Cart Completed -->
+<li class="flex items-center gap-2">
+<span class="w-7 h-7 rounded-none bg-primary text-on-primary flex items-center justify-center font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</span>
+<div class="hidden sm:flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Step 1</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Tiffin Cart</span>
+</div>
+</li>
+<li class="w-6 sm:w-10 h-0.5 bg-primary"></li>
+<!-- Step 2: Contact & Delivery (Active) -->
+<li class="flex items-center gap-2">
+<span class="w-7 h-7 rounded-none bg-primary text-on-primary flex items-center justify-center font-label-sm text-label-sm font-bold">
+                02
+              </span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-widest font-bold">Active</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Dispatch Details</span>
+</div>
+</li>
+<li class="w-6 sm:w-10 h-0.5 bg-surface-variant"></li>
+<!-- Step 3: Payment Method -->
+<li class="flex items-center gap-2 opacity-60">
+<span class="w-7 h-7 rounded-none bg-surface-container text-secondary flex items-center justify-center font-label-sm text-label-sm">
+                03
+              </span>
+<div class="hidden sm:flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Pending</span>
+<span class="font-label-md text-label-md text-secondary font-medium">Payment</span>
+</div>
+</li>
+<li class="w-6 sm:w-10 h-0.5 bg-surface-variant"></li>
+<!-- Step 4: Confirmation -->
+<li class="flex items-center gap-2 opacity-60">
+<span class="w-7 h-7 rounded-none bg-surface-container text-secondary flex items-center justify-center font-label-sm text-label-sm">
+                04
+              </span>
+<div class="hidden sm:flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Order</span>
+<span class="font-label-md text-label-md text-secondary font-medium">Confirmation</span>
+</div>
+</li>
+</ol>
+</nav>
+</div>
+</div>
+</div>
+<!-- Main Checkout Content Structure -->
+<div class="max-w-7xl mx-auto px-6 lg:px-12 w-full">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- LEFT COLUMN: Form Fields (8 Cols) -->
+<form class="lg:col-span-7 xl:col-span-8 flex flex-col gap-6" id="checkout-form" onsubmit="event.preventDefault(); handlePlaceOrder();">
+<!-- SECTION 1: Customer Contact -->
+<section class="bg-surface-container-lowest p-6 sm:p-8 shadow-sm">
+<div class="flex items-center justify-between pb-5 mb-6 bg-surface-container-low px-4 py-3">
+<div class="flex items-center gap-3">
+<span class="w-6 h-6 bg-primary text-on-primary flex items-center justify-center font-label-sm text-label-sm font-bold">1</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Recipient &amp; Contact Identification</h2>
+</div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Verified Record</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+<!-- Full Name -->
+<div class="flex flex-col gap-1.5 md:col-span-2">
+<label class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant" for="fullName">Full Name *</label>
+<div class="relative">
+<input class="w-full h-12 px-4 bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:shadow-md transition-all placeholder:text-secondary" id="fullName" name="fullName" placeholder="Enter recipient full name" required="" type="text" value="Bilal Ahmed"/>
+<span class="material-symbols-outlined absolute right-3.5 top-3 text-secondary text-[20px]">person</span>
+</div>
+</div>
+<!-- Phone Number with Pakistani Validation -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant" for="phoneNumber">Mobile Contact *</label>
+<span class="font-label-sm text-label-sm text-primary font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">verified</span> PK (+92)
+                </span>
+</div>
+<div class="relative">
+<div class="absolute left-0 top-0 bottom-0 px-3 bg-surface-container flex items-center gap-1.5">
+<span class="text-xs font-semibold text-on-surface">🇵🇰 +92</span>
+</div>
+<input class="w-full h-12 pl-24 pr-4 bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:shadow-md transition-all placeholder:text-secondary" id="phoneNumber" name="phoneNumber" placeholder="3XX XXXXXXX" required="" type="tel" value="300 1234567"/>
+</div>
+<span class="font-body-sm text-body-sm text-secondary">Used strictly for live dispatch calls &amp; driver coordinate ping.</span>
+</div>
+<!-- Email Address -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant" for="emailAddress">Email (Tax Invoice) *</label>
+<div class="relative">
+<input class="w-full h-12 px-4 bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:shadow-md transition-all placeholder:text-secondary" id="emailAddress" name="emailAddress" placeholder="your.email@domain.com" required="" type="email" value="bilal.ahmed@example.com"/>
+<span class="material-symbols-outlined absolute right-3.5 top-3 text-secondary text-[20px]">mail</span>
+</div>
+<span class="font-body-sm text-body-sm text-secondary">Digital FBR tax receipt issued immediately.</span>
+</div>
+</div>
+</section>
+<!-- SECTION 2: Delivery Destination -->
+<section class="bg-surface-container-lowest p-6 sm:p-8 shadow-sm">
+<div class="flex items-center justify-between pb-5 mb-6 bg-surface-container-low px-4 py-3">
+<div class="flex items-center gap-3">
+<span class="w-6 h-6 bg-primary text-on-primary flex items-center justify-center font-label-sm text-label-sm font-bold">2</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Karachi Delivery Sector &amp; Address</h2>
+</div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Zone 01 Express</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+<!-- City Selection (Fixed) -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant">Metropolitan Hub</label>
+<div class="h-12 px-4 bg-surface-container flex items-center justify-between text-on-surface font-body-md text-body-md">
+<span class="font-medium">Karachi City</span>
+<span class="font-label-sm text-label-sm bg-surface-variant text-on-surface px-2 py-0.5 uppercase tracking-wide">Fixed Hub</span>
+</div>
+</div>
+<!-- Delivery Zone Dropdown -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant" for="deliveryZone">Cantonment / Sector Zone *</label>
+<div class="relative">
+<select class="w-full h-12 px-4 bg-surface-container-low text-on-surface font-body-md text-body-md appearance-none focus:bg-surface-container-lowest focus:outline-none focus:shadow-md transition-all pr-10 cursor-pointer" id="deliveryZone" name="deliveryZone">
+<option selected="" value="dha-6">DHA Phase 6 (Main Khayaban-e-Sehar)</option>
+<option value="dha-5">DHA Phase 5 &amp; Badar Commercial</option>
+<option value="clifton-block-4">Clifton (Block 2 &amp; 4)</option>
+<option value="clifton-block-8">Clifton (Block 8 &amp; 9)</option>
+<option value="saddar">Saddar / Burns Road Heritage Belt</option>
+<option value="pechs">PECHS Block 2 &amp; 6</option>
+<option value="bahadurabad">Bahadurabad &amp; Dhoraji</option>
+</select>
+<span class="material-symbols-outlined absolute right-3.5 top-3 text-secondary pointer-events-none text-[20px]">expand_more</span>
+</div>
+</div>
+<!-- Street Address -->
+<div class="flex flex-col gap-1.5 md:col-span-2">
+<label class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant" for="streetAddress">Street / Residence Address *</label>
+<input class="w-full h-12 px-4 bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:shadow-md transition-all" id="streetAddress" name="streetAddress" placeholder="Building name, Floor, Apartment / Bungalow Number" required="" type="text" value="Plot 42-C, 7th Commercial Street"/>
+</div>
+<!-- Landmark & Gate Instructions -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant" for="landmark">Closest Landmark</label>
+<input class="w-full h-12 px-4 bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:shadow-md transition-all" id="landmark" name="landmark" placeholder="Mosque, bank, roundabout or clinic" type="text" value="Near Defence Library"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant" for="gateInstructions">Security / Gate Dispatch Note</label>
+<input class="w-full h-12 px-4 bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:shadow-md transition-all" id="gateInstructions" name="gateInstructions" placeholder="Ring intercom, leave at guard room, etc." type="text" value="Ring intercom at Main Gate 2; leave with reception if absent."/>
+</div>
+</div>
+</section>
+<!-- SECTION 3: Delivery Timing -->
+<section class="bg-surface-container-lowest p-6 sm:p-8 shadow-sm">
+<div class="flex items-center justify-between pb-5 mb-6 bg-surface-container-low px-4 py-3">
+<div class="flex items-center gap-3">
+<span class="w-6 h-6 bg-primary text-on-primary flex items-center justify-center font-label-sm text-label-sm font-bold">3</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Kitchen Fulfillment &amp; Transit Window</h2>
+</div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Live Coal Prep</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Option 1: Standard Priority -->
+<label class="cursor-pointer relative p-4 flex flex-col justify-between bg-surface-container-low transition-all has-[:checked]:bg-surface-bright has-[:checked]:shadow-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<input checked="" class="accent-primary w-4 h-4" name="deliveryTiming" type="radio" value="standard"/>
+<span class="font-label-lg text-label-lg uppercase tracking-wider text-on-surface">Standard Dispatch</span>
+</div>
+<span class="px-2 py-0.5 bg-primary text-on-primary font-label-sm text-label-sm">Hot Pack</span>
+</div>
+<div class="mt-4 pt-3 flex items-baseline justify-between">
+<div>
+<p class="font-headline-sm text-headline-sm text-on-surface font-semibold">35–45 mins</p>
+<p class="font-body-sm text-body-sm text-secondary">Charcoal-flamed order leaves clay oven immediately.</p>
+</div>
+<span class="material-symbols-outlined text-primary text-[28px]">local_shipping</span>
+</div>
+</label>
+<!-- Option 2: Schedule for Later -->
+<label class="cursor-pointer relative p-4 flex flex-col justify-between bg-surface-container-low transition-all has-[:checked]:bg-surface-bright has-[:checked]:shadow-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<input class="accent-primary w-4 h-4" name="deliveryTiming" type="radio" value="scheduled"/>
+<span class="font-label-lg text-label-lg uppercase tracking-wider text-on-surface">Scheduled Dastarkhwan</span>
+</div>
+<span class="px-2 py-0.5 bg-surface-container text-secondary font-label-sm text-label-sm">Reserved Pit</span>
+</div>
+<div class="mt-4 pt-3 flex items-baseline justify-between">
+<div>
+<p class="font-headline-sm text-headline-sm text-on-surface font-semibold">Select Evening Slot</p>
+<p class="font-body-sm text-body-sm text-secondary">Dinner reservation batch: 7:30 PM – 9:00 PM tonight.</p>
+</div>
+<span class="material-symbols-outlined text-secondary text-[28px]">schedule</span>
+</div>
+</label>
+</div>
+</section>
+<!-- SECTION 4: Payment Method -->
+<section class="bg-surface-container-lowest p-6 sm:p-8 shadow-sm">
+<div class="flex items-center justify-between pb-5 mb-6 bg-surface-container-low px-4 py-3">
+<div class="flex items-center gap-3">
+<span class="w-6 h-6 bg-primary text-on-primary flex items-center justify-center font-label-sm text-label-sm font-bold">4</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Settlement &amp; Payment Method</h2>
+</div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Encrypted &amp; Secure</span>
+</div>
+<div class="space-y-3.5">
+<!-- Payment 1: COD -->
+<label class="block cursor-pointer p-4 bg-surface-container-low transition-all has-[:checked]:bg-surface-bright has-[:checked]:shadow-md">
+<div class="flex items-start gap-4">
+<div class="pt-0.5">
+<input checked="" class="accent-primary w-4 h-4" name="paymentMethod" type="radio" value="cod"/>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg uppercase tracking-wider text-on-surface font-semibold">Cash on Delivery (COD)</span>
+<span class="px-2 py-0.5 bg-primary/10 text-primary font-label-sm text-label-sm font-bold">Standard</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-1">
+                    Pay the dispatch rider upon thermal box inspection.
+                  </p>
+<div class="mt-2.5 inline-flex items-center gap-2 px-3 py-1.5 bg-surface-container text-on-surface font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-primary text-[16px]">payments</span>
+<span>Exact cash tender is highly appreciated by riders.</span>
+</div>
+</div>
+</div>
+</label>
+<!-- Payment 2: Credit / Debit Card -->
+<label class="block cursor-pointer p-4 bg-surface-container-low transition-all has-[:checked]:bg-surface-bright has-[:checked]:shadow-md">
+<div class="flex items-start gap-4">
+<div class="pt-0.5">
+<input class="accent-primary w-4 h-4" name="paymentMethod" type="radio" value="card"/>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg uppercase tracking-wider text-on-surface font-semibold">Debit / Credit Card (Visa / Mastercard / PayPak)</span>
+<span class="material-symbols-outlined text-secondary text-[22px]">credit_card</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-1">
+                    Rider carries a 1-Link POS machine or 3D-Secure online link instantly upon confirmation.
+                  </p>
+</div>
+</div>
+</label>
+<!-- Payment 3: JazzCash / EasyPaisa -->
+<label class="block cursor-pointer p-4 bg-surface-container-low transition-all has-[:checked]:bg-surface-bright has-[:checked]:shadow-md">
+<div class="flex items-start gap-4">
+<div class="pt-0.5">
+<input class="accent-primary w-4 h-4" name="paymentMethod" type="radio" value="mobile_wallet"/>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg uppercase tracking-wider text-on-surface font-semibold">JazzCash / EasyPaisa / Raast Instant QR</span>
+<span class="material-symbols-outlined text-secondary text-[22px]">qr_code_2</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-1">
+                    Direct transfer via State Bank of Pakistan Raast instant ID: <span class="font-semibold text-on-surface">karachibites@raast</span>
+</p>
+</div>
+</div>
+</label>
+</div>
+</section>
+</form>
+<!-- RIGHT COLUMN: Order Summary Ledger (5 Cols) -->
+<aside class="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-28 flex flex-col gap-6">
+<!-- Ledger Container -->
+<div class="bg-surface-container-lowest p-6 sm:p-7 shadow-sm">
+<!-- Ledger Header -->
+<div class="flex items-center justify-between pb-4 bg-surface-container-low px-4 py-3">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-primary font-bold">Burns Road Ledger</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Your Culinary Tray</h3>
+</div>
+<span class="w-7 h-7 bg-surface-container flex items-center justify-center font-label-sm text-label-sm font-bold text-on-surface">3</span>
+</div>
+<!-- Dishes Items List -->
+<div class="space-y-4 pt-4 pb-5">
+<!-- Dish 1 -->
+<div class="flex gap-3.5 items-start">
+<img class="w-16 h-16 object-cover flex-shrink-0 bg-surface-container" data-alt="Authentic Shinwari mutton karahi in a cast iron wok with fresh cut ginger slivers, slit green chilies, and coriander garnish over rich spiced gravy under dramatic overhead warm spotlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvAO04AJQdj5FuKOKXkBAW4mbIDOd3HcyQKCISAHp473ti4T8QzkDcwdiWdQkgYueJG8yzPk5CPUONgeT0pCfrWQmUdstmXP6l2BoJUTxkQfZEpye5B17Xs4UtIGCVSjEOimshJfpkBWaPtBTtJEQRL45pYG45A3MYg9pwk1_oL_Z7fm8egZ3eUjd6Uk2vevBtfhQdayeLs1UAeuQ3PVu2GT_vOWDE0GMq1oRAajWSHHSGVsblekoUCA"/>
+<div class="flex-1 min-w-0">
+<div class="flex items-baseline justify-between gap-2">
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-medium truncate">Shinwari Mutton Karahi</h4>
+<span class="font-label-lg text-label-lg text-on-surface font-bold whitespace-nowrap">Rs. 1,850</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">Half KG (Cooked in pure lamb fat, tomatoes, black pepper)</p>
+<div class="flex items-center gap-3 mt-1.5 font-label-sm text-label-sm text-secondary">
+<span>Qty: 1</span>
+<span>•</span>
+<span class="text-on-surface-variant font-medium">Mild Pepper</span>
+</div>
+</div>
+</div>
+<!-- Dish 2 -->
+<div class="flex gap-3.5 items-start">
+<img class="w-16 h-16 object-cover flex-shrink-0 bg-surface-container" data-alt="Mouthwatering skewered Bihari beef boti kebab marinated in raw papaya and roasted spices with charred edges served on an artisanal clay platter" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDg25bxTR0ZeGmgflrOmYWvlSa4g8wWZqLKJJ8QQDOt21iC6jALMJbMBZCCwqxf2hcGBllWye1umd53mSehGLvu4zTgsFgtyH4wjpiOUv0sHRxHFItcI3pRNhtqvFyMRyUXLuO0wVQylIhw2rgO4-ie2KwvYM7iNE0_I6ZBxQen-0pBeq4v0Pc2BONReG44-WOMhsDCY4NDsGpekJBNBWf7U40HYksMCRtdMycUatIrZUO8L2Omq3VtkA"/>
+<div class="flex-1 min-w-0">
+<div class="flex items-baseline justify-between gap-2">
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-medium truncate">Burns Road Bihari Boti</h4>
+<span class="font-label-lg text-label-lg text-on-surface font-bold whitespace-nowrap">Rs. 890</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">Tender beef ribbons, 24-hr papaya &amp; mustard oil marinade</p>
+<div class="flex items-center gap-3 mt-1.5 font-label-sm text-label-sm text-secondary">
+<span>Qty: 1</span>
+<span>•</span>
+<span class="text-on-surface-variant font-medium">Served with Onion Rings</span>
+</div>
+</div>
+</div>
+<!-- Dish 3 -->
+<div class="flex gap-3.5 items-start">
+<img class="w-16 h-16 object-cover flex-shrink-0 bg-surface-container" data-alt="Freshly baked tandoori Roghani naans stacked in a woven wicker basket with golden sesame seeds and brushed with melted desi ghee under soft kitchen lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfy4eKUb7AxP0NZK2FMXyRTUaW74qleFyCEUYWK3fqAbWJ4ppV09fMbtk-13JyKa6Hiy3_tI4wvvei89viYncblLR_1gqoP6p5vRt9Lsm4a-PkxZBorHuqSyFpUdg_NpQoY8lJ9viFDkYx2x9Hi-XrWQNwRIfyoMTmlMPyKRDslfri9Qs6NfpoIouSn39XVLdQzQGWGac2SxZYpXFDUlRahrMdWIJOxSLeVtROObs-QlszZKLzC75DLg"/>
+<div class="flex-1 min-w-0">
+<div class="flex items-baseline justify-between gap-2">
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-medium truncate">Sesame Roghani Naan</h4>
+<span class="font-label-lg text-label-lg text-on-surface font-bold whitespace-nowrap">Rs. 450</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">Clay tandoor blistered with desi ghee glaze (3 pieces)</p>
+<div class="flex items-center gap-3 mt-1.5 font-label-sm text-label-sm text-secondary">
+<span>Qty: 3</span>
+<span>•</span>
+<span class="text-on-surface-variant font-medium">Warm Clay Wrap</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Voucher / Promo Code Box -->
+<div class="py-4 bg-surface-container-low px-4">
+<label class="font-label-sm text-label-sm uppercase tracking-wider text-secondary block mb-1.5" for="voucherCode">Heritage Guild Voucher</label>
+<div class="flex gap-2">
+<input class="flex-1 h-10 px-3 bg-surface-container-lowest text-on-surface font-label-sm text-label-sm uppercase tracking-wider focus:outline-none placeholder:text-secondary" id="voucherCode" placeholder="PROMO / DASTARKHWAN" type="text"/>
+<button class="h-10 px-4 bg-tertiary text-on-tertiary font-label-sm text-label-sm uppercase tracking-widest hover:bg-tertiary-container transition-colors" onclick="applyVoucher()" type="button">
+                Apply
+              </button>
+</div>
+<div class="hidden mt-2 font-label-sm text-label-sm text-primary font-medium" id="voucher-notice">
+              ✓ Promo 'BURNS1952' Applied (-Rs. 0)
+            </div>
+</div>
+<!-- Financial Accounting Lines -->
+<div class="py-4 space-y-2.5 bg-surface-container-lowest">
+<div class="flex justify-between font-body-sm text-body-sm text-on-surface-variant">
+<span>Tray Subtotal (3 Items)</span>
+<span class="font-medium text-on-surface">Rs. 3,190</span>
+</div>
+<div class="flex justify-between font-body-sm text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1.5">
+                Specialized Express Delivery (Zone 01)
+                <span class="material-symbols-outlined text-[14px] text-secondary cursor-help" title="Thermal insulated motor courier transit">help_outline</span>
+</span>
+<span class="font-medium text-on-surface">Rs. 150</span>
+</div>
+<div class="flex justify-between font-body-sm text-body-sm text-on-surface-variant">
+<span>Sindh Sales Tax on Services (5% PRA)</span>
+<span class="font-medium text-on-surface">Rs. 157</span>
+</div>
+<!-- Grand Total Block -->
+<div class="pt-4 mt-2 bg-surface-container-low p-4 flex items-baseline justify-between">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-primary font-bold block">Net Payable</span>
+<span class="font-headline-md text-headline-md text-on-surface font-bold">Total Amount</span>
+</div>
+<div class="text-right">
+<span class="font-display-lg-mobile text-display-lg-mobile text-primary font-bold tracking-tight">Rs. 3,497</span>
+<span class="block font-label-sm text-label-sm text-secondary">Pakistani Rupee</span>
+</div>
+</div>
+</div>
+<!-- PRIMARY ACTION BUTTON -->
+<div class="pt-4">
+<button class="w-full py-4 px-6 bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg tracking-widest uppercase transition-colors duration-200 shadow-md flex items-center justify-center gap-3 cursor-pointer group active:scale-[0.99]" form="checkout-form" id="submit-order-btn" type="submit">
+<span>Place Order (Rs. 3,497)</span>
+<span class="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<p class="font-body-sm text-body-sm text-center text-secondary mt-3">
+              By confirming dispatch, you verify Burns Road live preparation specifications.
+            </p>
+</div>
+<!-- Halal & Trust Pillars -->
+<div class="mt-6 pt-5 bg-surface-container-low p-4 space-y-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">verified_user</span>
+<div class="leading-tight">
+<p class="font-label-sm text-label-sm font-bold text-on-surface uppercase tracking-wider">100% Certified Zabiha Meat</p>
+<p class="font-body-sm text-body-sm text-secondary">Procured fresh daily from certified abbatoirs.</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">soup_kitchen</span>
+<div class="leading-tight">
+<p class="font-label-sm text-label-sm font-bold text-on-surface uppercase tracking-wider">Sealed Thermal Dispatches</p>
+<p class="font-body-sm text-body-sm text-secondary">Clay pot heat locked with food-grade security tape.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Kitchen Contact Hotline Card -->
+<div class="bg-surface-container-lowest p-5 shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[22px]">phone_in_talk</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Direct Tiffin Hotline</p>
+<p class="font-headline-sm text-headline-sm text-on-surface font-semibold">+92 (21) 3262-1952</p>
+</div>
+</div>
+<span class="px-2.5 py-1 bg-surface-container font-label-sm text-label-sm text-on-surface uppercase">Live</span>
+</div>
+</aside>
+</div>
+</div>
+<!-- Interactive Client Behavior Script -->
+<script>
+    function handlePlaceOrder() {
+      const btn = document.getElementById('submit-order-btn');
+      btn.innerHTML = `
+        <span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+        <span>Allocating Burns Road Chef...</span>
+      `;
+      btn.disabled = true;
+
+      setTimeout(() => {
+        btn.innerHTML = `
+          <span class="material-symbols-outlined text-[20px]">done_all</span>
+          <span>Dispatched! Order #KB-9182</span>
+        `;
+        btn.classList.remove('bg-primary');
+        btn.classList.add('bg-tertiary');
+        
+        // Modal Confirmation Banner
+        alert('Dastarkhwan Dispatched! Order #KB-9182 confirmed for Bilal Ahmed (Rs. 3,497). Estimated arrival at DHA Phase 6 in 38 minutes.');
+      }, 1200);
+    }
+
+    function applyVoucher() {
+      const input = document.getElementById('voucherCode');
+      const notice = document.getElementById('voucher-notice');
+      if (input.value.trim().length > 0) {
+        notice.innerText = "✓ Code '" + input.value.trim().toUpperCase() + "' verified: Complimentary Burns Road Gulab Jamun included!";
+        notice.classList.remove('hidden');
+      } else {
+        alert('Please enter a valid coupon or member code.');
+      }
+    }
+  </script>
+</div></main><footer class="w-full bg-surface-container-lowest border-t border-surface-variant"><div class="max-w-7xl mx-auto px-6 lg:px-12 pt-16 pb-12"><div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-12 gap-10 pb-14 border-b border-surface-variant"><div class="lg:col-span-4 flex flex-col justify-between pr-4"><div class="space-y-4"><div class="flex items-center gap-3"><img alt="Karachi Bites Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VTFoxorX86duzmJJooo00uS87sb3OxCnCi2BKdswTvx6YPb7ywJ3V1hH_ZdGpM7l1QqfhzgXcI-CURCeN68pxq4p1mPYJbopgkMxOhg0O--ooam1Vz3lAuk8BEfD7TChxs61XYzub0E_hQfjRUfFlgayXTyAUfXh_UDyPIYOMe9nuM3aSCVR-WELFa2n7mVOFt9GGCc1SMWXqzabo72xksrdTOedlbOdMhDf-rp4pVd7b7_C0TPKBOExbJ"/><span class="font-headline-sm text-headline-sm font-semibold text-on-surface">Karachi Bites</span></div><p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed max-w-sm">Preserving the uncompromised barbecue, slow-cooked nihari, and karahi crafts of Burns Road since 1952. Crafted daily over slow charcoal coals with heritage spices.</p></div><div class="pt-6"><span class="inline-block px-3 py-1 bg-surface-container-low border border-surface-variant font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">100% Certified Zabiha Halal</span></div></div><div class="lg:col-span-3 space-y-3"><h3 class="font-headline-sm text-headline-sm text-on-surface">Culinary Roster</h3><ul class="space-y-2 pt-2"><li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a data-path="menu" href="#">Slow-Pot Shinwari Karahi</a></li><li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a data-path="menu" href="#">Burns Road Seekh &amp; Bihari</a></li><li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a data-path="menu" href="#">Overnight Shank Nihari</a></li><li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a data-path="menu" href="#">Fragrant Dum Pulao</a></li><li class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors"><a data-path="menu" href="#">Clay Oven Roghani Naan</a></li></ul></div><div class="lg:col-span-3 space-y-3"><h3 class="font-headline-sm text-headline-sm text-on-surface">Dining &amp; Service</h3><div class="pt-2 space-y-3 text-on-surface-variant font-body-sm text-body-sm"><div><span class="block font-label-md text-label-md uppercase text-on-surface tracking-wider">Hours of Operation</span><p class="mt-0.5">Daily: 11:30 AM – 1:30 AM</p></div><div><span class="block font-label-md text-label-md uppercase text-on-surface tracking-wider">Burns Road Main Hall</span><p class="mt-0.5">Dine-in, Collection &amp; Express Dispatch</p></div><div><span class="block font-label-md text-label-md uppercase text-on-surface tracking-wider">Direct Telephone</span><p class="mt-0.5 font-medium text-on-surface">+92 (21) 3262-1952</p></div></div></div><div class="lg:col-span-2 space-y-3"><h3 class="font-headline-sm text-headline-sm text-on-surface">Assurances</h3><ul class="space-y-2 pt-2"><li class="font-body-sm text-body-sm text-on-surface-variant"><a class="hover:text-primary transition-colors" data-path="track-order" href="#">Live Kitchen Dispatch</a></li><li class="font-body-sm text-body-sm text-on-surface-variant"><a class="hover:text-primary transition-colors" data-path="staff-portal" href="#">KDS Staff Console</a></li><li class="font-body-sm text-body-sm text-on-surface-variant"><a class="hover:text-primary transition-colors" data-path="halal-charter" href="#">Halal Integrity Charter</a></li><li class="font-body-sm text-body-sm text-on-surface-variant"><a class="hover:text-primary transition-colors" data-path="catering" href="#">Bespoke Feasts &amp; Catering</a></li></ul></div></div><div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 font-body-sm text-body-sm text-on-surface-variant"><div>© 1952–2025 Karachi Bites Culinary Guild. All rights reserved.</div><div class="flex items-center gap-6 font-label-md text-label-md uppercase tracking-wider"><span>Hand-crafted Culinary Tradition</span><span>•</span><span>Sindh, Pakistan</span></div></div></div></footer></body></html>

@@ -1,127 +1,126 @@
 ---
-name: Nocturnal Spice
+name: Karachi Bites
 colors:
-  surface: '#151311'
-  surface-dim: '#151311'
-  surface-bright: '#3b3936'
-  surface-container-lowest: '#100e0c'
-  surface-container-low: '#1d1b19'
-  surface-container: '#211f1d'
-  surface-container-high: '#2c2927'
-  surface-container-highest: '#373432'
-  on-surface: '#e7e1dd'
-  on-surface-variant: '#e3beb8'
-  inverse-surface: '#e7e1dd'
-  inverse-on-surface: '#32302e'
-  outline: '#aa8984'
-  outline-variant: '#5a403c'
-  surface-tint: '#ffb4a8'
-  primary: '#ffb4a8'
-  on-primary: '#690001'
-  primary-container: '#b42318'
-  on-primary-container: '#ffcbc2'
-  inverse-primary: '#b62419'
-  secondary: '#ffb4a8'
-  on-secondary: '#690000'
-  secondary-container: '#950c06'
-  on-secondary-container: '#ff9f90'
-  tertiary: '#e6bdb8'
-  on-tertiary: '#442a26'
-  tertiary-container: '#755551'
-  on-tertiary-container: '#f7ccc7'
-  error: '#ffb4ab'
-  on-error: '#690005'
-  error-container: '#93000a'
-  on-error-container: '#ffdad6'
+  surface: '#fcf9f4'
+  surface-dim: '#dcdad5'
+  surface-bright: '#fcf9f4'
+  surface-container-lowest: '#ffffff'
+  surface-container-low: '#f6f3ee'
+  surface-container: '#f0ede9'
+  surface-container-high: '#ebe8e3'
+  surface-container-highest: '#e5e2dd'
+  on-surface: '#1c1c19'
+  on-surface-variant: '#5a413d'
+  inverse-surface: '#31302d'
+  inverse-on-surface: '#f3f0eb'
+  outline: '#8e706c'
+  outline-variant: '#e2bfb9'
+  surface-tint: '#b22b20'
+  primary: '#7b0002'
+  on-primary: '#ffffff'
+  primary-container: '#9e1c14'
+  on-primary-container: '#ffb0a4'
+  inverse-primary: '#ffb4a9'
+  secondary: '#5d5e66'
+  on-secondary: '#ffffff'
+  secondary-container: '#e3e1ec'
+  on-secondary-container: '#63646c'
+  tertiary: '#3a393d'
+  on-tertiary: '#ffffff'
+  tertiary-container: '#515054'
+  on-tertiary-container: '#c5c2c7'
+  error: '#ba1a1a'
+  on-error: '#ffffff'
+  error-container: '#ffdad6'
+  on-error-container: '#93000a'
   primary-fixed: '#ffdad5'
-  primary-fixed-dim: '#ffb4a8'
-  on-primary-fixed: '#410000'
-  on-primary-fixed-variant: '#930303'
-  secondary-fixed: '#ffdad4'
-  secondary-fixed-dim: '#ffb4a8'
-  on-secondary-fixed: '#410000'
-  on-secondary-fixed-variant: '#910804'
-  tertiary-fixed: '#ffdad5'
-  tertiary-fixed-dim: '#e6bdb8'
-  on-tertiary-fixed: '#2c1513'
-  on-tertiary-fixed-variant: '#5d3f3c'
-  background: '#151311'
-  on-background: '#e7e1dd'
-  surface-variant: '#373432'
+  primary-fixed-dim: '#ffb4a9'
+  on-primary-fixed: '#410001'
+  on-primary-fixed-variant: '#8f0f0b'
+  secondary-fixed: '#e3e1ec'
+  secondary-fixed-dim: '#c6c5cf'
+  on-secondary-fixed: '#1a1b22'
+  on-secondary-fixed-variant: '#46464e'
+  tertiary-fixed: '#e4e1e6'
+  tertiary-fixed-dim: '#c8c5ca'
+  on-tertiary-fixed: '#1b1b1e'
+  on-tertiary-fixed-variant: '#47464a'
+  background: '#fcf9f4'
+  on-background: '#1c1c19'
+  surface-variant: '#e5e2dd'
 typography:
-  headline-xl:
-    fontFamily: Geist
-    fontSize: 48px
-    fontWeight: '600'
-    lineHeight: 56px
-    letterSpacing: -0.03em
-  headline-xl-mobile:
-    fontFamily: Geist
-    fontSize: 34px
-    fontWeight: '600'
-    lineHeight: 42px
-    letterSpacing: -0.025em
-  headline-lg:
-    fontFamily: Geist
-    fontSize: 32px
-    fontWeight: '600'
-    lineHeight: 40px
-    letterSpacing: -0.02em
-  headline-lg-mobile:
-    fontFamily: Geist
-    fontSize: 26px
-    fontWeight: '600'
-    lineHeight: 34px
-    letterSpacing: -0.015em
-  headline-md:
-    fontFamily: Geist
-    fontSize: 22px
-    fontWeight: '500'
-    lineHeight: 30px
-    letterSpacing: -0.015em
-  headline-sm:
-    fontFamily: Geist
-    fontSize: 18px
-    fontWeight: '500'
-    lineHeight: 26px
-    letterSpacing: -0.01em
-  body-lg:
-    fontFamily: Geist
-    fontSize: 17px
+  display-lg:
+    fontFamily: EB Garamond
+    fontSize: 3.5rem
     fontWeight: '400'
-    lineHeight: 26px
+    lineHeight: '1.1'
+    letterSpacing: -0.02em
+  display-lg-mobile:
+    fontFamily: EB Garamond
+    fontSize: 2.25rem
+    fontWeight: '400'
+    lineHeight: '1.2'
+    letterSpacing: -0.01em
+  headline-lg:
+    fontFamily: EB Garamond
+    fontSize: 2.25rem
+    fontWeight: '400'
+    lineHeight: '1.2'
+    letterSpacing: -0.01em
+  headline-lg-mobile:
+    fontFamily: EB Garamond
+    fontSize: 1.75rem
+    fontWeight: '400'
+    lineHeight: '1.25'
+    letterSpacing: 0em
+  headline-md:
+    fontFamily: EB Garamond
+    fontSize: 1.75rem
+    fontWeight: '500'
+    lineHeight: '1.3'
+    letterSpacing: 0em
+  headline-sm:
+    fontFamily: EB Garamond
+    fontSize: 1.25rem
+    fontWeight: '500'
+    lineHeight: '1.4'
+    letterSpacing: 0em
+  body-lg:
+    fontFamily: Hanken Grotesk
+    fontSize: 1.125rem
+    fontWeight: '400'
+    lineHeight: '1.6'
     letterSpacing: 0em
   body-md:
-    fontFamily: Geist
-    fontSize: 15px
+    fontFamily: Hanken Grotesk
+    fontSize: 0.9375rem
     fontWeight: '400'
-    lineHeight: 24px
+    lineHeight: '1.5'
     letterSpacing: 0em
   body-sm:
-    fontFamily: Geist
-    fontSize: 13px
+    fontFamily: Hanken Grotesk
+    fontSize: 0.8125rem
     fontWeight: '400'
-    lineHeight: 20px
-    letterSpacing: 0.005em
-  label-md:
-    fontFamily: Geist
-    fontSize: 13px
-    fontWeight: '500'
-    lineHeight: 18px
-    letterSpacing: 0.02em
-  label-sm:
-    fontFamily: Geist
-    fontSize: 11px
+    lineHeight: '1.4'
+    letterSpacing: 0.01em
+  label-lg:
+    fontFamily: Hanken Grotesk
+    fontSize: 0.875rem
     fontWeight: '600'
-    lineHeight: 16px
-    letterSpacing: 0.04em
-rounded:
-  sm: 0.125rem
-  DEFAULT: 0.25rem
-  md: 0.375rem
-  lg: 0.5rem
-  xl: 0.75rem
-  full: 9999px
+    lineHeight: '1.2'
+    letterSpacing: 0.05em
+  label-md:
+    fontFamily: Hanken Grotesk
+    fontSize: 0.75rem
+    fontWeight: '600'
+    lineHeight: '1.2'
+    letterSpacing: 0.08em
+  label-sm:
+    fontFamily: Hanken Grotesk
+    fontSize: 0.6875rem
+    fontWeight: '500'
+    lineHeight: '1.2'
+    letterSpacing: 0.06em
 spacing:
   gutter: 1.5rem
   gutter-mobile: 1rem
@@ -136,88 +135,77 @@ spacing:
 
 ## Brand & Style
 
-This design system expresses the nocturnal culinary culture of Karachi—unapologetically rich, aromatic, and steeped in midnight charcoal fires, cast-iron karahis, and spiced heritage. The aesthetic abandons generic fast-casual tropes, sterile tech minimalism, and decorative ethnic kitsch in favor of a cinematic, refined, nocturnal hospitality experience.
+This design system expresses the understated luxury and deep culinary heritage of Karachi's historic food districts, curated through an architectural, classical lens. The aesthetic balances historic reverence with rigorous modern discipline: natural warmth meets uncompromising geometric precision.
 
-The visual mood evokes an intimate, dimly lit dining room illuminated by raw embers and warm ambient pendant lamps. It targets discerning diners who value culinary authenticity alongside contemporary design precision. Every element remains grounded, warm, and food-centric, relying on disciplined geometric sans typography (`Geist`), restrained surfaces, and a signature deep crimson accent inspired by freshly roasted whole Kashmiri chilies and reduced tomato masala.
+The visual direction rejects synthetic neon tropes and transient interface gimmicks in favor of a timeless, tactile editorial tone. The experience evokes the poise of a bespoke culinary publication or a prestigious menu card. Every surface feels considered, structured, and permanent. Sharp edges and high-contrast, fine-lined dividers provide structural authority, allowing rich editorial typography and deep heritage crimson accents to convey prestige, hospitality, and craft.
 
 ## Colors
 
-The palette is anchored in charcoal tones with warm umber undertones, deliberately rejecting cold, pure digital blacks (`#000000`) and cool blue-grays.
+The palette establishes an atmosphere of understated luxury rooted in natural, architectural materials:
 
-### Canvas & Surface Hierarchy
-- **Canvas Base (`#181614`):** The foundational dark charcoal canvas. Sets the nocturnal, warm atmosphere across full-bleed backgrounds.
-- **Section Alternate (`#211E1B`):** Secondary structural blocks and staggered band sections that divide long scrolling menus and editorial stories.
-- **Surface Elevation (`#2A2622`):** Elevated cards, interactive sheets, popovers, and menu item containers.
-- **Muted Accent Surface (`#3A211E`):** Low-contrast warm crimson-tinted background for active states, selected dietary badges, and featured specials.
-
-### Accent & Feedback
-- **Primary Accent (`#B42318`):** Deep Karachi Red, reserved for focal actions (Order Now, Reserve, Add to Cart) and critical price tags.
-- **Accent Hover (`#C93627`):** Elevated flame-red for interaction feedback and focus rings.
-
-### Typography & Linework
-- **Primary Text (`#F7F3EC`):** Warm off-white, providing high contrast against dark surfaces without harsh glare.
-- **Secondary / Metadata Text (`#B8B0A6`):** Muted stone-beige for ingredients, origin notes, spice meters, and operational details.
-- **Structural Borders (`#3A342E`):** Warm hairline borders defining structure without visual noise.
+- **Primary (`#9E1C14`):** A deep, authentic heritage crimson. Reserved strictly for intentional high-value accents: primary call-to-action buttons, active navigation states, selected order badges, and focused interaction indicators. It must never be diluted or used over wide background planes.
+- **Neutral Canvas (`#FAF7F2`):** A warm, parchment-like cream that anchors the entire interface, eliminating sterile screen glare and providing a warm, hospitable environment.
+- **Surface Layer (`#FFFFFF`):** Pristine white applied selectively to menu cards, modal sheets, and contained elevation surfaces to create gentle contrast against the cream ground.
+- **Tertiary Ink (`#18181B`):** Deep, legible carbon ink for headlines, body copy, and primary structural labels.
+- **Secondary Muted (`#71717A`):** Neutral slate for metadata, captions, ingredient notes, and inactive states.
+- **Structural Line (`#E4E4E7`):** Fine architectural boundary lines, column dividers, and component borders.
 
 ## Typography
 
-The type system is powered entirely by `Geist`, applied with editorial discipline. Rather than relying on ornate heritage display faces, modern culinary depth is achieved through tight negative letter tracking on headings and generous line heights on descriptions.
+The typographic hierarchy pairs the literary elegance of EB Garamond with the structured clarity of Hanken Grotesk. 
 
-Headlines should be styled in semi-bold cuts with negative kerning to anchor the page with presence and weight. Food descriptions, culinary provenance notes, and spice profiles use regular body weights with open line spacing to maximize readability in nocturnal environments. Micro-labels, spice scales, cut tags, and menu categorization labels utilize uppercase treatment with subtle positive tracking (`0.04em`).
+EB Garamond brings literary dignity and heritage to editorial headings, course titles, and tasting descriptions. Its classical proportions evoke legacy printing. Hanken Grotesk serves all interface utility roles: body prose, ingredient indices, prices, navigation items, and forms. 
+
+Uppercase treatments are strictly confined to `label-md` and `label-sm` levels with widened letter tracking (`0.05em` to `0.08em`), establishing a clean editorial catalog structure.
 
 ## Layout & Spacing
 
-The layout model is built on an 8pt architectural rhythm, structured around an expansive 12-column grid on desktop and an optimized 4-column flow on mobile viewports.
+The layout is grounded in a disciplined 12-column editorial grid for desktop devices, shifting to 6 columns on tablet, and 4 columns on mobile devices. Generous outer margins ensure that the interface feels unhurried and spacious.
 
-- **Desktop (1024px+):** Max-width 1280px, 12 columns, 1.5rem (`gutter`), 3rem (`margin`). Dishes display in 2 or 3-column modular cards with high image prominence.
-- **Tablet (768px - 1023px):** 8 columns, 1.25rem gutters, 2rem margins. Order summaries and menu categories collapse into top horizontal scrollbars or bottom sticky sheets.
-- **Mobile (<768px):** 4 columns, 1rem (`gutter-mobile`), 1.25rem (`margin-mobile`). Single-column card stacking with persistent bottom action drawers for checkout and reservations.
-
-Component internals use `space-sm` (0.5rem) for tight label-to-heading pairings, `space-md` (1rem) for form input padding and internal card sections, and `space-xl` (2.5rem) between major menu collections (e.g., Karahi Specialties, Tandoor & Charcoal, Breads & Rice).
+Whitespace functions as a primary design material. Generous vertical breathing room separates distinct menu categories and culinary narratives. Grid cells are partitioned by single-pixel boundaries rather than floating islands, maintaining a clean broadsheet structure. Content containers avoid dense visual crowding, allowing high-resolution photography and typographic storytelling to breathe naturally.
 
 ## Elevation & Depth
 
-Visual hierarchy uses warm, low-reflection tonal layering paired with ember-tinted shadow dispersion, avoiding harsh drop shadows or synthetic cold blues.
+This design system avoids blurry drop shadows, heavy diffusions, and synthetic elevation systems. Visual depth is established through layered surfaces and crisp structural framing.
 
-- **Layer 0 (Canvas):** `#181614` base tone, matte finish.
-- **Layer 1 (Sub-section / Recessed):** `#211E1B` with 1px border of `#3A342E`.
-- **Layer 2 (Cards / Food Containers):** `#2A2622` with a 1px border of `#3A342E`. Shadow: `0 4px 20px -2px rgba(12, 10, 8, 0.65)`.
-- **Layer 3 (Modals / Cart Drawer / Menus):** `#2A2622` elevated surface with `0 12px 36px -4px rgba(10, 8, 6, 0.85)` and an interior subtle perimeter glow `inset 0 1px 0 0 rgba(247, 243, 236, 0.05)`.
-- **Focus Rings:** Non-offset, razor-sharp 2px border using `#B42318` or `#C93627`.
+Depth is achieved via:
+1. **Surface Stratification:** The foundational plane sits on `#FAF7F2`. Raised interactive modules, menus, and item cards occupy crisp `#FFFFFF` rectangular planes.
+2. **Hairline Outlines:** Surfaces are defined by 1px solid boundaries in `#E4E4E7`. 
+3. **Modals & Overlays:** Where an element must physically suspend above the canvas (e.g., table reservations, order trays), it uses an opaque white fill with a solid 1px `#18181B` border or a precise, near-imperceptible contact line (`rgba(24, 24, 27, 0.06)` with zero blur and a 2px downward offset). No volumetric blur effects or neo-morphic shadows are permitted.
 
 ## Shapes
 
-The shape system adopts a refined, subtle curve profile (`roundedness: 1`). Elements favor architectural solidity over bulbous or juvenile rounded components.
+The shape system utilizes a strict `0` radius across every element. 
 
-- **Base Radius (0.25rem / 4px):** Form inputs, chips, badge tags, and secondary small controls.
-- **Container Radius (`rounded-lg` / 0.5rem / 8px):** Menu cards, food photography frames, category containers, and cart summary modules.
-- **Sheet Radius (`rounded-xl` / 0.75rem / 12px):** Top corners of mobile slide-up sheets, payment sheets, and hero reservation modals.
-- **Never Pill-Shaped:** Buttons and chips retain disciplined 4px or 8px corners; round pills are strictly avoided.
+All buttons, cards, dialogs, inputs, image frames, and badges feature crisp, 90-degree corners. This architectural sharpness echoes bespoke print stationery, linen placemats, and classic restaurant menus. It directly rejects the generic, hyper-rounded aesthetic of mass-market utility applications, imparting an uncompromising standard of craft and intention.
 
 ## Components
 
 ### Buttons
-- **Primary (Action):** Background `#B42318`, text `#F7F3EC`, font weight 500, radius 6px (`rounded-md`). Hover state `#C93627`. Active state `#981B12`.
-- **Secondary (Subdued):** Background `#2A2622`, border 1px solid `#3A342E`, text `#F7F3EC`. Hover background `#3A211E`, border color `#B42318`.
-- **Ghost:** Background transparent, text `#B8B0A6`. Hover text `#F7F3EC`, background `rgba(58, 52, 46, 0.4)`.
+- **Primary:** Filled `#9E1C14` with `#FFFFFF` text in `label-lg` uppercase tracking. Sharp 90-degree corners. Hover shifts to `#80160F`. Active state reveals an inner 1px white inset border.
+- **Secondary:** Transparent background, 1px solid `#18181B` border, `#18181B` text. Hover inverts to solid `#18181B` fill with `#FFFFFF` text.
+- **Ghost/Tertiary:** No border, text-only in `#18181B` with a subtle bottom border underline that transitions opacity on hover.
 
-### Chips & Badges
-- **Dietary / Spice Badge:** Muted background `#3A211E`, text `#F7F3EC`, border 1px solid `rgba(180, 35, 24, 0.4)`. Used for "Shinwari Style", "Coal-Smoked", "Mild", "Fiery".
-- **Category Filter Chip:** Background `#211E1B`, text `#B8B0A6`, border 1px solid `#3A342E`, radius 4px. Selected state switches background to `#B42318` and text to `#F7F3EC`.
+### Menu Cards & Containers
+- Built on `#FFFFFF` planes framed by a 1px solid `#E4E4E7` border.
+- Sharp edges throughout. Dish titles are set in `headline-sm` EB Garamond, accompanied by prices set in `label-lg` Hanken Grotesk. Descriptions and spice profiles sit in `body-sm` using `#71717A`.
+- Imagery is framed edge-to-edge or inset with strict equal margins, avoiding any border radius.
 
-### Cards (Menu Item & Specialty)
-- Surface background `#2A2622`, border 1px solid `#3A342E`, radius 8px (`rounded-lg`).
-- Internal layout features a 1:1 or 16:9 photography header with subtle dark bottom gradient blending directly into the charcoal surface.
-- Title in `headline-sm` (`#F7F3EC`), ingredient narrative in `body-sm` (`#B8B0A6`), and price in `label-md` accented with `#F7F3EC`.
+### Input Fields & Selectors
+- Background: `#FFFFFF`.
+- Border: 1px solid `#E4E4E7`. Focus state shifts the border cleanly to 1px solid `#18181B` without glow or shadow rings.
+- Placeholder text in `#71717A`, active input in `#18181B`.
+- Labels appear above the input in `label-md` uppercase, tracked out.
 
-### Input Fields
-- Background `#211E1B`, border 1px solid `#3A342E`, text `#F7F3EC`, placeholder `#B8B0A6` (opacity 0.6), radius 4px.
-- Focus state updates border color to `#B42318` without outline ring artifacts.
+### Badges & Chips
+- Status badges (e.g., "Signature", "Heritage Recipe") feature a 1px border with a transparent or `#FAF7F2` fill.
+- The heritage crimson badge uses a solid `#9E1C14` fill with `#FFFFFF` text in `label-sm`, strictly reserved for live order tallies and chef's specials.
 
-### Checkboxes & Radios
-- Box/Circle frame with 1px border `#3A342E`, background `#181614`.
-- Checked state fills with `#B42318` and renders a clean checkmark or inner indicator in `#F7F3EC`.
+### Checkboxes & Radio Buttons
+- Form controls are strictly square.
+- Unchecked: 1px border in `#71717A` over `#FFFFFF`.
+- Checked: Solid `#9E1C14` fill with a sharp white checkmark or center square indicator.
 
-### Lists & Menu Item Rows
-- Alternating horizontal separators use 1px solid `#3A342E`.
-- Quantity increments provide subtle click feedback with `#3A211E` backing and sharp tabular number typography.
+### Dividers & Lists
+- List items within menus are separated by 1px solid `#E4E4E7` horizontal rules.
+- Optional dotted leader lines connect menu items directly to their price columns, maintaining classical menu tradition.
