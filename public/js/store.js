@@ -31,7 +31,7 @@ const cartStore = {
     }
     
     try {
-      cart.total = this.calculateTotal();
+      cart.total = this.calculateTotal(cart);
       cart.itemCount = this.calculateItemCount(cart.items);
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(cart));
     } catch (error) {
