@@ -139,4 +139,3 @@ const checkoutPage = {
   },
 };
 
-window.addEventListener('DOMContentLoaded', () => checkoutPage.init());
