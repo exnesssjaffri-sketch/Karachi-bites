@@ -80,8 +80,13 @@ router.post('/orders', async (req, res) => {
     }
   }
 
+  const notes = customer.notes === undefined ? body.notes : customer.notes;
+  if (!validate.isValidNotes(notes)) {
+    return res.status(400).json({ error: 'customer.notes must be 500 characters or fewer' });
+  }
+
   try {
-    const order = await orderService.createOrder(customer, branch, items);
+    const order = await orderService.createOrder(customer, branch, items, notes);
     res.status(201).json(order);
   } catch (err) {
     console.error('Order creation error:', err.message);
@@ -92,6 +97,25 @@ router.post('/orders', async (req, res) => {
       return res.status(400).json({ error: err.message });
     }
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// POST /api/orders/:id/track — verify order ID and phone before exposing tracking details.
+router.post('/orders/:id/track', async (req, res) => {
+  const orderId = req.params.id;
+  const phone = req.body && req.body.phone;
+  if (!orderId) return res.status(400).json({ error: 'Order ID is required' });
+  if (!validate.isValidPhone(phone)) {
+    return res.status(400).json({ error: 'A valid Pakistani mobile number is required' });
+  }
+  try {
+    const order = await orderService.trackOrder(orderId, phone);
+    return res.json(order);
+  } catch (err) {
+    if (err.statusCode === 404) return res.status(404).json({ error: 'Order not found' });
+    if (err.statusCode === 403) return res.status(403).json({ error: 'Phone number does not match this order' });
+    console.error('Track order error:', err.message);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
