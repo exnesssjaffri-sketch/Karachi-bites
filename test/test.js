@@ -10,6 +10,7 @@ const files = [
   'test_admin_menu.js',
   'test_csv_export.js',
   'test_frontend_wiring.js',
+  'test_cart_store.js',
 ];
 
 let allPassed = true;
