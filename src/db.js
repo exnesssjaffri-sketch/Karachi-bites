@@ -10,7 +10,6 @@ const DATABASE_URL = process.env.DATABASE_URL;
 let db = null;
 let pool = null;
 let resolveDatabaseReady;
-let transactionClient = null;
 
 const databaseReady = new Promise((resolve) => {
   resolveDatabaseReady = resolve;
@@ -34,7 +33,7 @@ function getDb() {
   }
   pool = new Pool({
     connectionString: DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
+    ssl: { rejectUnauthorized: true },
     max: 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 10000,
@@ -49,18 +48,92 @@ function isSqlite() {
 /**
  * Convert SQL `?` placeholders to PostgreSQL `$1, $2, ...` style.
  * The pg module only supports numbered placeholders.
+ * Handles edge cases: string literals containing `?`, comments, escaped quotes.
  */
 function parameterizeSql(sql) {
   let idx = 0;
-  return sql.replace(/\?/g, () => `$${++idx}`);
+  let inString = false;
+  let inLineComment = false;
+  let inBlockComment = false;
+  let result = '';
+  let prevChar = '';
+
+  for (let i = 0; i < sql.length; i++) {
+    const ch = sql[i];
+    const nextCh = sql[i + 1];
+
+    // Track comment state
+    if (!inString) {
+      if (inLineComment) {
+        if (ch === '\n') inLineComment = false;
+        result += ch;
+        continue;
+      }
+      if (inBlockComment) {
+        if (ch === '*' && nextCh === '/') {
+          result += '*/';
+          i++;
+          inBlockComment = false;
+          continue;
+        }
+        result += ch;
+        continue;
+      }
+      if (ch === '-' && nextCh === '-') {
+        inLineComment = true;
+        result += '--';
+        i++;
+        continue;
+      }
+      if (ch === '/' && nextCh === '*') {
+        inBlockComment = true;
+        result += '/*';
+        i++;
+        continue;
+      }
+    }
+
+    // Track string literal state
+    if (!inLineComment && !inBlockComment) {
+      if (ch === "'" && !inString) {
+        inString = true;
+        result += ch;
+        continue;
+      }
+      if (ch === "'" && inString) {
+        // Check for escaped quote ''
+        if (nextCh === "'") {
+          result += "''";
+          i++;
+          continue;
+        }
+        inString = false;
+        result += ch;
+        continue;
+      }
+      if (inString) {
+        result += ch;
+        continue;
+      }
+    }
+
+    // Replace placeholder only outside strings and comments
+    if (ch === '?') {
+      result += `$${++idx}`;
+    } else {
+      result += ch;
+    }
+    prevChar = ch;
+  }
+  return result;
 }
 
 /**
  * Return the SQL expression for "current timestamp" that is valid for the
- * active driver.  SQLite uses `datetime('now')`; PostgreSQL uses `now()`.
+ * active driver.  SQLite uses `datetime('now')`; PostgreSQL uses `CURRENT_TIMESTAMP`.
  */
 function nowExpression() {
-  return USE_SQLITE ? "datetime('now')" : 'now()';
+  return USE_SQLITE ? "datetime('now')" : 'CURRENT_TIMESTAMP';
 }
 
 /**
@@ -75,7 +148,7 @@ function ensureReturning(sql) {
   return sql;
 }
 
-async function query(sql, params = []) {
+async function query(sql, params = [], client = null) {
   const database = getDb();
   if (USE_SQLITE) {
     return new Promise((resolve, reject) => {
@@ -85,12 +158,12 @@ async function query(sql, params = []) {
       });
     });
   }
-  const client = transactionClient || database;
-  const result = await client.query(parameterizeSql(sql), params);
+  const pgClient = client || database;
+  const result = await pgClient.query(parameterizeSql(sql), params);
   return result.rows || [];
 }
 
-async function get(sql, params = []) {
+async function get(sql, params = [], client = null) {
   const database = getDb();
   if (USE_SQLITE) {
     return new Promise((resolve, reject) => {
@@ -100,12 +173,12 @@ async function get(sql, params = []) {
       });
     });
   }
-  const client = transactionClient || database;
-  const result = await client.query(parameterizeSql(sql), params);
+  const pgClient = client || database;
+  const result = await pgClient.query(parameterizeSql(sql), params);
   return result.rows[0];
 }
 
-async function run(sql, params = []) {
+async function run(sql, params = [], client = null) {
   const database = getDb();
   if (USE_SQLITE) {
     return new Promise((resolve, reject) => {
@@ -115,8 +188,8 @@ async function run(sql, params = []) {
       });
     });
   }
-  const client = transactionClient || database;
-  const result = await client.query(ensureReturning(parameterizeSql(sql)), params);
+  const pgClient = client || database;
+  const result = await pgClient.query(ensureReturning(parameterizeSql(sql)), params);
   return { changes: result.rowCount, lastID: result.rows[0] ? result.rows[0].id : null };
 }
 
@@ -204,8 +277,6 @@ async function withTransaction(callback) {
     }
   }
   const client = await database.connect();
-  const previousClient = transactionClient;
-  transactionClient = client;
   try {
     await client.query('BEGIN');
     const result = await callback(client);
@@ -215,7 +286,6 @@ async function withTransaction(callback) {
     await client.query('ROLLBACK');
     throw err;
   } finally {
-    transactionClient = previousClient;
     client.release();
   }
 }

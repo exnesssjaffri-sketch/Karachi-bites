@@ -4,6 +4,12 @@ const helmet = require('helmet');
 const path = require('path');
 require('dotenv').config();
 
+// Fail fast in production if DATABASE_URL is missing
+if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+  console.error('FATAL: DATABASE_URL is required in production');
+  process.exit(1);
+}
+
 const { initDatabase, seedDatabase, databaseReady } = require('./db');
 const apiRoutes = require('./routes');
 

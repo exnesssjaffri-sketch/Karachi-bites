@@ -27,9 +27,50 @@ function boolLiteral(value) {
 // GET /api/menu
 router.get('/menu', async (req, res) => {
   try {
-    const rows = await getAll(
-      'SELECT id, name, price, category, tags, available FROM menu_items WHERE available = ' + boolLiteral(true) + ' ORDER BY id'
-    );
+    const { category, tags, maxPrice, search } = req.query;
+    let sql = 'SELECT id, name, price, category, tags, available FROM menu_items WHERE available = ' + boolLiteral(true);
+    const params = [];
+
+    if (category) {
+      if (!validate.isValidCategory(category)) {
+        return res.status(400).json({ error: 'Invalid category filter' });
+      }
+      sql += ' AND category = ?';
+      params.push(category);
+    }
+
+    if (tags) {
+      const tagList = Array.isArray(tags) ? tags : [tags];
+      for (const t of tagList) {
+        if (!validate.isValidTag(t)) {
+          return res.status(400).json({ error: `Invalid tag: ${t}` });
+        }
+      }
+      // Filter by tags using LIKE for SQLite / PostgreSQL compatibility
+      const tagConditions = tagList.map(() => 'tags = ?').join(' OR ');
+      sql += ' AND (' + tagConditions + ')';
+      tagList.forEach((t) => params.push(t));
+    }
+
+    if (maxPrice !== undefined) {
+      const maxPriceNum = Number(maxPrice);
+      if (!validate.isValidMaxPrice(maxPriceNum)) {
+        return res.status(400).json({ error: 'Invalid maxPrice filter' });
+      }
+      sql += ' AND price <= ?';
+      params.push(maxPriceNum);
+    }
+
+    if (search) {
+      if (!validate.isValidMenuSearchQuery(search)) {
+        return res.status(400).json({ error: 'Invalid search query' });
+      }
+      sql += ' AND name LIKE ?';
+      params.push(`%${search.trim()}%`);
+    }
+
+    sql += ' ORDER BY id';
+    const rows = await getAll(sql, params);
     res.json(rows.map((row) => ({
       id: row.id,
       name: row.name,
@@ -89,6 +130,34 @@ router.post('/orders', async (req, res) => {
     }
     if (err.message && err.message.includes('unavailable')) {
       return res.status(400).json({ error: err.message });
+    }
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// POST /api/orders/track
+router.post('/orders/track', async (req, res) => {
+  const body = req.body || {};
+  const orderId = body.orderId;
+  const phone = body.phone;
+
+  if (!orderId || typeof orderId !== 'string') {
+    return res.status(400).json({ error: 'orderId is required' });
+  }
+  if (!validate.isValidPhone(phone)) {
+    return res.status(400).json({ error: 'phone is required and must be a valid Pakistani phone number' });
+  }
+
+  try {
+    const order = await orderService.trackOrder(orderId, phone);
+    res.json(order);
+  } catch (err) {
+    console.error('Track order error:', err.message);
+    if (err.statusCode === 404) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    if (err.statusCode === 403) {
+      return res.status(403).json({ error: 'Phone number does not match this order' });
     }
     res.status(500).json({ error: 'Internal server error' });
   }

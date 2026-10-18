@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { getOne, getAll, run, withTransaction, isSqlite } = require('./db');
+const { getOne, getAll, run, withTransaction, isSqlite, get, query } = require('./db');
 const { isValidTransition, isValidNotes, sanitizeString } = require('./validate');
 
 const DELIVERY_FEE = parseInt(process.env.DELIVERY_FEE || '150', 10);
@@ -70,7 +70,7 @@ async function createOrder(customer, branch, items, notes, idempotencyKey) {
       const orderItems = [];
 
       for (const item of items) {
-        const row = await getOne('SELECT id, name, price, available FROM menu_items WHERE id = ?', [item.id]);
+        const row = await getOne('SELECT id, name, price, available FROM menu_items WHERE id = ?', [item.id], client);
         if (!row) {
           throw new Error(`Menu item with id ${item.id} not found`);
         }
@@ -92,14 +92,16 @@ async function createOrder(customer, branch, items, notes, idempotencyKey) {
 
       const orderResult = await run(
         'INSERT INTO orders (public_order_id, customer_name, customer_phone, customer_address, branch, status, total, customer_notes, idempotency_key) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [publicId, name, phone, address, branch, 'Received', total, safeNotes, idempotencyKey || null]
+        [publicId, name, phone, address, branch, 'Received', total, safeNotes, idempotencyKey || null],
+        client
       );
       const orderId = orderResult.lastID;
 
       for (const oi of orderItems) {
         await run(
           'INSERT INTO order_items (order_id, menu_item_id, quantity, price_at_order, name_at_order) VALUES (?, ?, ?, ?, ?)',
-          [orderId, oi.menu_item_id, oi.quantity, oi.price_at_order, oi.name_at_order]
+          [orderId, oi.menu_item_id, oi.quantity, oi.price_at_order, oi.name_at_order],
+          client
         );
       }
 
