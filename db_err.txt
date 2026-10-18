@@ -1,0 +1,2 @@
+◇ injected env (3) from .env
+Migration warning: SQLITE_MISUSE: Database handle is closed

@@ -1,0 +1,185 @@
+
+> karachi-bites@1.0.0 test
+> node test/test.js
+
+
+=== Running test_db.js ===
+
+--- Database, branch seed and validation tests ---
+Database test PASSED: 12 menu items and all three branches exist.
+
+=== test_db.js PASSED ===
+
+
+=== Running test_api.js ===
+
+--- API Tests ---
+[2026-10-18T02:05:26.786Z] GET /api/menu
+Testing customer homepage, preserved app and admin page routes...
+[2026-10-18T02:05:27.666Z] GET /
+[2026-10-18T02:05:27.687Z] GET /app.html
+[2026-10-18T02:05:27.699Z] GET /admin
+  PASS
+Testing GET /api/menu...
+[2026-10-18T02:05:27.715Z] GET /api/menu
+  PASS
+Testing POST /api/auth/login for admin...
+[2026-10-18T02:05:27.738Z] POST /api/auth/login
+  PASS
+Testing POST /api/orders and server-calculated totals...
+[2026-10-18T02:05:27.868Z] POST /api/orders
+  PASS
+Testing order retrieval...
+[2026-10-18T02:05:27.895Z] GET /api/orders/KB-20261018-53A67305
+  PASS
+Testing order creation for branch Gulshan-e-Iqbal...
+[2026-10-18T02:05:27.910Z] POST /api/orders
+[2026-10-18T02:05:27.934Z] GET /api/orders/KB-20261018-9D4C6B2A
+  PASS
+Testing order creation for branch North Nazimabad...
+[2026-10-18T02:05:27.957Z] POST /api/orders
+[2026-10-18T02:05:27.992Z] GET /api/orders/KB-20261018-13716975
+  PASS
+Testing rejection of an unsupported branch...
+[2026-10-18T02:05:27.998Z] POST /api/orders
+  PASS
+Testing admin order filters...
+[2026-10-18T02:05:28.008Z] GET /api/admin/orders
+[2026-10-18T02:05:28.018Z] GET /api/admin/orders
+[2026-10-18T02:05:28.023Z] GET /api/admin/orders
+  PASS
+Testing valid and invalid status transitions...
+[2026-10-18T02:05:28.039Z] PATCH /api/admin/orders/KB-20261018-53A67305/status
+[2026-10-18T02:05:28.098Z] PATCH /api/admin/orders/KB-20261018-53A67305/status
+  PASS
+Testing staff cannot access admin endpoints...
+[2026-10-18T02:05:28.115Z] POST /api/auth/login
+[2026-10-18T02:05:28.259Z] GET /api/admin/orders
+  PASS
+Testing unknown orders return 404...
+[2026-10-18T02:05:28.271Z] GET /api/orders/KB-NOT-FOUND
+  PASS
+All API tests PASSED.
+
+=== test_api.js PASSED ===
+
+
+=== Running test_failures.js ===
+
+--- API failure and authorization tests ---
+[2026-10-18T02:05:29.657Z] GET /api/menu
+[2026-10-18T02:05:31.124Z] POST /api/orders
+  PASS: Missing customer.name is rejected
+[2026-10-18T02:05:31.189Z] POST /api/orders
+  PASS: Invalid phone is rejected
+[2026-10-18T02:05:31.199Z] POST /api/orders
+  PASS: Unsupported branch is rejected
+[2026-10-18T02:05:31.210Z] GET /api/admin/orders
+  PASS: Missing admin token returns 401
+[2026-10-18T02:05:31.216Z] POST /api/auth/login
+[2026-10-18T02:05:31.393Z] POST /api/orders
+[2026-10-18T02:05:31.433Z] PATCH /api/admin/orders/KB-20261018-F6E7A67C/status
+  PASS: Invalid status jump is rejected
+[2026-10-18T02:05:31.463Z] POST /api/auth/login
+[2026-10-18T02:05:31.629Z] GET /api/admin/orders
+  PASS: Staff login cannot access admin endpoints
+
+Failure tests: 6/6 passed
+
+=== test_failures.js PASSED ===
+
+
+=== Running test_persistence.js ===
+
+--- Persistence Test (separate server processes) ---
+Persistence test PASSED: the order was retrieved after the first server process stopped.
+
+=== test_persistence.js PASSED ===
+
+
+=== Running test_admin_menu.js ===
+
+--- Admin Menu CRUD Tests ---
+[2026-10-18T02:05:36.676Z] GET /api/menu
+Logging in as admin...
+[2026-10-18T02:05:37.404Z] POST /api/auth/login
+Testing POST /api/admin/menu...
+[2026-10-18T02:05:37.562Z] POST /api/admin/menu
+  PASS
+Testing PUT /api/admin/menu/:id...
+[2026-10-18T02:05:37.598Z] PUT /api/admin/menu/13
+  PASS
+Testing hidden item is excluded from GET /api/menu...
+[2026-10-18T02:05:37.619Z] GET /api/menu
+  PASS
+Testing order containing a hidden item is rejected...
+[2026-10-18T02:05:37.627Z] POST /api/orders
+  PASS
+Testing PATCH /api/admin/menu/:id/availability (unhide)...
+[2026-10-18T02:05:37.646Z] PATCH /api/admin/menu/13/availability
+[2026-10-18T02:05:37.685Z] GET /api/menu
+  PASS
+Testing DELETE /api/admin/menu/:id hides the item...
+[2026-10-18T02:05:37.695Z] DELETE /api/admin/menu/13
+[2026-10-18T02:05:37.717Z] GET /api/menu
+[2026-10-18T02:05:37.729Z] PUT /api/admin/menu/13
+  PASS
+Testing historical order data survives hiding...
+[2026-10-18T02:05:37.764Z] POST /api/orders
+[2026-10-18T02:05:37.798Z] DELETE /api/admin/menu/13
+[2026-10-18T02:05:37.827Z] GET /api/orders/KB-20261018-1AEE6C70
+  PASS
+Testing unauthorized access...
+[2026-10-18T02:05:37.842Z] POST /api/admin/menu
+[2026-10-18T02:05:37.850Z] POST /api/admin/menu
+  PASS
+Testing validation failure...
+[2026-10-18T02:05:37.858Z] POST /api/admin/menu
+  PASS
+Admin Menu CRUD tests PASSED.
+
+=== test_admin_menu.js PASSED ===
+
+
+=== Running test_csv_export.js ===
+
+--- CSV Export Tests ---
+[2026-10-18T02:05:39.011Z] GET /api/menu
+Logging in as admin...
+[2026-10-18T02:05:39.820Z] POST /api/auth/login
+Creating test order...
+[2026-10-18T02:05:39.970Z] POST /api/orders
+Testing GET /api/admin/orders/export...
+[2026-10-18T02:05:40.017Z] GET /api/admin/orders/export
+  PASS
+Testing date_to filter excludes out-of-range orders...
+[2026-10-18T02:05:40.030Z] GET /api/admin/orders/export
+  PASS
+Testing date_from filter includes in-range orders...
+[2026-10-18T02:05:40.037Z] GET /api/admin/orders/export
+  PASS
+Testing date_from filter excludes out-of-range orders...
+[2026-10-18T02:05:40.044Z] GET /api/admin/orders/export
+  PASS
+Testing CSV formula-injection protection...
+[2026-10-18T02:05:40.061Z] POST /api/orders
+[2026-10-18T02:05:40.093Z] GET /api/orders/KB-20261018-27EA9AFE
+[2026-10-18T02:05:40.110Z] GET /api/admin/orders/export
+  PASS
+Testing CSV formula-injection with leading whitespace...
+[2026-10-18T02:05:40.121Z] POST /api/orders
+[2026-10-18T02:05:40.156Z] GET /api/orders/KB-20261018-3B05B586
+[2026-10-18T02:05:40.172Z] GET /api/admin/orders/export
+  PASS
+Testing staff cannot export CSV...
+[2026-10-18T02:05:40.189Z] POST /api/auth/login
+[2026-10-18T02:05:40.279Z] GET /api/admin/orders/export
+  PASS
+Testing unauthorized export...
+[2026-10-18T02:05:40.295Z] GET /api/admin/orders/export
+  PASS
+CSV Export tests PASSED.
+
+=== test_csv_export.js PASSED ===
+
+All test suites passed.

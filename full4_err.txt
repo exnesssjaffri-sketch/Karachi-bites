@@ -1,0 +1,23 @@
+◇ injected env (3) from .env
+Migration warning: SQLITE_MISUSE: Database handle is closed
+◇ injected env (3) from .env
+◇ injected env (0) from .env
+Update status error: Invalid status transition from Preparing to Delivered
+◇ injected env (3) from .env
+◇ injected env (0) from .env
+Update status error: Invalid status transition from Received to Delivered
+◇ injected env (3) from .env
+◇ injected env (0) from .env
+Order creation error: Menu item with id 13 is currently unavailable
+Update availability error: TypeError: nowExpression is not a function
+    at C:\Users\ALI HAIDER\OneDrive\Desktop\Karachi bites\src\routes.js:241:99
+Admin Menu CRUD tests FAILED: Error: Unhide should return 200
+    at assert (C:\Users\ALI HAIDER\OneDrive\Desktop\Karachi bites\test\test_admin_menu.js:14:25)
+    at runTests (C:\Users\ALI HAIDER\OneDrive\Desktop\Karachi bites\test\test_admin_menu.js:119:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+
+=== test_admin_menu.js FAILED ===
+
+◇ injected env (3) from .env
+◇ injected env (0) from .env
+Some tests failed.

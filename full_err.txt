@@ -1,0 +1,11 @@
+◇ injected env (3) from .env
+Migration warning: SQLITE_MISUSE: Database handle is closed
+◇ injected env (3) from .env
+◇ injected env (0) from .env
+Update status error: Invalid status transition from Preparing to Delivered
+◇ injected env (3) from .env
+◇ injected env (0) from .env
+Update status error: Invalid status transition from Received to Delivered
+◇ injected env (3) from .env
+◇ injected env (0) from .env
+Order creation error: Menu item with id 13 is currently unavailable

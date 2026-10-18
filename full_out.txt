@@ -1,0 +1,145 @@
+
+> karachi-bites@1.0.0 test
+> node test/test.js
+
+
+=== Running test_db.js ===
+
+--- Database, branch seed and validation tests ---
+Database test PASSED: 12 menu items and all three branches exist.
+
+=== test_db.js PASSED ===
+
+
+=== Running test_api.js ===
+
+--- API Tests ---
+[2026-10-18T01:21:36.556Z] GET /api/menu
+Testing customer homepage, preserved app and admin page routes...
+[2026-10-18T01:21:37.833Z] GET /
+[2026-10-18T01:21:37.876Z] GET /app.html
+[2026-10-18T01:21:37.887Z] GET /admin
+  PASS
+Testing GET /api/menu...
+[2026-10-18T01:21:37.917Z] GET /api/menu
+  PASS
+Testing POST /api/auth/login for admin...
+[2026-10-18T01:21:37.954Z] POST /api/auth/login
+  PASS
+Testing POST /api/orders and server-calculated totals...
+[2026-10-18T01:21:38.267Z] POST /api/orders
+  PASS
+Testing order retrieval...
+[2026-10-18T01:21:38.299Z] GET /api/orders/KB-20261018-F5460E95
+  PASS
+Testing order creation for branch Gulshan-e-Iqbal...
+[2026-10-18T01:21:38.317Z] POST /api/orders
+[2026-10-18T01:21:38.360Z] GET /api/orders/KB-20261018-A8D651E8
+  PASS
+Testing order creation for branch North Nazimabad...
+[2026-10-18T01:21:38.391Z] POST /api/orders
+[2026-10-18T01:21:38.435Z] GET /api/orders/KB-20261018-3415346D
+  PASS
+Testing rejection of an unsupported branch...
+[2026-10-18T01:21:38.453Z] POST /api/orders
+  PASS
+Testing admin order filters...
+[2026-10-18T01:21:38.467Z] GET /api/admin/orders
+[2026-10-18T01:21:38.484Z] GET /api/admin/orders
+[2026-10-18T01:21:38.501Z] GET /api/admin/orders
+  PASS
+Testing valid and invalid status transitions...
+[2026-10-18T01:21:38.514Z] PATCH /api/admin/orders/KB-20261018-F5460E95/status
+[2026-10-18T01:21:38.547Z] PATCH /api/admin/orders/KB-20261018-F5460E95/status
+  PASS
+Testing staff cannot access admin endpoints...
+[2026-10-18T01:21:38.559Z] POST /api/auth/login
+[2026-10-18T01:21:38.704Z] GET /api/admin/orders
+  PASS
+Testing unknown orders return 404...
+[2026-10-18T01:21:38.715Z] GET /api/orders/KB-NOT-FOUND
+  PASS
+All API tests PASSED.
+
+=== test_api.js PASSED ===
+
+
+=== Running test_failures.js ===
+
+--- API failure and authorization tests ---
+[2026-10-18T01:21:40.777Z] GET /api/menu
+[2026-10-18T01:21:42.230Z] POST /api/orders
+  PASS: Missing customer.name is rejected
+[2026-10-18T01:21:42.303Z] POST /api/orders
+  PASS: Invalid phone is rejected
+[2026-10-18T01:21:42.321Z] POST /api/orders
+  PASS: Unsupported branch is rejected
+[2026-10-18T01:21:42.343Z] GET /api/admin/orders
+  PASS: Missing admin token returns 401
+[2026-10-18T01:21:42.358Z] POST /api/auth/login
+[2026-10-18T01:21:42.522Z] POST /api/orders
+[2026-10-18T01:21:42.557Z] PATCH /api/admin/orders/KB-20261018-83C2C9CF/status
+  PASS: Invalid status jump is rejected
+[2026-10-18T01:21:42.586Z] POST /api/auth/login
+[2026-10-18T01:21:42.728Z] GET /api/admin/orders
+  PASS: Staff login cannot access admin endpoints
+
+Failure tests: 6/6 passed
+
+=== test_failures.js PASSED ===
+
+
+=== Running test_persistence.js ===
+
+--- Persistence Test (separate server processes) ---
+Persistence test PASSED: the order was retrieved after the first server process stopped.
+
+=== test_persistence.js PASSED ===
+
+
+=== Running test_admin_menu.js ===
+
+--- Admin Menu CRUD Tests ---
+[2026-10-18T01:21:50.989Z] GET /api/menu
+Logging in as admin...
+[2026-10-18T01:21:52.483Z] POST /api/auth/login
+Testing POST /api/admin/menu...
+[2026-10-18T01:21:52.793Z] POST /api/admin/menu
+  PASS
+Testing PUT /api/admin/menu/:id...
+[2026-10-18T01:21:52.823Z] PUT /api/admin/menu/13
+  PASS
+Testing hidden item is excluded from GET /api/menu...
+[2026-10-18T01:21:52.860Z] GET /api/menu
+  PASS
+Testing order containing a hidden item is rejected...
+[2026-10-18T01:21:52.881Z] POST /api/orders
+  PASS
+Testing PATCH /api/admin/menu/:id/availability (unhide)...
+[2026-10-18T01:21:52.921Z] PATCH /api/admin/menu/13/availability
+[2026-10-18T01:21:52.958Z] GET /api/menu
+  PASS
+Testing DELETE /api/admin/menu/:id hides the item...
+[2026-10-18T01:21:52.983Z] DELETE /api/admin/menu/13
+[2026-10-18T01:21:53.014Z] GET /api/menu
+[2026-10-18T01:21:53.033Z] PUT /api/admin/menu/13
+  PASS
+Testing historical order data survives hiding...
+[2026-10-18T01:21:53.067Z] POST /api/orders
+[2026-10-18T01:21:53.097Z] DELETE /api/admin/menu/13
+[2026-10-18T01:21:53.125Z] GET /api/orders/KB-20261018-3DBD8FF5
+  PASS
+Testing unauthorized access...
+[2026-10-18T01:21:53.142Z] POST /api/admin/menu
+[2026-10-18T01:21:53.153Z] POST /api/admin/menu
+  PASS
+Testing validation failure...
+[2026-10-18T01:21:53.170Z] POST /api/admin/menu
+  PASS
+Admin Menu CRUD tests PASSED.
+
+=== test_admin_menu.js PASSED ===
+
+
+=== Running test_csv_export.js ===
+

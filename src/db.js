@@ -10,6 +10,8 @@ const DATABASE_URL = process.env.DATABASE_URL;
 let db = null;
 let pool = null;
 let resolveDatabaseReady;
+let transactionClient = null;
+
 const databaseReady = new Promise((resolve) => {
   resolveDatabaseReady = resolve;
 });
@@ -44,6 +46,35 @@ function isSqlite() {
   return USE_SQLITE;
 }
 
+/**
+ * Convert SQL `?` placeholders to PostgreSQL `$1, $2, ...` style.
+ * The pg module only supports numbered placeholders.
+ */
+function parameterizeSql(sql) {
+  let idx = 0;
+  return sql.replace(/\?/g, () => `$${++idx}`);
+}
+
+/**
+ * Return the SQL expression for "current timestamp" that is valid for the
+ * active driver.  SQLite uses `datetime('now')`; PostgreSQL uses `now()`.
+ */
+function nowExpression() {
+  return USE_SQLITE ? "datetime('now')" : 'now()';
+}
+
+/**
+ * For PostgreSQL INSERT statements that do not already include a RETURNING
+ * clause, append `RETURNING id` so callers can read back the generated
+ * primary key through `result.rows[0].id`.
+ */
+function ensureReturning(sql) {
+  if (/^\s*INSERT\s+/i.test(sql) && !/RETURNING/i.test(sql)) {
+    return sql + ' RETURNING id';
+  }
+  return sql;
+}
+
 async function query(sql, params = []) {
   const database = getDb();
   if (USE_SQLITE) {
@@ -54,7 +85,8 @@ async function query(sql, params = []) {
       });
     });
   }
-  const result = await database.query(sql, params);
+  const client = transactionClient || database;
+  const result = await client.query(parameterizeSql(sql), params);
   return result.rows || [];
 }
 
@@ -68,7 +100,8 @@ async function get(sql, params = []) {
       });
     });
   }
-  const result = await database.query(sql, params);
+  const client = transactionClient || database;
+  const result = await client.query(parameterizeSql(sql), params);
   return result.rows[0];
 }
 
@@ -82,7 +115,8 @@ async function run(sql, params = []) {
       });
     });
   }
-  const result = await database.query(sql, params);
+  const client = transactionClient || database;
+  const result = await client.query(ensureReturning(parameterizeSql(sql)), params);
   return { changes: result.rowCount, lastID: result.rows[0] ? result.rows[0].id : null };
 }
 
@@ -95,7 +129,7 @@ async function runWithinTransaction(client, sql, params = []) {
       });
     });
   }
-  const result = await client.query(sql, params);
+  const result = await client.query(ensureReturning(parameterizeSql(sql)), params);
   return { changes: result.rowCount, lastID: result.rows[0] ? result.rows[0].id : null };
 }
 
@@ -170,6 +204,8 @@ async function withTransaction(callback) {
     }
   }
   const client = await database.connect();
+  const previousClient = transactionClient;
+  transactionClient = client;
   try {
     await client.query('BEGIN');
     const result = await callback(client);
@@ -179,6 +215,7 @@ async function withTransaction(callback) {
     await client.query('ROLLBACK');
     throw err;
   } finally {
+    transactionClient = previousClient;
     client.release();
   }
 }
@@ -509,4 +546,7 @@ module.exports = {
   commitTransaction,
   rollbackTransaction,
   isSqlite,
+  nowExpression,
+  parameterizeSql,
+  ensureReturning,
 };

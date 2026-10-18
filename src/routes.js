@@ -1,11 +1,10 @@
 const express = require('express');
-const { getAll, run, getOne } = require('./db');
+const { getAll, run, getOne, isSqlite, nowExpression } = require('./db');
 const orderService = require('./orderService');
 const auth = require('./auth');
 const validate = require('./validate');
 
 const router = express.Router();
-const { isSqlite } = require('./db');
 
 // CSV injection protection: quote every field and prefix dangerous formula
 // characters (= + - @) with a single quote so spreadsheets treat them as text.
@@ -221,7 +220,7 @@ router.delete('/admin/menu/:id', auth.authMiddleware, auth.requireAdmin, async (
   try {
     const exists = await getOne('SELECT 1 FROM menu_items WHERE id = ?', [id]);
     if (!exists) return res.status(404).json({ error: 'Item not found' });
-    await run('UPDATE menu_items SET available = ' + boolLiteral(false) + ', updated_at = datetime("now") WHERE id = ?', [id]);
+    await run('UPDATE menu_items SET available = ' + boolLiteral(false) + ', updated_at = ' + nowExpression() + ' WHERE id = ?', [id]);
     res.status(204).send();
   } catch (err) {
     console.error('Delete menu item error:', err);
@@ -239,7 +238,7 @@ router.patch('/admin/menu/:id/availability', auth.authMiddleware, auth.requireAd
   try {
     const row = await getOne('SELECT id, available FROM menu_items WHERE id = ?', [id]);
     if (!row) return res.status(404).json({ error: 'Item not found' });
-    await run('UPDATE menu_items SET available = ' + boolLiteral(available) + ', updated_at = datetime("now") WHERE id = ?',
+    await run('UPDATE menu_items SET available = ' + boolLiteral(available) + ', updated_at = ' + nowExpression() + ' WHERE id = ?',
       [id]);
     res.json({ id, available: !!available });
   } catch (err) {
