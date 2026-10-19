@@ -107,3 +107,17 @@ GitHub Actions run **7** (run ID `39320576856`) completed successfully using the
 - Report artifact (available for 30 days): https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/39320576856/artifacts/12218594103
 
 The earlier baseline run against the old production version was 69 Performance / 89 Accessibility. This baseline is not the score of the optimized PR code. The passing run audits the PR code locally; production will receive the homepage optimizations only after this PR is merged and deployed.
+
+
+## Follow-up source audit — 2026-10-20
+
+This follow-up reviewed the actual API client, Express route table, customer checkout/tracking UI, and CI workflow rather than treating feature names as proof of working behavior.
+
+- **Tracking defect found:** `public/js/api.js` called `POST /api/orders/:id/track` and sent only the phone, while `src/routes.js` implements `POST /api/orders/track` and expects both `orderId` and `phone`. The UI tracking request was therefore incompatible with its server route. PR #10 fixes the URL/body and adds a regression assertion in `test/test_frontend_wiring.js`.
+- **CI gap found:** the existing Lighthouse workflow did not run `npm test` or JavaScript parser checks despite those checks being listed in the prior PR's verification plan. PR #10 adds both steps before Lighthouse.
+- **C1:** no language-toggle/i18n script was found in the reviewed `public/js` paths; Urdu/English translation and RTL are not verified as implemented.
+- **C3/C4:** the backend contains staff-protected `GET /api/admin/kitchen/:id` and `POST /api/orders/reorder` endpoints. The reviewed customer/admin UI files do not establish a complete print dialog or a customer-facing reorder flow, so both remain partial until browser interaction tests are added.
+- **F12:** production health/menu had prior HTTP 200 evidence, but this audit did not create or mutate a live order. Persistent production order creation/status/tracking remains unverified.
+- **Live test limitation:** the production API URLs were not accessible through the available browser verification channel during this pass. PR #10 CI is pending; a previous Vercel status reported a build-rate-limit failure, not a confirmed application-code failure. Do not treat either as a passing test.
+
+No production customer or order records were changed during this follow-up.
