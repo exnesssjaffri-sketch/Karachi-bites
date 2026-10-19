@@ -2,6 +2,7 @@
   'use strict';
 
   const TOKEN_KEY = 'karachi_bites_admin_token';
+  const REFRESH_TOKEN_KEY = 'karachi_bites_admin_refresh_token';
   const API_BASE_URL = '';
   const $ = (selector) => document.querySelector(selector);
   const loginPanel = $('#loginPanel');
@@ -57,7 +58,7 @@
   }
 
   function clearToken() {
-    try { sessionStorage.removeItem(TOKEN_KEY); } catch (_) {}
+    try { sessionStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem(REFRESH_TOKEN_KEY); } catch (_) {}
   }
 
   function showLogin() {
@@ -79,7 +80,18 @@
     if (token) headers.set('Authorization', 'Bearer ' + token);
     if (options.body) headers.set('Content-Type', 'application/json');
 
-    const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
+    let response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
+    if (response.status === 401 && window.KBAuth && sessionStorage.getItem(REFRESH_TOKEN_KEY)) {
+      try {
+        const refreshed = await window.KBAuth.refreshSession(sessionStorage.getItem(REFRESH_TOKEN_KEY));
+        if (refreshed.access_token) {
+          saveToken(refreshed.access_token);
+          if (refreshed.refresh_token) sessionStorage.setItem(REFRESH_TOKEN_KEY, refreshed.refresh_token);
+          headers.set('Authorization', 'Bearer ' + refreshed.access_token);
+          response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
+        }
+      } catch (_) { clearToken(); }
+    }
     const body = await response.json().catch(() => ({}));
     if (!response.ok) {
       const error = new Error(body.error || ('Request failed (' + response.status + ')'));
@@ -102,6 +114,7 @@
         body: JSON.stringify({ username, password })
       });
       if (!response.token) throw new Error('The login API did not return a token.');
+      clearToken();
       saveToken(response.token);
       await loadOrders();
       $('#password').value = '';
@@ -128,6 +141,7 @@
       const response = await window.KBAuth.signInWithPassword(email, password);
       if (!response.access_token) throw new Error('Supabase did not return a session. Confirm your email if prompted.');
       saveToken(response.access_token);
+      if (response.refresh_token) sessionStorage.setItem(REFRESH_TOKEN_KEY, response.refresh_token);
       $('#authPassword').value = '';
       await loadOrders();
     } catch (error) {
@@ -171,6 +185,7 @@
       const response = await window.KBAuth.verifyPhoneOtp(phone, otp);
       if (!response.access_token) throw new Error('Supabase did not return a session.');
       saveToken(response.access_token);
+      if (response.refresh_token) sessionStorage.setItem(REFRESH_TOKEN_KEY, response.refresh_token);
       $('#authOtp').value = '';
       await loadOrders();
     } catch (error) {
