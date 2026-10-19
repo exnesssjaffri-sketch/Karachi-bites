@@ -217,7 +217,7 @@ async function runTests() {
     assert(response.status === 400 && /Invalid status transition/.test(invalidTransition.error || ''), 'Invalid status jump must be rejected');
     console.log('  PASS');
 
-    console.log('Testing staff cannot access admin endpoints...');
+    console.log('Testing staff can access order operations but not menu administration...');
     response = await fetch(baseUrl + '/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -228,7 +228,13 @@ async function runTests() {
     response = await fetch(baseUrl + '/api/admin/orders', {
       headers: { Authorization: 'Bearer ' + staffLogin.token },
     });
-    assert(response.status === 403, 'Staff account must receive 403 on admin endpoints');
+    assert(response.status === 200, 'Staff account should access order operations');
+    response = await fetch(baseUrl + '/api/admin/menu', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + staffLogin.token },
+      body: JSON.stringify({ name: 'Forbidden Test Item', price: 100, category: 'Drinks', tags: 'veg' }),
+    });
+    assert(response.status === 403, 'Staff account must not mutate the menu');
     console.log('  PASS');
 
     console.log('Testing unknown orders return 404...');
