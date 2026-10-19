@@ -21,7 +21,7 @@
     sessionStorage.setItem('kb_account_display', JSON.stringify({ name, email, status }));
   }
   function redirectHome() { window.location.assign('/'); }
-  async function showIdentity(session, fallbackName, fallbackEmail) {
+  async function showIdentity(session, fallbackName, fallbackEmail, isNewAccount = false) {
     saveSession(session);
     if (!session || !session.access_token) return false;
     try {
@@ -33,7 +33,7 @@
         const name = (authUser.user_metadata && authUser.user_metadata.full_name) || fallbackName || data.user.username || 'Customer';
         const email = authUser.email || fallbackEmail || data.user.email || '';
         saveDisplayProfile(name, email, 'signed-in');
-        showNotice('Account created successfully! Welcome, ' + name + '. Taking you to the home page…');
+        showNotice((isNewAccount ? 'Account created successfully! Welcome, ' : 'Signed in successfully! Welcome back, ') + name + '. Taking you to the home page…');
         window.setTimeout(redirectHome, 1400);
         return true;
       } else showNotice('Account created, but the app could not confirm the profile yet. Apply the Supabase Auth migration and retry.', true);
@@ -48,7 +48,7 @@
       const email = $('#email').value.trim();
       const session = await window.KBAuth.signInWithPassword(email, $('#password').value);
       $('#password').value = '';
-      await showIdentity(session, '', email);
+      await showIdentity(session, '', email, false);
     } catch (error) { showNotice(error.message || 'Sign in failed.', true); }
     finally { setBusy(button, false); }
   });
@@ -62,7 +62,7 @@
       const result = await window.KBAuth.signUpWithPassword(email, $('#newPassword').value, fullName);
       $('#newPassword').value = '';
       if (result.access_token) {
-        await showIdentity(result, fullName, email);
+        await showIdentity(result, fullName, email, true);
       } else {
         saveDisplayProfile(fullName, email, 'pending-verification');
         showNotice('Account created successfully, ' + fullName + '! Please check your email to verify the account. Returning to the home page…');
