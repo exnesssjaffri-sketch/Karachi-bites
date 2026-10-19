@@ -17,13 +17,13 @@ This is an evidence-based implementation status, not a claim that the entire ass
 | F3 | Cart and Rs.150 delivery fee | PASS (automated) | API suite checks server-calculated totals; cart store suite checks total/count updates. |
 | F4 | Cart persistence | PASS (automated) | `test_cart_store.js` verifies localStorage refresh persistence, add/increment, quantity changes and removal. |
 | F5 | Checkout validation | PASS (automated) | API failure suite checks required customer fields, Pakistani phone and supported branch; order notes are validated and passed to the service. |
-| F6 | Persist order and unique order ID | PASS locally / production NOT VERIFIED | SQLite API and separate-process persistence tests pass. Production health is currently failing; do not treat local persistence as proof of production persistence. |
+| F6 | Persist order and unique order ID | PASS locally / production NOT VERIFIED | SQLite API and separate-process persistence tests pass. Production health is inconsistent; do not treat local persistence as proof of production persistence. |
 | F7 | Track by order ID + phone | PASS (automated) | API tests check correct phone succeeds, incorrect phone gets HTTP 403, and public GET-by-ID omits customer PII/private notes. |
 | F8 | Order status progression | PASS (automated) | API suite verifies valid transition and rejects invalid status jumps. |
 | F9 | Staff/admin login and protected routes | PARTIAL | Legacy username/password login and role protection pass automated tests. Supabase Auth PR #5 is still separate/unmerged; real SMS OTP requires provider configuration and has not been verified. |
 | F10 | Dashboard filters/status updates | PASS (automated) | API suite exercises branch filtering and status transitions; auth failure tests confirm protected endpoints. |
 | F11 | 360px mobile usability | PARTIAL | Responsive layout changes exist, but a real 360px device/browser visual pass has not been performed in this audit. |
-| F12 | Deployment and persistent production DB | BLOCKED | Production `/api/health` returned HTTP 503 with a PostgreSQL connection timeout. Preview health returns HTTP 503 because preview has no `DATABASE_URL`. Live order create/read/persistence is not verified. |
+| F12 | Deployment and persistent production DB | BLOCKED | Production `/api/health` has returned HTTP 503 with a PostgreSQL connection timeout and later HTTP 200 with `ready:false`; the health contract is inconsistent. Preview health returns HTTP 503 because preview has no `DATABASE_URL`. Live order create/read/persistence is not verified. |
 
 ## Security and quality requirements
 
@@ -62,7 +62,7 @@ Run evidence: https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs
 ## Live evidence captured
 
 - Production `GET /api/menu`: HTTP 200, 12 menu items returned in the sampled request.
-- Production `GET /api/health`: HTTP 503, detail was `Connection terminated due to connection timeout`.
+- Production `GET /api/health`: sampled HTTP 503 with `Connection terminated due to connection timeout`; a later request returned HTTP 200 but `ready:false`. This exposed a health-check bug now fixed on the PR branch (it must verify the initialized menu schema before returning ready).
 - Supabase project status reported `ACTIVE_HEALTHY`; a read-only SQL health query succeeded at the time of audit. This suggests the database service itself was reachable through the Supabase control-plane connection, but does **not** prove Vercel's configured `DATABASE_URL` can connect.
 - Current PR preview homepage `/`: HTTP 200 and includes the live menu mount/API client.
 - Current PR preview `/app.html`: HTTP 200.
