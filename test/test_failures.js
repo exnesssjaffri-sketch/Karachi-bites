@@ -138,7 +138,17 @@ async function testFailures() {
       }
     });
 
-    await test('Staff login cannot access admin endpoints', async () => {
+    await test('Verified identity endpoint returns the current legacy role', async () => {
+      const response = await fetch(baseUrl + '/api/auth/me', {
+        headers: { Authorization: 'Bearer ' + adminLogin.token },
+      });
+      const body = await readJson(response);
+      if (response.status !== 200 || body.user?.role !== 'admin') {
+        throw new Error('Expected server-verified admin identity, got HTTP ' + response.status);
+      }
+    });
+
+    await test('Staff can manage orders but cannot mutate the menu', async () => {
       const response = await fetch(baseUrl + '/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -146,10 +156,16 @@ async function testFailures() {
       });
       if (response.status !== 200) throw new Error('Staff login failed');
       const staffLogin = await readJson(response);
-      const adminResponse = await fetch(baseUrl + '/api/admin/orders', {
+      const ordersResponse = await fetch(baseUrl + '/api/admin/orders', {
         headers: { Authorization: 'Bearer ' + staffLogin.token },
       });
-      if (adminResponse.status !== 403) throw new Error('Expected HTTP 403, got ' + adminResponse.status);
+      if (ordersResponse.status !== 200) throw new Error('Staff order access should return 200, got ' + ordersResponse.status);
+      const menuResponse = await fetch(baseUrl + '/api/admin/menu', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + staffLogin.token },
+        body: JSON.stringify({ name: 'Forbidden Test Item', price: 100, category: 'Drinks', tags: 'veg' }),
+      });
+      if (menuResponse.status !== 403) throw new Error('Staff menu mutation must return 403, got ' + menuResponse.status);
     });
 
     console.log('\nFailure tests: ' + passed + '/' + total + ' passed');
