@@ -83,7 +83,7 @@ async function authMiddleware(req, res, next) {
     const decoded = verifyToken(token);
     // Resolve the current legacy role from the database so a stale JWT cannot
     // retain admin permissions after the underlying account has been changed.
-    const row = await getOne('SELECT id, username, role, is_active FROM users WHERE id = ?', [decoded.id]);
+    const row = await getOne('SELECT * FROM users WHERE id = ?', [decoded.id]);
     if (!row || row.is_active === false || row.is_active === 0) {
       return res.status(401).json({ error: 'Invalid or expired token' });
     }
