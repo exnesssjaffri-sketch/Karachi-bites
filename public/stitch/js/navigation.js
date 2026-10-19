@@ -162,6 +162,10 @@
       }
     }
 
+    // Live Stitch menu buttons now add the selected API-backed item to the shared cart.
+    // Let their own handler run instead of redirecting to the generic menu.
+    if (event.target.closest("[data-kb-live-cart]")) return;
+
     const control = event.target.closest("a,button");
     if (!control) return;
     const text = (control.innerText || control.textContent || "").replace(/\s+/g, " ").trim().toLowerCase();
