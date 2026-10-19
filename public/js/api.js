@@ -90,10 +90,10 @@ const api = {
    */
   async trackOrder(orderId, phone) {
     try {
-      const response = await fetch(`${API_BASE_URL}/orders/${encodeURIComponent(orderId)}/track`, {
+      const response = await fetch(`${API_BASE_URL}/orders/track`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ phone }),
+        body: JSON.stringify({ orderId, phone }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) return { success: false, error: data.error || ('Server returned ' + response.status), status: response.status };
