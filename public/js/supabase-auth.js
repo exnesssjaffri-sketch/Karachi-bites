@@ -25,8 +25,8 @@
     return result;
   }
 
-  function signUpWithPassword(email, password) {
-    return authRequest('/auth/v1/signup', { email, password });
+  function signUpWithPassword(email, password, fullName) {
+    return authRequest('/auth/v1/signup', { email, password, data: { full_name: fullName } });
   }
 
   function signInWithPassword(email, password) {
