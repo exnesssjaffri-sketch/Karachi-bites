@@ -79,3 +79,12 @@ This log records AI-assisted work that can be tied to the available project hist
 - Added a Lighthouse mobile CI workflow that collects a report and gates performance/accessibility scores at 85, plus an evidence-based requirements audit and a real-recording walkthrough script.
 - Explicit limitations: real Supabase signup/confirmation and SMS OTP were not tested with a new human account; production order mutation was avoided to protect live restaurant operations; Lighthouse results and physical 360px/manual keyboard checks are pending; the actual screen-recorded MP4 must still be recorded and attached.
 - No service-role key, database URL, JWT secret, customer phone, or delivery address was committed to documentation.
+
+
+## 2026-10-20 — Lighthouse findings and measured optimization
+
+- Lighthouse baseline against the previous production homepage found Performance 69/100, Accessibility 89/100, Best Practices 96/100, SEO 75/100.
+- Main causes included a 3.9 MB Material Symbols font, large image payloads, missing `alt` and intrinsic image dimensions, a malformed/missing `robots.txt`, missing description metadata, low-contrast red text, and layout shift while web fonts loaded.
+- Updated the homepage to use lightweight inline SVG icons instead of the oversized icon font; optimized Unsplash image URLs; added descriptive alt text and intrinsic image dimensions; adjusted font-display behavior and red text contrast; added meta description, `robots.txt`, and `sitemap.xml`.
+- GitHub Actions Lighthouse run 7 tested the exact PR code with an isolated SQLite database at 360×800. Results: Performance 96/100, Accessibility 100/100, Best Practices 96/100, SEO 100/100. Artifact: https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/39320576856/artifacts/12218594103.
+- These are local PR-code measurements, not a claim that the unmerged optimization is already deployed. Physical Android interaction, manual keyboard/screen-reader testing, and a final post-deploy Lighthouse run remain to be done.
