@@ -176,6 +176,7 @@
       if (cursor < items.length) {
         window.requestAnimationFrame(appendChunk);
       } else {
+        grid.style.minHeight = grid.scrollHeight + 'px';
         grid.setAttribute('aria-busy', 'false');
       }
     }
@@ -208,8 +209,9 @@
     isLoading = true;
     var grid = document.getElementById('kb-live-menu');
     if (grid) {
+      // Keep the server-rendered featured cards visible while the live API responds.
+      // CSS reserves the full menu's expected height to prevent layout shift.
       grid.setAttribute('aria-busy', 'true');
-      grid.innerHTML = '<div class="md:col-span-12 rounded-xl border border-[#3A342E] bg-[#211E1B] px-6 py-10 text-center text-[#B8B0A6]">Loading available dishes…</div>';
     }
 
     try {
@@ -278,6 +280,7 @@
     document.querySelectorAll('.menu-tab-btn').forEach(function (button) {
       button.addEventListener('click', function () {
         activeCategory = (button.textContent || '').replace(/\s+/g, ' ').trim();
+        grid.style.minHeight = '0px';
         syncCategoryTabs();
         renderMenu();
       });
