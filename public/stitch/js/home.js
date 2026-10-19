@@ -4,6 +4,7 @@
   var menuItems = [];
   var activeCategory = 'All Dishes';
   var isLoading = false;
+  var menuLoaded = false;
   var renderVersion = 0;
 
   var fallbackImages = {
@@ -205,7 +206,7 @@
   }
 
   async function loadMenu() {
-    if (isLoading) return;
+    if (isLoading || menuLoaded) return;
     isLoading = true;
     var grid = document.getElementById('kb-live-menu');
     if (grid) {
@@ -225,6 +226,7 @@
       menuItems = result.data.filter(function (item) {
         return item && item.available !== false && item.available !== 0 && item.available !== 'false';
       });
+      menuLoaded = true;
       window.cartStore.setCart(window.cartStore.getCart());
       updateCartCount();
       syncCategoryTabs();
@@ -280,13 +282,25 @@
     document.querySelectorAll('.menu-tab-btn').forEach(function (button) {
       button.addEventListener('click', function () {
         activeCategory = (button.textContent || '').replace(/\s+/g, ' ').trim();
-        grid.style.minHeight = '0px';
+        if (menuLoaded) {
+          grid.style.minHeight = '0px';
+          renderMenu();
+        }
         syncCategoryTabs();
-        renderMenu();
       });
     });
 
     window.addEventListener('cartUpdated', updateCartCount);
-    loadMenu();
+    if (grid && 'IntersectionObserver' in window) {
+      var menuObserver = new IntersectionObserver(function (entries) {
+        if (entries.some(function (entry) { return entry.isIntersecting; })) {
+          menuObserver.disconnect();
+          loadMenu();
+        }
+      }, { rootMargin: '350px 0px' });
+      menuObserver.observe(grid);
+    } else {
+      loadMenu();
+    }
   });
 })();
