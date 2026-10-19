@@ -65,13 +65,14 @@ Run evidence: https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs
 
 ## Live evidence captured
 
-- Production `GET /api/menu`: HTTP 200, 12 menu items returned in the sampled request.
-- Production `GET /api/health`: sampled HTTP 503 with `Connection terminated due to connection timeout`; a later request returned HTTP 200 but `ready:false`. This exposed a health-check bug now fixed on the PR branch (it must verify the initialized menu schema before returning ready).
-- Supabase project status reported `ACTIVE_HEALTHY`; a read-only SQL health query succeeded at the time of audit. This suggests the database service itself was reachable through the Supabase control-plane connection, but does **not** prove Vercel's configured `DATABASE_URL` can connect.
-- Current PR preview homepage `/`: HTTP 200 and includes the live menu mount/API client.
-- Current PR preview `/app.html`: HTTP 200.
-- Current PR preview tracking script: HTTP 200 and uses the phone-verified tracking method.
-- Current PR preview `/api/health`: HTTP 503 because no Preview `DATABASE_URL` is configured. Production credentials were not copied to Preview.
+- Production `GET /api/menu`: HTTP 200, 12 menu items returned.
+- Production `GET /api/health`: HTTP 200 with PostgreSQL `ready: true` after PR #6 and PR #7 deployments.
+- Production `/login.html`, `/admin`, `/js/login.js`, and `/js/account-header.js`: HTTP 200.
+- Supabase SQL control-plane check succeeded; the production schema has 12 menu items, 2 orders and 2 legacy users.
+- Migration `supabase_auth_profiles` applied and verified: profile table exists, RLS is enabled, signup trigger exists, and direct execution by API roles is revoked.
+- GitHub Actions run **107** passed all eight suites on the final pre-merge PR #7 commit.
+- Production order creation/status mutation was intentionally not performed because it would create/change live operational records. Full order → admin status → tracking is covered in automated isolated-database tests, but a safe production-specific order flow is still pending.
+- Mobile visual inspection, Lighthouse scores and manual keyboard/screen-reader checks remain pending; a workflow has been added to collect Lighthouse scores and enforce 85-point performance/accessibility thresholds.
 
 ## Delivery items still outstanding
 
