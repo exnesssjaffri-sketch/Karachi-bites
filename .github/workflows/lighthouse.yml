@@ -99,3 +99,72 @@ jobs:
           path: lighthouse-report.json
           if-no-files-found: warn
           retention-days: 30
+
+  lighthouse-production:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Wait for the matching homepage deployment
+        run: |
+          for attempt in $(seq 1 60); do
+            html="$(curl --fail --silent https://karachi-bites.vercel.app/ || true)"
+            if printf '%s' "$html" | grep -q 'Order Authentic Karachi Food Online'; then
+              echo "Optimized homepage is live."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Production homepage did not update within 10 minutes."
+          exit 1
+
+      - name: Run Lighthouse against the live production site at 360px
+        run: >-
+          npx --yes lighthouse@12.8.2 https://karachi-bites.vercel.app/
+          --only-categories=performance,accessibility,best-practices,seo
+          --screenEmulation.mobile
+          --screenEmulation.width=360
+          --screenEmulation.height=800
+          --screenEmulation.deviceScaleFactor=1
+          --chrome-flags="--headless --no-sandbox"
+          --output=json
+          --output-path=./lighthouse-production-report.json
+          --quiet
+
+      - name: Enforce live production scores
+        if: always()
+        run: |
+          if [ ! -f lighthouse-production-report.json ]; then
+            echo "Production Lighthouse report was not created."
+            exit 1
+          fi
+          node - <<'NODE'
+          const report = require('./lighthouse-production-report.json');
+          let failed = false;
+          for (const name of ['performance', 'accessibility', 'best-practices', 'seo']) {
+            const score = report.categories?.[name]?.score;
+            if (typeof score !== 'number') {
+              console.log(name + ': no score available');
+              failed = true;
+              continue;
+            }
+            const points = Math.round(score * 100);
+            console.log(name + ': ' + points + '/100');
+            if ((name === 'performance' || name === 'accessibility') && points < 85) failed = true;
+          }
+          if (failed) process.exit(1);
+          NODE
+
+      - name: Upload live production Lighthouse report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: karachi-bites-lighthouse-production-mobile
+          path: lighthouse-production-report.json
+          if-no-files-found: warn
+          retention-days: 30
