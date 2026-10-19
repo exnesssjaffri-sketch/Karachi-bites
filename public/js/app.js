@@ -1,6 +1,7 @@
 /**
- * Main Router
- * Handles client-side routing based on URL hash
+ * Main router for the API-backed ordering flow.
+ * The Stitch-designed homepage is served from /; this SPA handles menu,
+ * cart, checkout, order confirmation, and tracking.
  */
 class Router {
   constructor() {
@@ -16,10 +17,7 @@ class Router {
   }
 
   init() {
-    // Listen for hash changes
     window.addEventListener("hashchange", () => this.handleRoute());
-
-    // Handle initial load
     this.handleRoute();
   }
 
@@ -31,7 +29,6 @@ class Router {
     if (route) {
       route();
     } else {
-      // Default to home page
       this.loadPage("home");
     }
   }
@@ -40,19 +37,18 @@ class Router {
     const container = document.getElementById("app");
     if (!container) return;
 
-    // Clear container
-    container.innerHTML = "";
-
-    // Render navbar
-    if (window.renderNavbar) {
-      window.renderNavbar("app");
+    if (page === "home") {
+      window.location.replace("/");
+      return;
     }
 
-    // Render page content
+    container.setAttribute("aria-busy", "true");
+    container.innerHTML = "";
+    document.body.dataset.page = page;
+
+    if (window.renderNavbar) window.renderNavbar("site-nav");
+
     switch (page) {
-      case "home":
-        homePage.init();
-        break;
       case "menu":
         menuPage.init();
         break;
@@ -69,17 +65,16 @@ class Router {
         orderTrackingPage.init();
         break;
       default:
-        homePage.init();
+        window.location.replace("/");
+        return;
     }
 
-    // Render footer
-    if (window.renderFooter) {
-      window.renderFooter("app");
-    }
+    if (window.renderFooter) window.renderFooter("site-footer");
+    container.setAttribute("aria-busy", "false");
+    window.scrollTo({ top: 0, behavior: "auto" });
   }
 }
 
-// Initialize router when DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
   new Router();
 });

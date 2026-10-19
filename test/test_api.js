@@ -50,6 +50,7 @@ function makeOrderPayload(branch, quantity = 1) {
       name: 'Test Customer',
       phone: '03001234567',
       address: 'Test address, Karachi',
+      notes: 'Please call on arrival',
     },
     branch,
     items: [{ id: 1, qty: quantity }],
@@ -67,6 +68,13 @@ async function runTests() {
     });
     const baseUrl = 'http://127.0.0.1:' + server.address().port;
     await waitForServer(baseUrl);
+
+    console.log('Testing health endpoint readiness...');
+    const healthResponse = await fetch(baseUrl + '/api/health');
+    assert(healthResponse.status === 200, 'Health endpoint should return 200 when schema is ready');
+    const health = await readJson(healthResponse);
+    assert(health.status === 'ok' && health.ready === true, 'Health endpoint must not report success until the menu schema is queryable');
+    console.log('  PASS');
 
     console.log('Testing customer homepage, preserved app and admin page routes...');
     let pageResponse = await fetch(baseUrl + '/');
@@ -123,6 +131,31 @@ async function runTests() {
     assert(fetched.orderId === created.orderId, 'Public order ID mismatch');
     assert(fetched.branch === 'Clifton', 'Order branch should persist');
     assert(fetched.items?.[0]?.quantity === 2, 'Order quantity should persist');
+    assert(!fetched.customer && !Object.hasOwn(fetched, 'notes'), 'Public order lookup must not expose customer PII or private notes');
+
+    response = await fetch(baseUrl + '/api/admin/kitchen/' + encodeURIComponent(created.orderId), {
+      headers: { Authorization: 'Bearer ' + adminLogin.token },
+    });
+    assert(response.status === 200, 'Admin kitchen ticket should be available to admin');
+    const kitchenTicket = await readJson(response);
+    assert(kitchenTicket.notes === 'Please call on arrival', 'Customer order notes should persist and be visible on the admin kitchen ticket');
+
+    response = await fetch(baseUrl + '/api/orders/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId: created.orderId, phone: '03001234567' }),
+    });
+    assert(response.status === 200, 'Correct phone should authorize order tracking');
+    const tracked = await readJson(response);
+    assert(tracked.orderId === created.orderId, 'Verified tracking should return the order');
+    assert(!tracked.customer && !Object.hasOwn(tracked, 'notes'), 'Tracking response must not reveal private address or notes');
+
+    response = await fetch(baseUrl + '/api/orders/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId: created.orderId, phone: '03009999999' }),
+    });
+    assert(response.status === 403, 'Incorrect phone must not authorize order tracking');
     console.log('  PASS');
 
     for (const branch of ['Gulshan-e-Iqbal', 'North Nazimabad']) {

@@ -109,6 +109,13 @@ async function createOrder(customer, branch, items, notes, idempotencyKey) {
         orderId: publicId,
         total,
         status: 'Received',
+        items: orderItems.map((item) => ({
+          id: item.menu_item_id,
+          name: item.name_at_order,
+          quantity: item.quantity,
+          price: item.price_at_order,
+          lineTotal: item.price_at_order * item.quantity,
+        })),
       };
     });
   } finally {
@@ -195,12 +202,6 @@ function getOrderById(orderId) {
           lineTotal: i.price_at_order * i.quantity,
         })),
         total: order.total,
-        customer: {
-          name: order.customer_name,
-          phone: order.customer_phone,
-          address: order.customer_address,
-        },
-        notes: order.customer_notes || '',
         branch: order.branch,
         createdAt: order.created_at,
       }));

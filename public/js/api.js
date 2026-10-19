@@ -85,6 +85,25 @@ const api = {
   },
 
   /**
+   * Verify an order ID and customer phone before showing tracking details.
+   * POST avoids putting the customer's phone number into a URL.
+   */
+  async trackOrder(orderId, phone) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/orders/${encodeURIComponent(orderId)}/track`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) return { success: false, error: data.error || ('Server returned ' + response.status), status: response.status };
+      return { success: true, data };
+    } catch (error) {
+      console.error('Failed to track order:', error);
+      return { success: false, error: error.message };
+    }
+  },
+  /**
    * Admin login for backend access
    * @param {string} username - Username
    * @param {string} password - Password

@@ -1,17 +1,3 @@
-const showFieldError = (id, message) => {
-  const el = document.getElementById(id);
-  if (el) {
-    el.classList.add('border-rose-500');
-    let err = el.parentElement.querySelector('.field-error');
-    if (!err) {
-      err = document.createElement('p');
-      err.className = 'field-error text-rose-400 text-xs mt-1';
-      el.parentElement.appendChild(err);
-    }
-    err.textContent = message;
-  }
-};
-
 const checkoutPage = {
   init() {
     this.render();
@@ -65,8 +51,9 @@ const checkoutPage = {
                   <input id="customerEmail" type="email" placeholder="you@example.com" class="w-full px-4 py-2.5 rounded-lg bg-[#211E1B] border border-[#3A342E] text-white placeholder-[#B8B0A6]/60 focus:outline-none focus:border-[#B42318] text-sm"/>
                 </div>
                 <div>
-                  <label class="block text-[#B8B0A6] text-sm mb-2">Order Notes</label>
-                  <textarea id="customerNotes" rows="2" placeholder="Special instructions (max 500 chars)" class="w-full px-4 py-2.5 rounded-lg bg-[#211E1B] border border-[#3A342E] text-white placeholder-[#B8B0A6]/60 focus:outline-none focus:border-[#B42318] text-sm" maxlength="500"></textarea>
+                  <label for="customerNotes" class="block text-[#B8B0A6] text-sm mb-2">Order notes (Optional)</label>
+                  <textarea id="customerNotes" rows="3" maxlength="500" placeholder="Delivery instructions or special requests (max 500 characters)" class="w-full px-4 py-2.5 rounded-lg bg-[#211E1B] border border-[#3A342E] text-white placeholder-[#B8B0A6]/60 focus:outline-none focus:border-[#B42318] text-sm"></textarea>
+                  <p class="mt-1 text-xs text-[#B8B0A6]">Please avoid sharing sensitive personal information.</p>
                 </div>
               </div>
             </div>
@@ -103,7 +90,6 @@ const checkoutPage = {
                 <span class="font-price text-[#B42318]">${cartStore.formatPrice(cart.total + 150)}</span>
               </div>
 
-              <div id="checkoutError" class="hidden mt-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/40 text-rose-300 text-sm"></div>
               <button id="placeOrderBtn" class="w-full bg-[#B42318] hover:bg-[#9E1C13] text-white py-3 rounded-lg font-title shadow-lg transition-all">Place Order</button>
             </div>
           </div>
@@ -123,62 +109,39 @@ const checkoutPage = {
     const branch = document.getElementById('customerBranch').value;
     const email = document.getElementById('customerEmail').value.trim();
     const notes = document.getElementById('customerNotes').value.trim();
-
-    const errorEl = document.getElementById('checkoutError');
-    if (errorEl) { errorEl.classList.add('hidden'); errorEl.textContent = ''; }
-
+    
     if (!name) {
-      showFieldError('customerName', 'Please enter your name');
+      alert('Please enter your name');
       return;
     }
     if (!phone) {
-      showFieldError('customerPhone', 'Please enter your phone number');
-      return;
-    }
-    if (!/^03\d{9}$/.test(phone.replace(/[\s-]/g, ''))) {
-      showFieldError('customerPhone', 'Phone must be a valid Pakistani mobile number (03XXXXXXXXX)');
+      alert('Please enter your phone number');
       return;
     }
     if (address.length < 5) {
-      showFieldError('customerAddress', 'Please enter your delivery address');
+      alert('Please enter your delivery address');
       return;
     }
-
+    
     const cart = cartStore.getCart();
     if (cart.items.length === 0) {
       alert('Your cart is empty');
       return;
     }
-
+    
     const orderData = {
       customer: { name, phone, address, email: email || undefined, notes: notes || undefined },
       branch,
       items: cart.items.map(item => ({ id: item.id, qty: item.quantity })),
     };
 
-    const placeOrderBtn = document.getElementById('placeOrderBtn');
-    if (placeOrderBtn) {
-      placeOrderBtn.disabled = true;
-      placeOrderBtn.textContent = 'Placing Order…';
-    }
-
     const result = await api.createOrder(orderData);
     if (result.success) {
       cartStore.clearCart();
       window.location.hash = '#order-placed?order=' + result.data.orderId;
     } else {
-      if (errorEl) {
-        errorEl.textContent = result.error || 'Failed to place order';
-        errorEl.classList.remove('hidden');
-      } else {
-        alert('Failed to place order: ' + result.error);
-      }
-      if (placeOrderBtn) {
-        placeOrderBtn.disabled = false;
-        placeOrderBtn.textContent = 'Place Order';
-      }
+      alert('Failed to place order: ' + result.error);
     }
   },
 };
 
-window.addEventListener('DOMContentLoaded', () => checkoutPage.init());

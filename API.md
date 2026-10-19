@@ -121,15 +121,12 @@ GET /api/orders/KB-20261002-ABC123
     }
   ],
   "total": 1850,
-  "customer": {
-    "name": "Ali",
-    "phone": "03001234567",
-    "address": "Karachi address"
-  },
   "branch": "Clifton",
   "createdAt": "2026-10-02T10:30:00.000Z"
 }
 ```
+
+**Privacy:** This public lookup returns order progress and item totals only; it must not return the customer's name, phone, delivery address, or private order notes. Use `POST /api/orders/track` with both the order ID and checkout phone number to verify ownership before showing tracking details.
 
 **Error Responses**
 - 404 Not Found: `{ "error": "Order not found" }`
