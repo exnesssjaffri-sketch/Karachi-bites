@@ -109,11 +109,49 @@ const orderTrackingPage = {
         '<div class="rounded-2xl border border-[#3A342E] bg-[#211E1B] p-6"><h2 class="mb-4 font-semibold text-[#F7F3EC]">Order Summary</h2>' +
           (items.length ? items.map((item) => '<div class="flex justify-between gap-4 border-b border-[#3A342E] py-3 text-sm"><span class="text-[#B8B0A6]">' + this.escapeHtml(item.name || "Item") + ' × ' + this.escapeHtml(item.quantity || 1) + '</span><span class="text-[#F7F3EC]">' + this.escapeHtml(window.cartStore.formatPrice(Number(item.price || 0) * Number(item.quantity || 1))) + '</span></div>').join("") : '<p class="py-3 text-sm text-[#B8B0A6]">Order items are not available.</p>') +
           '<div class="mt-4 flex justify-between gap-4"><span class="text-sm text-[#B8B0A6]">Total</span><span class="font-semibold text-[#F7F3EC]">' + this.escapeHtml(window.cartStore.formatPrice(Number(order.total || 0))) + '</span></div>' +
-        '</div><button id="trackAnotherOrder" type="button" class="mt-5 min-h-11 rounded-lg border border-[#3A342E] px-4 py-2 text-sm font-semibold text-[#F7F3EC] hover:border-[#B42318]">Track another order</button>' +
+        '</div><div class="mt-5 rounded-2xl border border-[#3A342E] bg-[#211E1B] p-6"><button id="showReorderForm" type="button" class="min-h-11 rounded-lg bg-[#B42318] px-4 py-2 text-sm font-semibold text-white">Order Again</button>' +
+          '<form id="reorderForm" class="hidden mt-4 space-y-4" novalidate><p class="text-sm text-[#B8B0A6]">We will repeat available items from this order. The original checkout phone must match.</p>' +
+            '<div><label for="reorderName" class="mb-2 block text-sm font-medium text-[#F7F3EC]">Full name</label><input id="reorderName" required maxlength="100" autocomplete="name" class="min-h-11 w-full rounded-lg border border-[#3A342E] bg-[#181614] px-3 py-2 text-[#F7F3EC]" /></div>' +
+            '<div><label for="reorderPhone" class="mb-2 block text-sm font-medium text-[#F7F3EC]">Verified checkout phone</label><input id="reorderPhone" readonly value="' + this.escapeHtml(this.verifiedPhone || "") + '" class="min-h-11 w-full rounded-lg border border-[#3A342E] bg-[#181614] px-3 py-2 text-[#F7F3EC]" /></div>' +
+            '<div><label for="reorderAddress" class="mb-2 block text-sm font-medium text-[#F7F3EC]">Delivery address</label><textarea id="reorderAddress" required minlength="5" maxlength="500" autocomplete="street-address" rows="3" class="w-full rounded-lg border border-[#3A342E] bg-[#181614] px-3 py-2 text-[#F7F3EC]"></textarea></div>' +
+            '<div><label for="reorderNotes" class="mb-2 block text-sm font-medium text-[#F7F3EC]">Order notes (optional)</label><textarea id="reorderNotes" maxlength="500" rows="2" class="w-full rounded-lg border border-[#3A342E] bg-[#181614] px-3 py-2 text-[#F7F3EC]"></textarea></div>' +
+            '<p id="reorderFeedback" class="hidden text-sm" role="alert" aria-live="polite"></p><button id="submitReorder" type="submit" class="min-h-11 rounded-lg bg-[#B42318] px-4 py-2 text-sm font-semibold text-white">Place Same Order Again</button></form></div>' +
+        '<button id="trackAnotherOrder" type="button" class="mt-5 min-h-11 rounded-lg border border-[#3A342E] px-4 py-2 text-sm font-semibold text-[#F7F3EC] hover:border-[#B42318]">Track another order</button>' +
       '</div></section>';
 
+    container.querySelector("#showReorderForm")?.addEventListener("click", () => {
+      container.querySelector("#reorderForm")?.classList.toggle("hidden");
+    });
+    container.querySelector("#reorderForm")?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const feedback = container.querySelector("#reorderFeedback");
+      const submit = container.querySelector("#submitReorder");
+      const name = container.querySelector("#reorderName").value.trim();
+      const address = container.querySelector("#reorderAddress").value.trim();
+      const notes = container.querySelector("#reorderNotes").value.trim();
+      if (name.length < 2 || address.length < 5 || !this.verifiedPhone) {
+        feedback.textContent = "Enter your name and a valid delivery address.";
+        feedback.classList.remove("hidden");
+        return;
+      }
+      submit.disabled = true;
+      submit.textContent = "Placing order…";
+      feedback.classList.add("hidden");
+      try {
+        const result = await window.api.reorderOrder(this.orderId, { name, phone: this.verifiedPhone, address, notes });
+        if (!result.success || !result.data || !result.data.orderId) throw new Error(result.error || "Could not place the repeat order.");
+        window.location.hash = "#order-placed?order=" + encodeURIComponent(result.data.orderId);
+      } catch (error) {
+        feedback.textContent = error.message || "Could not place the repeat order. Please try again.";
+        feedback.classList.remove("hidden");
+      } finally {
+        submit.disabled = false;
+        submit.textContent = "Place Same Order Again";
+      }
+    });
     container.querySelector("#trackAnotherOrder")?.addEventListener("click", () => {
       this.orderData = null;
+      this.verifiedPhone = null;
       this.error = null;
       this.orderId = "";
       this.render();
