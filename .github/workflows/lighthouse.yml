@@ -1,0 +1,74 @@
+name: Lighthouse and Accessibility Audit
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "public/**"
+      - "src/**"
+      - ".github/workflows/lighthouse.yml"
+  push:
+    branches: [main]
+    paths:
+      - "public/**"
+      - "src/**"
+      - ".github/workflows/lighthouse.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Run Lighthouse on the live customer homepage (mobile preset)
+        run: >-
+          npx --yes lighthouse@12.8.2 https://karachi-bites.vercel.app/
+          --only-categories=performance,accessibility,best-practices,seo
+          --chrome-flags="--headless --no-sandbox"
+          --output=json
+          --output-path=./lighthouse-report.json
+          --quiet
+
+      - name: Print scores and enforce the brief's 85-point targets
+        if: always()
+        run: |
+          if [ ! -f lighthouse-report.json ]; then
+            echo "Lighthouse report was not created."
+            exit 1
+          fi
+          node - <<'NODE'
+          const report = require('./lighthouse-report.json');
+          const names = ['performance', 'accessibility', 'best-practices', 'seo'];
+          let failed = false;
+          for (const name of names) {
+            const score = report.categories?.[name]?.score;
+            if (typeof score !== 'number') {
+              console.log(name + ': no score available');
+              failed = true;
+              continue;
+            }
+            const points = Math.round(score * 100);
+            console.log(name + ': ' + points + '/100');
+            if ((name === 'performance' || name === 'accessibility') && points < 85) failed = true;
+          }
+          if (failed) process.exit(1);
+          NODE
+
+      - name: Upload Lighthouse report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: karachi-bites-lighthouse-mobile
+          path: lighthouse-report.json
+          if-no-files-found: warn
+          retention-days: 30
