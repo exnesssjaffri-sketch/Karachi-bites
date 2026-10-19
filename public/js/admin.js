@@ -209,6 +209,15 @@
     return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleString();
   }
 
+  function makeKitchenTicketLink(order) {
+    const link = document.createElement('a');
+    link.href = '/kitchen-ticket.html?order=' + encodeURIComponent(order.orderId || '');
+    link.className = 'btn btn-muted text-xs inline-flex items-center justify-center mt-2';
+    link.textContent = 'Print ticket';
+    link.setAttribute('aria-label', 'Print kitchen ticket for ' + (order.orderId || 'order'));
+    return link;
+  }
+
   function emptyTable(message) {
     ordersBody.replaceChildren();
     const row = document.createElement('tr');
@@ -228,6 +237,7 @@
       complete.className = 'status';
       complete.textContent = 'Complete';
       cell.appendChild(complete);
+      cell.appendChild(makeKitchenTicketLink(order));
       return cell;
     }
 
@@ -270,6 +280,7 @@
       }
     });
     cell.appendChild(form);
+    cell.appendChild(makeKitchenTicketLink(order));
     return cell;
   }
 

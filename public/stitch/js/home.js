@@ -95,9 +95,14 @@
     });
   }
 
+  function categoryName(button) {
+    if (!button.dataset.kbEnglishText) button.dataset.kbEnglishText = (button.textContent || '').replace(/\s+/g, ' ').trim();
+    return button.dataset.kbEnglishText;
+  }
+
   function syncCategoryTabs() {
     document.querySelectorAll('.menu-tab-btn').forEach(function (button) {
-      var selected = (button.textContent || '').replace(/\\s+/g, ' ').trim() === activeCategory;
+      var selected = categoryName(button) === activeCategory;
       var stateClasses = [
         'bg-[#2A2622]',
         'text-[#B42318]',
@@ -281,7 +286,7 @@
 
     document.querySelectorAll('.menu-tab-btn').forEach(function (button) {
       button.addEventListener('click', function () {
-        activeCategory = (button.textContent || '').replace(/\s+/g, ' ').trim();
+        activeCategory = categoryName(button);
         if (menuLoaded) {
           grid.style.minHeight = '0px';
           renderMenu();

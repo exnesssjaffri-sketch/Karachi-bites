@@ -131,3 +131,10 @@ PR #9's optimized homepage is merged into `main`, but the live Vercel alias is s
 ### Remaining manual evidence
 
 A real Android 360px touch/visual pass, keyboard-only and screen-reader review, live Supabase signup/email-confirmation testing, actual SMS OTP testing with a configured provider, a production-safe order-flow rehearsal, and the final screen-recorded MP4 are not replaced by automated tests. Do not use real customer details in a demo or create a production order without an agreed safe test plan.
+
+
+## Bonus features
+
+- Customer homepage and ordering app include an Urdu/English toggle with saved preference and RTL layout for Urdu.
+- Staff order rows open a print-friendly kitchen ticket protected by the current staff session.
+- After phone-verified tracking, customers can repeat an order; the server verifies the original phone and recalculates totals from currently available items.

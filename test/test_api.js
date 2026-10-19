@@ -158,6 +158,27 @@ async function runTests() {
     assert(response.status === 403, 'Incorrect phone must not authorize order tracking');
     console.log('  PASS');
 
+    console.log('Testing secure order again...');
+    const repeatCustomer = { name: 'Repeat Customer', phone: '03009999999', address: 'New address, Karachi', notes: 'Repeat order test' };
+    response = await fetch(baseUrl + '/api/orders/reorder', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ originalOrderId: created.orderId, customer: repeatCustomer }),
+    });
+    assert(response.status === 403, 'Reorder must reject a mismatched original checkout phone');
+    repeatCustomer.phone = '03001234567';
+    response = await fetch(baseUrl + '/api/orders/reorder', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ originalOrderId: created.orderId, customer: repeatCustomer }),
+    });
+    assert(response.status === 201, 'Reorder with verified original phone should succeed');
+    const repeated = await readJson(response);
+    assert(repeated.orderId && repeated.orderId !== created.orderId, 'Repeat order should get a new unique order ID');
+    const repeatedResponse = await fetch(baseUrl + '/api/orders/' + encodeURIComponent(repeated.orderId));
+    const repeatedDetails = await readJson(repeatedResponse);
+    assert(repeatedResponse.status === 200 && repeatedDetails.branch === 'Clifton', 'Repeat order should preserve original branch');
+    assert(repeatedDetails.items?.[0]?.quantity === 2 && repeatedDetails.total === 1850, 'Repeat order should preserve quantities and recalculate total');
+    console.log('  PASS');
+
     for (const branch of ['Gulshan-e-Iqbal', 'North Nazimabad']) {
       console.log('Testing order creation for branch ' + branch + '...');
       response = await fetch(baseUrl + '/api/orders', {
