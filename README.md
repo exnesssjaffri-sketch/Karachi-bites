@@ -112,3 +112,18 @@ This invokes the repository's current test runner, which runs the database, API,
 ## Current verification limitations
 
 The deployment and URLs are checked independently from functional behavior. HTTP 200 confirms that a page or API route responds, not that all buttons work or an order successfully persists. Before accepting real orders, verify the production database's write access and persistence, browser test the full customer order flow, test all three branches, and run the performance check against the actual production site.
+
+
+## Verification and submission evidence
+
+- [PDF requirement-by-requirement audit](REQUIREMENTS_AUDIT.md) — distinguishes automated PASS from manual/production checks still pending.
+- [Supabase Auth rollout and legacy-login compatibility](docs/SUPABASE_AUTH_SETUP.md).
+- [Three-minute walkthrough recording script](docs/WALKTHROUGH_SCRIPT.md). The script is not the final video; record a real browser session and add its link before submission.
+- [Lighthouse mobile workflow](.github/workflows/lighthouse.yml) measures the exact code at a 360×800 viewport and enforces Performance and Accessibility scores of at least 85.
+- Passing PR-code Lighthouse evidence: [GitHub Actions run 7](https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/39320576856) — Performance 96, Accessibility 100, Best Practices 96, SEO 100. The report is retained as an artifact for 30 days.
+- Latest eight-suite automated backend/frontend test evidence: [GitHub Actions run 107](https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/39319151736).
+- Production evidence: [health check](https://karachi-bites.vercel.app/api/health) and [live menu API](https://karachi-bites.vercel.app/api/menu).
+
+### Remaining manual evidence
+
+A real Android 360px touch/visual pass, keyboard-only and screen-reader review, live Supabase signup/email-confirmation testing, actual SMS OTP testing with a configured provider, a production-safe order-flow rehearsal, and the final screen-recorded MP4 are not replaced by automated tests. Do not use real customer details in a demo or create a production order without an agreed safe test plan.
