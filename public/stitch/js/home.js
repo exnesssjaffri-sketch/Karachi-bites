@@ -69,8 +69,8 @@
     var cartControls = Array.prototype.slice.call(document.querySelectorAll('header a, header button'));
 
     cartControls.forEach(function (control) {
-      var icon = control.querySelector('.material-symbols-outlined');
-      if (!icon || !/shopping_bag/i.test(icon.textContent || '')) return;
+      var icon = control.querySelector('[data-kb-icon="shopping-bag"]');
+      if (!icon) return;
 
       var updated = false;
       Array.prototype.slice.call(control.childNodes).forEach(function (node) {
@@ -95,20 +95,27 @@
 
   function syncCategoryTabs() {
     document.querySelectorAll('.menu-tab-btn').forEach(function (button) {
-      var selected = (button.textContent || '').replace(/\s+/g, ' ').trim() === activeCategory;
-      button.classList.remove('bg-[#2A2622]', 'text-[#B42318]', 'border', 'border-[#3A342E]', 'shadow-sm');
-      if (selected) {
-        button.classList.add('bg-[#2A2622]', 'text-[#B42318]', 'border', 'border-[#3A342E]', 'shadow-sm');
-        button.classList.remove('text-[#B8B0A6']);
-        if (!button.querySelector('span.rounded-full')) {
-          var dot = document.createElement('span');
-          dot.className = 'w-1.5 h-1.5 rounded-full bg-[#B42318] inline-block mr-1.5';
-          button.prepend(dot);
-        }
-      } else {
-        button.classList.add('text-[#B8B0A6]');
-        var oldDot = button.querySelector('span.rounded-full');
-        if (oldDot) oldDot.remove();
+      var selected = (button.textContent || '').replace(/\\s+/g, ' ').trim() === activeCategory;
+      var stateClasses = [
+        'bg-[#2A2622]',
+        'text-[#B42318]',
+        'border',
+        'border-[#3A342E]',
+        'shadow-sm'
+      ];
+      stateClasses.forEach(function (className) {
+        button.classList.toggle(className, selected);
+      });
+      button.classList.toggle('text-[#B8B0A6]', !selected);
+
+      var oldDot = button.querySelector('span.rounded-full');
+      if (selected && !oldDot) {
+        var dot = document.createElement('span');
+        dot.className = 'w-1.5 h-1.5 rounded-full bg-[#B42318] inline-block mr-1.5';
+        dot.setAttribute('aria-hidden', 'true');
+        button.prepend(dot);
+      } else if (!selected && oldDot) {
+        oldDot.remove();
       }
     });
   }
