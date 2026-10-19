@@ -37,6 +37,17 @@ jobs:
       - name: Install application dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Run all backend and frontend contract tests
+        env:
+          JWT_SECRET: ci-only-test-secret-not-for-production
+          USE_SQLITE: "true"
+          DATABASE_PATH: /tmp/karachi-bites-test.sqlite
+        run: npm test
+
+      - name: Check syntax of every shipped JavaScript file
+        run: |
+          find public src test -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+
       - name: Start the exact PR code with an isolated SQLite database
         run: |
           JWT_SECRET=ci-only-test-secret-not-for-production \
