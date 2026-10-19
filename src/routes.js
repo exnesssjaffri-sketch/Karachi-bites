@@ -108,6 +108,15 @@ router.post('/orders', async (req, res) => {
     return res.status(400).json({ error: 'branch is required and must be one of: Clifton, Gulshan-e-Iqbal, North Nazimabad' });
   }
 
+  if (customer.notes !== undefined && !validate.isValidNotes(customer.notes)) {
+    return res.status(400).json({ error: 'customer.notes must be a string of 500 characters or fewer' });
+  }
+
+  const idempotencyKey = req.get('Idempotency-Key') || null;
+  if (idempotencyKey && !/^[A-Za-z0-9._:-]{8,128}$/.test(idempotencyKey)) {
+    return res.status(400).json({ error: 'Idempotency-Key must be 8-128 characters using letters, numbers, dot, underscore, colon or hyphen' });
+  }
+
   if (!Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'items are required and must be a non-empty array' });
   }
@@ -121,7 +130,7 @@ router.post('/orders', async (req, res) => {
   }
 
   try {
-    const order = await orderService.createOrder(customer, branch, items);
+    const order = await orderService.createOrder(customer, branch, items, customer.notes, idempotencyKey);
     res.status(201).json(order);
   } catch (err) {
     console.error('Order creation error:', err.message);
