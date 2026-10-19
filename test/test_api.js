@@ -69,6 +69,13 @@ async function runTests() {
     const baseUrl = 'http://127.0.0.1:' + server.address().port;
     await waitForServer(baseUrl);
 
+    console.log('Testing health endpoint readiness...');
+    const healthResponse = await fetch(baseUrl + '/api/health');
+    assert(healthResponse.status === 200, 'Health endpoint should return 200 when schema is ready');
+    const health = await readJson(healthResponse);
+    assert(health.status === 'ok' && health.ready === true, 'Health endpoint must not report success until the menu schema is queryable');
+    console.log('  PASS');
+
     console.log('Testing customer homepage, preserved app and admin page routes...');
     let pageResponse = await fetch(baseUrl + '/');
     assert(pageResponse.status === 200, 'Homepage should return 200');
