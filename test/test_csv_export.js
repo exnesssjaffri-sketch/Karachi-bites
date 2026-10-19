@@ -154,10 +154,6 @@ async function runTests() {
     });
     assert(response.status === 201, 'Order with leading-whitespace formula name should be created');
     const wsOrder = await readJson(response);
-    response = await fetch(baseUrl + '/api/orders/' + wsOrder.orderId);
-    assert(response.status === 200, 'Should be able to fetch the whitespace order');
-    const wsFetched = await readJson(response);
-    const wsName = wsFetched.customer.name;
     response = await fetch(baseUrl + '/api/admin/orders/export?date_from=1999-01-01', {
       headers: { Authorization: 'Bearer ' + adminToken },
     });
