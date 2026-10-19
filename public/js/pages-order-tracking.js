@@ -7,27 +7,26 @@ const orderTrackingPage = {
   async init() {
     const params = new URLSearchParams(window.location.hash.split('?')[1]);
     this.orderId = params.get('order') || null;
-    if (this.orderId) {
-      await this.fetchOrder();
-    }
     this.render();
   },
 
-  async fetchOrder() {
+  async lookupOrder(orderId, phone) {
     this.loading = true;
     this.error = null;
+    this.orderData = null;
+    this.orderId = orderId.trim();
     this.render();
 
     try {
-      const result = await api.getOrder(this.orderId);
+      const result = await api.trackOrder(this.orderId, phone.trim());
       if (result.success) {
         this.orderData = result.data;
         this.orderId = result.data.orderId || this.orderId;
       } else {
-        this.error = result.error || 'Order not found';
+        this.error = result.error || 'Unable to verify this order';
       }
     } catch (err) {
-      console.error('Failed to fetch order:', err);
+      console.error('Failed to track order:', err);
       this.error = 'Failed to load order details';
     }
 
@@ -58,10 +57,12 @@ const orderTrackingPage = {
             <span class="material-symbols-outlined text-6xl text-[#B42318] mb-4">search_off</span>
             <h2 class="font-headline text-2xl text-[#F7F3EC] mb-2">Order Not Found</h2>
             <p class="text-[#B8B0A6] mb-6">${this.error || 'Enter the order ID from your confirmation to check its latest status.'}</p>
-            <form id="orderLookupForm" class="max-w-xl mx-auto mb-5 flex flex-col sm:flex-row gap-3 text-left">
-              <label for="orderLookupId" class="sr-only">Order ID</label>
-              <input id="orderLookupId" name="orderId" type="text" required maxlength="80" autocomplete="off" placeholder="e.g. KB-20261010-ABC123" class="flex-1 px-4 py-3 rounded-lg bg-[#211E1B] border border-[#3A342E] text-white placeholder-[#B8B0A6]/60 focus:outline-none focus:border-[#B42318]">
-              <button type="submit" class="bg-[#B42318] hover:bg-[#9E1C13] text-white px-6 py-3 rounded-lg font-title">Track Order</button>
+            <form id="orderLookupForm" class="max-w-xl mx-auto mb-5 flex flex-col gap-3 text-left">
+              <label for="orderLookupId" class="text-[#B8B0A6] text-sm">Order ID</label>
+              <input id="orderLookupId" name="orderId" type="text" required maxlength="80" autocomplete="off" placeholder="e.g. KB-20261010-ABC123" class="w-full px-4 py-3 rounded-lg bg-[#211E1B] border border-[#3A342E] text-white placeholder-[#B8B0A6]/60 focus:outline-none focus:border-[#B42318]">
+              <label for="orderLookupPhone" class="text-[#B8B0A6] text-sm">Phone number used at checkout</label>
+              <input id="orderLookupPhone" name="phone" type="tel" inputmode="tel" required maxlength="20" autocomplete="tel" placeholder="03XXXXXXXXX" class="w-full px-4 py-3 rounded-lg bg-[#211E1B] border border-[#3A342E] text-white placeholder-[#B8B0A6]/60 focus:outline-none focus:border-[#B42318]">
+              <button type="submit" class="bg-[#B42318] hover:bg-[#9E1C13] text-white px-6 py-3 rounded-lg font-title">Verify &amp; Track Order</button>
             </form>
             <a href="#home" class="text-[#B8B0A6] hover:text-white px-6 py-2 rounded-lg font-title inline-flex items-center gap-2" data-link>
               <span class="material-symbols-outlined text-sm">home</span> Go Home
@@ -71,19 +72,22 @@ const orderTrackingPage = {
       `;
       const lookupForm = container.querySelector('#orderLookupForm');
       if (lookupForm) {
+        const idInput = container.querySelector('#orderLookupId');
+        const phoneInput = container.querySelector('#orderLookupPhone');
+        if (idInput && this.orderId) idInput.value = this.orderId;
         lookupForm.addEventListener('submit', (event) => {
           event.preventDefault();
-          const input = container.querySelector('#orderLookupId');
-          const orderId = input ? input.value.trim() : '';
-          if (!orderId) return;
-          window.location.hash = '#tracking?order=' + encodeURIComponent(orderId);
+          const orderId = idInput ? idInput.value.trim() : '';
+          const phone = phoneInput ? phoneInput.value.trim() : '';
+          if (!orderId || !phone) return;
+          this.lookupOrder(orderId, phone);
         });
       }
       return;
     }
 
     const order = this.orderData;
-    const status = (order.status || 'pending').toLowerCase();
+    const status = (order.status || 'pending').toLowerCase().replace(/\\s+/g, '-');
     const statusSteps = ['received', 'preparing', 'out-for-delivery', 'delivered'];
     const currentStepIndex = statusSteps.indexOf(status);
 
