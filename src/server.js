@@ -4,13 +4,16 @@ const helmet = require('helmet');
 const path = require('path');
 require('dotenv').config();
 
-// Fail fast in production if DATABASE_URL is missing
+// Track readiness state for graceful degradation in serverless environments
+let dbConnected = false;
+let dbError = null;
+
+// In production, warn but don't exit — let the health endpoint report status
 if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
-  console.error('FATAL: DATABASE_URL is required in production');
-  process.exit(1);
+  console.warn('WARNING: DATABASE_URL is not set in production. Database operations will fail until configured.');
 }
 
-const { initDatabase, seedDatabase, databaseReady } = require('./db');
+const { initDatabase, seedDatabase, databaseReady, getDb, isSqlite, isPg } = require('./db');
 const apiRoutes = require('./routes');
 
 const app = express();
@@ -50,6 +53,51 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 app.use(limiter);
+
+// Health check endpoint — registered BEFORE the databaseReady middleware so it
+// responds even while the DB is still initializing or has failed to initialize.
+// Executes a lightweight SELECT 1 to verify real database connectivity.
+app.get('/api/health', async (req, res) => {
+  // Fast-fail with a clear message when the connection string is absent in production.
+  if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+    return res.status(503).json({
+      status: 'error',
+      database: 'postgresql',
+      detail: 'DATABASE_URL is not configured. Add it in Vercel Project Settings > Environment Variables (Production).',
+    });
+  }
+
+  if (dbError) {
+    return res.status(503).json({
+      status: 'error',
+      database: isPg ? 'postgresql' : 'sqlite',
+      detail: dbError.message,
+    });
+  }
+
+  try {
+    const dbHandle = getDb();
+    if (isSqlite()) {
+      await new Promise((resolve, reject) => {
+        dbHandle.get('SELECT 1', (err) => (err ? reject(err) : resolve()));
+      });
+    } else {
+      await dbHandle.query('SELECT 1');
+    }
+    res.json({
+      status: 'ok',
+      database: isPg ? 'postgresql' : 'sqlite',
+      ready: dbConnected,
+      time: new Date().toISOString(),
+    });
+  } catch (err) {
+    res.status(503).json({
+      status: 'error',
+      database: isPg ? 'postgresql' : 'sqlite',
+      detail: err.message,
+    });
+  }
+});
 
 // Wait for database schema + initial seed before handling API or page requests.
 app.use(async (req, res, next) => {
@@ -93,13 +141,44 @@ app.use((err, req, res, next) => {
 });
 
 // Initialize database and start server
-initDatabase();
-seedDatabase();
+(async () => {
+  try {
+    // Both functions kick off async work and resolve the shared `databaseReady`
+    // promise when schema + seed are complete. Either may throw synchronously
+    // (e.g. missing DATABASE_URL) — that is caught below.
+    initDatabase();
+    seedDatabase();
+  } catch (err) {
+    dbError = err;
+    console.error('Database initialization failed:', err.message);
+  }
 
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Karachi Bites backend running on http://localhost:${PORT}`);
-  });
-}
+  if (!dbError) {
+    try {
+      await databaseReady;
+      // `databaseReady` resolves even when initialization fails, so probe the
+      // real connection before marking the app as database-ready.
+      const dbHandle = getDb();
+      if (isSqlite()) {
+        await new Promise((resolve, reject) => {
+          dbHandle.get('SELECT 1', (err) => (err ? reject(err) : resolve()));
+        });
+      } else {
+        await dbHandle.query('SELECT 1');
+      }
+      dbConnected = true;
+      console.log('Database initialized and seeded successfully');
+    } catch (err) {
+      dbError = err;
+      console.error('Database initialization failed:', err.message);
+    }
+  }
+
+  if (require.main === module) {
+    app.listen(PORT, () => {
+      console.log(`Karachi Bites backend running on http://localhost:${PORT}`);
+    });
+  }
+})();
 
 module.exports = app;

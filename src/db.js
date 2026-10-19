@@ -28,15 +28,20 @@ function getDb() {
   }
   if (pool) return pool;
   if (!DATABASE_URL) {
-    console.error('FATAL: DATABASE_URL is required in production');
-    process.exit(1);
+    const msg = 'DATABASE_URL is not configured. Set it in Vercel Project Settings > Environment Variables.';
+    console.error(msg);
+    throw new Error(msg);
   }
   pool = new Pool({
     connectionString: DATABASE_URL,
-    ssl: { rejectUnauthorized: true },
-    max: 20,
+    ssl: { rejectUnauthorized: false },
+    max: 10,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 10000,
+  });
+  // Handle pool-level errors to prevent unhandled rejections in serverless
+  pool.on('error', (err) => {
+    console.error('Unexpected PostgreSQL pool error:', err.message);
   });
   return pool;
 }
@@ -292,18 +297,39 @@ async function withTransaction(callback) {
 
 function ensureColumn(database, table, column, definition) {
   return new Promise((resolve, reject) => {
-    database.all(`PRAGMA table_info(${table})`, (err, rows) => {
-      if (err) return reject(err);
-      const existing = new Set((rows || []).map((r) => r.name));
-      if (!existing.has(column)) {
-        database.run(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`, (alterErr) => {
-          if (alterErr) return reject(alterErr);
+    if (!USE_SQLITE) {
+      // PostgreSQL: use information_schema to check column existence
+      database.query(
+        `SELECT column_name FROM information_schema.columns WHERE table_name = $1 AND column_name = $2`,
+        [table, column],
+        (err, result) => {
+          if (err) return reject(err);
+          const rows = result ? result.rows : [];
+          if (rows.length === 0) {
+            database.query(`ALTER TABLE ${table} ADD COLUMN IF NOT EXISTS ${column} ${definition}`, (alterErr) => {
+              if (alterErr) return reject(alterErr);
+              resolve();
+            });
+          } else {
+            resolve();
+          }
+        }
+      );
+    } else {
+      // SQLite: use PRAGMA table_info
+      database.all(`PRAGMA table_info(${table})`, (err, rows) => {
+        if (err) return reject(err);
+        const existing = new Set((rows || []).map((r) => r.name));
+        if (!existing.has(column)) {
+          database.run(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`, (alterErr) => {
+            if (alterErr) return reject(alterErr);
+            resolve();
+          });
+        } else {
           resolve();
-        });
-      } else {
-        resolve();
-      }
-    });
+        }
+      });
+    }
   });
 }
 
@@ -319,6 +345,17 @@ function ensureSQLiteMigrations(database) {
     { table: 'orders', column: 'updated_at', definition: "TEXT NOT NULL DEFAULT (datetime('now'))" },
     { table: 'users', column: 'created_at', definition: "TEXT NOT NULL DEFAULT (datetime('now'))" },
     { table: 'users', column: 'updated_at', definition: "TEXT NOT NULL DEFAULT (datetime('now'))" },
+  ];
+  return migrations.reduce((promise, m) => promise.then(() => ensureColumn(database, m.table, m.column, m.definition)), Promise.resolve());
+}
+
+// PostgreSQL reconciliation: add columns the app expects but that may be missing
+// from the Supabase migration history (e.g. customer_notes, idempotency_key).
+// Uses ADD COLUMN IF NOT EXISTS so it is safe to run on every cold start.
+function ensurePgMigrations(database) {
+  const migrations = [
+    { table: 'orders', column: 'customer_notes', definition: 'TEXT' },
+    { table: 'orders', column: 'idempotency_key', definition: 'TEXT' },
   ];
   return migrations.reduce((promise, m) => promise.then(() => ensureColumn(database, m.table, m.column, m.definition)), Promise.resolve());
 }
@@ -440,6 +477,7 @@ function initDatabase() {
       customer_address TEXT NOT NULL CHECK (char_length(trim(customer_address)) BETWEEN 5 AND 500),
       customer_email TEXT,
       customer_notes TEXT,
+      idempotency_key TEXT,
       branch TEXT NOT NULL CHECK (branch IN ('Clifton', 'Gulshan-e-Iqbal', 'North Nazimabad')),
       status TEXT NOT NULL DEFAULT 'Received' CHECK (status IN ('Received', 'Preparing', 'Out for Delivery', 'Delivered')),
       total INTEGER NOT NULL CHECK (total >= 0),
@@ -463,15 +501,29 @@ function initDatabase() {
     CREATE INDEX IF NOT EXISTS idx_menu_available ON menu_items(available);
   `;
 
-  getDb().query(initSql).then(() => {
-    const branchQueries = ['Clifton', 'Gulshan-e-Iqbal', 'North Nazimabad']
-      .map((b) => `INSERT INTO branches (name) VALUES ('${b}') ON CONFLICT (name) DO NOTHING;`)
-      .join('\n');
-    return getDb().query(branchQueries);
-  }).catch((err) => {
+  try {
+    getDb().query(initSql).then(() => {
+      const branchQueries = ['Clifton', 'Gulshan-e-Iqbal', 'North Nazimabad']
+        .map((b) => `INSERT INTO branches (name) VALUES ('${b}') ON CONFLICT (name) DO NOTHING;`)
+        .join('\n');
+      return getDb().query(branchQueries);
+    }).then(() => {
+      // Reconcile columns that app code expects but Supabase migrations may not include.
+      // Uses ADD COLUMN IF NOT EXISTS pattern to stay idempotent across cold starts.
+      return ensurePgMigrations(getDb());
+    }).then(() => {
+      resolveDatabaseReady();
+    }).catch((err) => {
+      console.error('Failed to initialize PostgreSQL database:', err.message);
+      resolveDatabaseReady();
+    });
+  } catch (err) {
+    // Synchronous failure (e.g. DATABASE_URL missing): resolve the readiness
+    // promise so the health endpoint can respond instead of hanging, then rethrow.
     console.error('Failed to initialize PostgreSQL database:', err.message);
     resolveDatabaseReady();
-  });
+    throw err;
+  }
 }
 
 function seedUsers(database) {
@@ -601,6 +653,8 @@ function seedDatabase() {
   });
 }
 
+const isPg = !USE_SQLITE;
+
 module.exports = {
   getDb,
   initDatabase,
@@ -616,6 +670,7 @@ module.exports = {
   commitTransaction,
   rollbackTransaction,
   isSqlite,
+  isPg,
   nowExpression,
   parameterizeSql,
   ensureReturning,
