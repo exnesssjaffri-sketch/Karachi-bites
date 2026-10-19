@@ -370,3 +370,111 @@ Export all orders as CSV file (admin only).
 **Security Notes**
 - CSV values are properly quoted and escaped to prevent CSV injection
 - Only non-sensitive fields are exported (no password hashes, tokens, or secrets)
+
+---
+
+## Order Notes (F5)
+
+`POST /api/orders` now accepts an optional `customer.notes` field (string, max 500 chars). The server sanitises and stores it in `customer_notes`.
+
+---
+
+## Order Tracking with Phone (F7)
+
+### POST /api/orders/track
+
+Verify an order by both order ID and the customer's phone number.
+
+**Request**
+```
+POST /api/orders/track
+Content-Type: application/json
+```
+```json
+{
+  "orderId": "KB-20261002-ABC123",
+  "phone": "03001234567"
+}
+```
+
+**Response**
+- Status: 200 OK
+- Body: full order object (same shape as `GET /api/orders/:id`)
+
+**Error Responses**
+- 400 Bad Request: `{ "error": "orderId is required" }` or `{ "error": "phone is required and must be a valid Pakistani phone number" }`
+- 404 Not Found: `{ "error": "Order not found" }`
+- 403 Forbidden: `{ "error": "Phone number does not match this order" }`
+
+---
+
+## Kitchen Ticket (C3)
+
+### GET /api/admin/kitchen/:id
+
+Admin-only, print-friendly kitchen ticket for a single order.
+
+**Request**
+```
+GET /api/admin/kitchen/KB-20261002-ABC123
+Authorization: Bearer <token>
+```
+
+**Response**
+- Status: 200 OK
+- Body:
+```json
+{
+  "orderId": "KB-20261002-ABC123",
+  "branch": "Clifton",
+  "createdAt": "2026-10-02 10:30:00",
+  "status": "Received",
+  "items": [
+    {
+      "id": 1,
+      "name": "Chicken Malai Boti",
+      "quantity": 2,
+      "price": 850,
+      "lineTotal": 1700
+    }
+  ],
+  "notes": "Extra spicy",
+  "total": 1850
+}
+```
+
+**Error Responses**
+- 401 Unauthorized, 403 Forbidden, 404 Not Found, 500 Internal Server Error
+
+---
+
+## Order Again (C4)
+
+### POST /api/orders/reorder
+
+Re-create a previous order with the same items and branch.
+
+**Request**
+```
+POST /api/orders/reorder
+Content-Type: application/json
+```
+```json
+{
+  "originalOrderId": "KB-20261002-ABC123",
+  "customer": {
+    "name": "Ali",
+    "phone": "03001234567",
+    "address": "Karachi address"
+  }
+}
+```
+
+**Response**
+- Status: 201 Created
+- Body: `{ "orderId": "KB-...", "total": 1850, "status": "Received" }`
+
+**Error Responses**
+- 400 Bad Request: `{ "error": "originalOrderId is required" }`
+- 404 Not Found: `{ "error": "Original order not found" }`
+- 500 Internal Server Error

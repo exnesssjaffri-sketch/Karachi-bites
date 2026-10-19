@@ -106,10 +106,35 @@ const orderPlacedPage = {
               <span class="material-symbols-outlined">restaurant</span>
               Continue Shopping
             </a>
+            <button id="orderAgainBtn" class="bg-[#211E1B] hover:bg-[#3A342E] border border-[#3A342E] text-white px-6 py-3 rounded-lg font-title inline-flex items-center gap-2">
+              <span class="material-symbols-outlined">refresh</span>
+              Order Again
+            </button>
           </div>
         </div>
       </section>
     `;
+  },
+
+  bindEvents() {
+    const btn = document.getElementById("orderAgainBtn");
+    if (btn) {
+      btn.addEventListener("click", async () => {
+        const originalId = this.orderData?.orderId || this.orderId;
+        if (!originalId) { alert("Order ID not available"); return; }
+        try {
+          const res = await fetch("/api/orders/reorder", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ originalOrderId: originalId, customer: {} }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) { alert(data.error || "Could not reorder"); return; }
+          cartStore.clearCart();
+          window.location.hash = "#order-placed?order=" + data.orderId;
+        } catch (err) { alert("Could not reorder: " + err.message); }
+      });
+    }
   },
 };
 

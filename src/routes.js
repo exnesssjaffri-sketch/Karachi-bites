@@ -182,6 +182,44 @@ router.get('/orders/:id', async (req, res) => {
   }
 });
 
+// POST /api/orders/reorder — C4: "Order again" for returning customers
+router.post('/orders/reorder', async (req, res) => {
+  const body = req.body || {};
+  const originalOrderId = body.originalOrderId;
+  const customer = body.customer || {};
+  if (!originalOrderId || typeof originalOrderId !== 'string') {
+    return res.status(400).json({ error: 'originalOrderId is required' });
+  }
+  try {
+    const result = await orderService.reorderFromOrder(originalOrderId, customer);
+    res.status(201).json(result);
+  } catch (err) {
+    console.error('Reorder error:', err.message);
+    if (err.statusCode === 404) {
+      return res.status(404).json({ error: err.message });
+    }
+    if (err.statusCode === 400) {
+      return res.status(400).json({ error: err.message });
+    }
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// GET /api/admin/kitchen/:id — C3: print-friendly kitchen ticket (admin only)
+router.get('/admin/kitchen/:id', auth.authMiddleware, auth.requireAdmin, async (req, res) => {
+  const orderId = req.params.id;
+  try {
+    const ticket = await orderService.getKitchenTicket(orderId);
+    res.json(ticket);
+  } catch (err) {
+    console.error('Kitchen ticket error:', err.message);
+    if (err.statusCode === 404) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // POST /api/auth/login
 router.post('/auth/login', async (req, res) => {
   const body = req.body || {};

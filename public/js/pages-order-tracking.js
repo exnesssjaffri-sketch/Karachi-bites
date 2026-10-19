@@ -141,12 +141,13 @@ const orderTrackingPage = {
                 </div>
               `).join('')}
             </div>
-            <div class="border-t border-[#3A342E] pt-4">
-              <div class="flex justify-between text-[#B8B0A6] text-sm">
-                <span>Total</span>
-                <span class="text-[#B42318] font-price">${cartStore.formatPrice(order.total || 0)}</span>
+            ${order.notes ? `<div class="mt-4 pt-4 border-t border-[#3A342E]"><div class="text-[#B8B0A6] text-sm mb-1">Order Notes</div><div class="text-[#F7F3EC] text-sm">${order.notes}</div></div>` : ''}
+              <div class="border-t border-[#3A342E] pt-4">
+                <div class="flex justify-between text-[#B8B0A6] text-sm">
+                  <span>Total</span>
+                  <span class="text-[#B42318] font-price">${cartStore.formatPrice(order.total || 0)}</span>
+                </div>
               </div>
-            </div>
           </div>
         </div>
       </section>

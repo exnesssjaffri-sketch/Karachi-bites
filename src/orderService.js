@@ -200,6 +200,7 @@ function getOrderById(orderId) {
           phone: order.customer_phone,
           address: order.customer_address,
         },
+        notes: order.customer_notes || '',
         branch: order.branch,
         createdAt: order.created_at,
       }));

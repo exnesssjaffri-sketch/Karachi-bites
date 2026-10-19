@@ -2,7 +2,7 @@
  * Karachi Bites API Client
  * Handles all communication with the backend server
  */
-const API_BASE_URL = 'https://rgejphvmnlwcoojkpcje.supabase.co/functions/v1/karachi-bites-api/api';
+const API_BASE_URL = '/api';
 
 // API methods
 const api = {
