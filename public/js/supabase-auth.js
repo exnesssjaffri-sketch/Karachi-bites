@@ -41,5 +41,9 @@
     return authRequest('/auth/v1/verify', { phone, token, type: 'sms' });
   }
 
-  window.KBAuth = { signUpWithPassword, signInWithPassword, sendPhoneOtp, verifyPhoneOtp };
+  function refreshSession(refresh_token) {
+    return authRequest('/auth/v1/token?grant_type=refresh_token', { refresh_token });
+  }
+
+  window.KBAuth = { signUpWithPassword, signInWithPassword, sendPhoneOtp, verifyPhoneOtp, refreshSession };
 })();
