@@ -118,6 +118,70 @@
     }
   }
 
+  async function emailAuthLogin(event) {
+    event.preventDefault();
+    clearNotice();
+    setBusy($('#emailAuthBtn'), true, 'Signing in…');
+    try {
+      const email = $('#authEmail').value.trim();
+      const password = $('#authPassword').value;
+      const response = await window.KBAuth.signInWithPassword(email, password);
+      if (!response.access_token) throw new Error('Supabase did not return a session. Confirm your email if prompted.');
+      saveToken(response.access_token);
+      $('#authPassword').value = '';
+      await loadOrders();
+    } catch (error) {
+      clearToken();
+      showLogin();
+      showNotice(error.message || 'Unable to sign in with email.', true);
+    } finally {
+      setBusy($('#emailAuthBtn'), false);
+    }
+  }
+
+  async function sendStaffOtp() {
+    clearNotice();
+    const phone = $('#authPhone').value.trim();
+    if (!/^\\+[1-9][0-9]{7,14}$/.test(phone)) {
+      showNotice('Enter the phone number in international format, for example +923001234567.', true);
+      return;
+    }
+    setBusy($('#sendOtpBtn'), true, 'Sending OTP…');
+    try {
+      await window.KBAuth.sendPhoneOtp(phone, false);
+      $('#otpEntry').classList.remove('hidden');
+      showNotice('If this phone belongs to an existing Auth account and SMS is configured, an OTP has been sent.');
+    } catch (error) {
+      showNotice(error.message || 'Could not send the OTP. The SMS provider may not be configured yet.', true);
+    } finally {
+      setBusy($('#sendOtpBtn'), false);
+    }
+  }
+
+  async function verifyStaffOtp() {
+    clearNotice();
+    const phone = $('#authPhone').value.trim();
+    const otp = $('#authOtp').value.trim();
+    if (!/^\\+[1-9][0-9]{7,14}$/.test(phone) || !/^[0-9]{6}$/.test(otp)) {
+      showNotice('Enter a valid international phone number and the 6-digit OTP.', true);
+      return;
+    }
+    setBusy($('#verifyOtpBtn'), true, 'Verifying…');
+    try {
+      const response = await window.KBAuth.verifyPhoneOtp(phone, otp);
+      if (!response.access_token) throw new Error('Supabase did not return a session.');
+      saveToken(response.access_token);
+      $('#authOtp').value = '';
+      await loadOrders();
+    } catch (error) {
+      clearToken();
+      showLogin();
+      showNotice(error.message || 'OTP verification failed.', true);
+    } finally {
+      setBusy($('#verifyOtpBtn'), false);
+    }
+  }
+
   function makeCell(value) {
     const cell = document.createElement('td');
     cell.textContent = value == null || value === '' ? '—' : String(value);
@@ -272,7 +336,7 @@
         showLogin();
         emptyTable('Sign in with an admin account to view orders.');
         showNotice(error.status === 403
-          ? 'This user is not authorized to manage orders. An admin account is required.'
+          ? 'This user is not authorized to manage orders. A staff or admin account is required.'
           : 'Your session has expired. Please sign in again.', true);
         return;
       }
@@ -284,6 +348,9 @@
   }
 
   loginForm.addEventListener('submit', login);
+  $('#emailAuthForm').addEventListener('submit', emailAuthLogin);
+  $('#sendOtpBtn').addEventListener('click', sendStaffOtp);
+  $('#verifyOtpBtn').addEventListener('click', verifyStaffOtp);
   logoutBtn.addEventListener('click', () => {
     clearToken();
     showLogin();
