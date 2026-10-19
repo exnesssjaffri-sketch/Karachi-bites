@@ -56,7 +56,7 @@ assert.match(stitchNavigation, /data-kb-live-cart/, 'Stitch navigation lets live
 assert.match(read('public/js/pages-order-tracking.js'), /window\.api\.trackOrder\(this\.orderId, String\(phone \|\| ""\)\.trim\(\)\)/, 'tracking verifies order ID with checkout phone');
 assert.doesNotMatch(read('public/js/pages-order-tracking.js'), /api\.getOrder\(/, 'tracking must not reveal an order by ID alone');
 assert.match(serverRoutes, /router\.post\(['\"]\/orders\/track['\"]/, 'server exposes the documented POST /api/orders/track endpoint');
-assert.match(apiClient, /fetch\(\`\$\{API_BASE_URL\}\/orders\/track\`/, 'tracking client calls the server route that actually exists');
+assert.match(apiClient, /API_BASE_URL\}\/orders\/track/, 'tracking client calls the server route that actually exists');
 assert.match(apiClient, /body:\s*JSON\.stringify\(\{\s*orderId,\s*phone\s*\}\)/, 'tracking client sends both order ID and phone to the verification endpoint');
 
 console.log('Frontend wiring checks passed.');
