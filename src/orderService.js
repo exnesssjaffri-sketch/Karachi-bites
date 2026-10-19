@@ -266,6 +266,13 @@ async function reorderFromOrder(originalOrderId, customer) {
     err.statusCode = 404;
     throw err;
   }
+  const { name, phone, address } = customer || {};
+  const normalizePhone = (value) => String(value || '').replace(/[\s-]/g, '');
+  if (!phone || normalizePhone(phone) !== normalizePhone(original.customer_phone)) {
+    const err = new Error('Phone number does not match the original order');
+    err.statusCode = 403;
+    throw err;
+  }
   const items = await getAll(
     'SELECT oi.menu_item_id, oi.quantity FROM order_items oi WHERE oi.order_id = ?',
     [original.id]
@@ -275,11 +282,10 @@ async function reorderFromOrder(originalOrderId, customer) {
     err.statusCode = 400;
     throw err;
   }
-  const { name, phone, address } = customer || {};
   const notes = customer && customer.notes;
-  const idempotencyKey = `reorder:${originalOrderId}:${phone || ''}:${Date.now()}`;
+  const idempotencyKey = 'reorder:' + originalOrderId + ':' + normalizePhone(phone) + ':' + Date.now();
   return createOrder(
-    { name, phone, address },
+    { name, phone: normalizePhone(phone), address },
     original.branch,
     items.map((i) => ({ id: i.menu_item_id, qty: i.quantity })),
     notes,

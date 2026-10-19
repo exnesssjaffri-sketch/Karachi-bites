@@ -15,6 +15,11 @@ const stitchHome = read('public/stitch/js/home.js');
 const stitchNavigation = read('public/stitch/js/navigation.js');
 const apiClient = read('public/js/api.js');
 const serverRoutes = read('src/routes.js');
+const i18n = read('public/js/i18n.js');
+const kitchenHtml = read('public/kitchen-ticket.html');
+const kitchenJs = read('public/js/kitchen-ticket.js');
+const adminUi = read('public/js/admin.js');
+const trackingUi = read('public/js/pages-order-tracking.js');
 
 assert.match(appHtml, /id="site-nav"/, 'SPA has a dedicated navigation mount');
 assert.match(appHtml, /<main id="app"/, 'SPA has a dedicated main content mount');
@@ -59,5 +64,17 @@ assert.doesNotMatch(read('public/js/pages-order-tracking.js'), /api\.getOrder\(/
 assert.match(serverRoutes, /router\.post\(['\"]\/orders\/track['\"]/, 'server exposes the phone-verified POST /api/orders/track route');
 assert.match(apiClient, /API_BASE_URL\}\/orders\/track/, 'tracking client calls the route implemented by the server');
 assert.match(apiClient, /body:\s*JSON\.stringify\(\{\s*orderId,\s*phone\s*\}\)/, 'tracking client sends both order ID and phone in the request body');
+assert.match(rootHtml, /\/js\/i18n\.js/, 'homepage loads bilingual support');
+assert.match(appHtml, /js\/i18n\.js/, 'ordering app loads bilingual support');
+assert.match(i18n, /document\.documentElement\.dir=lang==='ur'\?'rtl':'ltr'/, 'Urdu mode enables RTL');
+assert.match(i18n, /'Order Now':'ابھی آرڈر کریں'/, 'Urdu labels are provided');
+assert.match(stitchHome, /categoryName\(button\)/, 'translated tabs preserve category filter keys');
+assert.match(adminUi, /kitchen-ticket\.html\?order=/, 'staff can open the kitchen ticket');
+assert.match(kitchenHtml, /@media print/, 'kitchen ticket includes print styles');
+assert.match(kitchenJs, /\/api\/admin\/kitchen\//, 'ticket loads the protected kitchen endpoint');
+assert.match(kitchenJs, /Authorization:'Bearer '\+token/, 'ticket request includes staff authorization');
+assert.match(trackingUi, /reorderForm/, 'tracking UI exposes an order-again form');
+assert.match(apiClient, /\/orders\/reorder/, 'API client calls reorder endpoint');
+assert.match(serverRoutes, /router\.post\(['\"]\/orders\/reorder['\"]/, 'server exposes reorder endpoint');
 
 console.log('Frontend wiring checks passed.');

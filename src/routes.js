@@ -196,9 +196,13 @@ router.post('/orders/reorder', async (req, res) => {
   const body = req.body || {};
   const originalOrderId = body.originalOrderId;
   const customer = body.customer || {};
-  if (!originalOrderId || typeof originalOrderId !== 'string') {
-    return res.status(400).json({ error: 'originalOrderId is required' });
+  if (!originalOrderId || typeof originalOrderId !== 'string' || originalOrderId.length > 80) {
+    return res.status(400).json({ error: 'A valid originalOrderId is required' });
   }
+  if (!validate.isValidName(customer.name)) return res.status(400).json({ error: 'customer.name is required and must be a valid name' });
+  if (!validate.isValidPhone(customer.phone)) return res.status(400).json({ error: 'customer.phone is required and must be a valid Pakistani phone number' });
+  if (!validate.isValidAddress(customer.address)) return res.status(400).json({ error: 'customer.address is required and must be a valid address' });
+  if (customer.notes !== undefined && !validate.isValidNotes(customer.notes)) return res.status(400).json({ error: 'customer.notes must be a string of 500 characters or fewer' });
   try {
     const result = await orderService.reorderFromOrder(originalOrderId, customer);
     res.status(201).json(result);

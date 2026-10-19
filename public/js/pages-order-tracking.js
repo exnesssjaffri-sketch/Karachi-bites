@@ -3,6 +3,7 @@ const orderTrackingPage = {
   orderId: null,
   loading: false,
   error: null,
+  verifiedPhone: null,
 
   escapeHtml(value) {
     return String(value == null ? "" : value)
@@ -18,6 +19,7 @@ const orderTrackingPage = {
     this.orderId = params.get("order") || "";
     this.orderData = null;
     this.error = null;
+    this.verifiedPhone = null;
     this.loading = false;
     this.render();
   },
@@ -25,6 +27,7 @@ const orderTrackingPage = {
   async track(orderId, phone) {
     this.orderId = String(orderId || "").trim();
     this.error = null;
+    this.verifiedPhone = null;
     this.loading = true;
     this.render();
 
@@ -38,6 +41,7 @@ const orderTrackingPage = {
         this.error = result.error || "We could not find an order matching those details.";
       } else {
         this.orderData = result.data;
+        this.verifiedPhone = String(phone || '').trim();
       }
     } catch (error) {
       console.error("Failed to track order:", error);

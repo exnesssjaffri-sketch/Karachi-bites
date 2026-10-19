@@ -128,3 +128,11 @@ The earlier baseline run against the old production version was 69 Performance /
 - **Supabase advisory review:** seven service-side tables have RLS enabled and no direct Data API policies. This is deny-by-default and should remain so unless a specific browser access policy is required; the server-side function uses the service-role key. Supabase also reports leaked-password protection disabled; enable and verify it in Auth settings before launch.
 - **Not yet verified:** production order creation + persistence across requests/redeploys, staff status update then customer tracking, actual Supabase signup/confirmation, email/SMS OTP delivery, physical Android review, manual keyboard/screen-reader review, C1 Urdu/English + RTL, C3 print interaction, C4 reorder interaction, and the three-minute walkthrough video.
 - No live orders or customer records were created or modified during this audit.
+
+
+## Bonus requirement implementation follow-up — 2026-10-20 UTC
+
+- **C1:** branch `feat/brief-bonus-features` adds a remembered Urdu/English toggle, LTR/RTL document direction and translations for common customer labels/category tabs. Automated and visual checks are pending; complete translation coverage is not yet certified.
+- **C3:** adds a staff-only print-ticket link and `/kitchen-ticket.html`, which fetches ticket data through the protected API using the current staff session and applies print styles. Automated/browser print verification is pending.
+- **C4:** adds a customer-facing order-again form after successful phone-verified tracking. Server-side validation checks customer fields and the original checkout phone; tests cover mismatch rejection and successful item/branch/total preservation. CI is pending.
+- No production orders or customer records were created or changed. These changes are not live until reviewed, merged, deployed and verified on production.

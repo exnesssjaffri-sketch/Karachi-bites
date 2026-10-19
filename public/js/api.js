@@ -104,6 +104,25 @@ const api = {
     }
   },
   /**
+   * Repeat a prior order after the server verifies the original checkout phone.
+   */
+  async reorderOrder(originalOrderId, customer) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/orders/reorder`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ originalOrderId, customer }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) return { success: false, error: data.error || ('Server returned ' + response.status), status: response.status };
+      return { success: true, data };
+    } catch (error) {
+      console.error('Failed to reorder:', error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  /**
    * Admin login for backend access
    * @param {string} username - Username
    * @param {string} password - Password
