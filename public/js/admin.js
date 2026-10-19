@@ -212,8 +212,6 @@
   function makeKitchenTicketLink(order) {
     const link = document.createElement('a');
     link.href = '/kitchen-ticket.html?order=' + encodeURIComponent(order.orderId || '');
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
     link.className = 'btn btn-muted text-xs inline-flex items-center justify-center mt-2';
     link.textContent = 'Print ticket';
     link.setAttribute('aria-label', 'Print kitchen ticket for ' + (order.orderId || 'order'));

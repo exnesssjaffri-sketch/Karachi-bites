@@ -214,6 +214,9 @@ router.post('/orders/reorder', async (req, res) => {
     if (err.statusCode === 400) {
       return res.status(400).json({ error: err.message });
     }
+    if (err.statusCode === 403) {
+      return res.status(403).json({ error: err.message });
+    }
     res.status(500).json({ error: 'Internal server error' });
   }
 });

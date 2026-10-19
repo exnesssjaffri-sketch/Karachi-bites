@@ -70,6 +70,7 @@ assert.match(i18n, /document\.documentElement\.dir=lang==='ur'\?'rtl':'ltr'/, 'U
 assert.match(i18n, /'Order Now':'ابھی آرڈر کریں'/, 'Urdu labels are provided');
 assert.match(stitchHome, /categoryName\(button\)/, 'translated tabs preserve category filter keys');
 assert.match(adminUi, /kitchen-ticket\.html\?order=/, 'staff can open the kitchen ticket');
+assert.doesNotMatch(adminUi, /target = '_blank'/, 'ticket opens in the same tab so the staff session token remains available');
 assert.match(kitchenHtml, /@media print/, 'kitchen ticket includes print styles');
 assert.match(kitchenJs, /\/api\/admin\/kitchen\//, 'ticket loads the protected kitchen endpoint');
 assert.match(kitchenJs, /Authorization:'Bearer '\+token/, 'ticket request includes staff authorization');
