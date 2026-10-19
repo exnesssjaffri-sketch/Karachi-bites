@@ -9,7 +9,7 @@ A lightweight Karachi restaurant ordering project built with vanilla HTML/CSS/Ja
 - API-backed ordering app: https://karachi-bites.vercel.app/app.html
 - Individual Stitch design exports: https://karachi-bites.vercel.app/stitch/
 
-**Important:** the Stitch exports under `/stitch/` are visual design previews. Their sample cart, checkout, confirmation and tracking screens are not yet wired to the real order API. Use `/app.html` for the current API-backed order flow. Browser end-to-end verification of the Stitch-to-API flow is still required.
+**Important:** the root homepage (`/`) now loads featured dishes from `GET /api/menu` and connects its live add-to-cart controls to the shared cart used by `/app.html`. Use `/app.html` for the complete API-backed menu, checkout, confirmation and phone-verified tracking flow. Other standalone exports under `/stitch/` remain visual previews unless specifically wired. Automated frontend wiring and cart persistence tests are included; real-browser E2E, real mobile-device testing and the performance target still require separate verification.
 
 ## Requirements
 
