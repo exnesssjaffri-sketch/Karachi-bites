@@ -30,9 +30,28 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Run Lighthouse on the live customer homepage (mobile preset)
+      - name: Install application dependencies
+        run: npm ci
+
+      - name: Start the exact PR code with an isolated SQLite database
+        run: |
+          JWT_SECRET=ci-only-test-secret-not-for-production \
+          USE_SQLITE=true \
+          DATABASE_PATH=/tmp/karachi-bites-lighthouse.sqlite \
+          PORT=3000 \
+          npm start > /tmp/karachi-bites-server.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:3000/api/health; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/karachi-bites-server.log
+          exit 1
+
+      - name: Run Lighthouse on the exact PR code (360px mobile viewport)
         run: >-
-          npx --yes lighthouse@12.8.2 https://karachi-bites.vercel.app/
+          npx --yes lighthouse@12.8.2 http://127.0.0.1:3000/
           --only-categories=performance,accessibility,best-practices,seo
           --screenEmulation.mobile
           --screenEmulation.width=360
