@@ -50,6 +50,7 @@ function makeOrderPayload(branch, quantity = 1) {
       name: 'Test Customer',
       phone: '03001234567',
       address: 'Test address, Karachi',
+      notes: 'Please call on arrival',
     },
     branch,
     items: [{ id: 1, qty: quantity }],
@@ -124,6 +125,13 @@ async function runTests() {
     assert(fetched.branch === 'Clifton', 'Order branch should persist');
     assert(fetched.items?.[0]?.quantity === 2, 'Order quantity should persist');
     assert(!fetched.customer && !Object.hasOwn(fetched, 'notes'), 'Public order lookup must not expose customer PII or private notes');
+
+    response = await fetch(baseUrl + '/api/admin/kitchen/' + encodeURIComponent(created.orderId), {
+      headers: { Authorization: 'Bearer ' + adminLogin.token },
+    });
+    assert(response.status === 200, 'Admin kitchen ticket should be available to admin');
+    const kitchenTicket = await readJson(response);
+    assert(kitchenTicket.notes === 'Please call on arrival', 'Customer order notes should persist and be visible on the admin kitchen ticket');
 
     response = await fetch(baseUrl + '/api/orders/track', {
       method: 'POST',
