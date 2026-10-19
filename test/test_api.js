@@ -123,6 +123,24 @@ async function runTests() {
     assert(fetched.orderId === created.orderId, 'Public order ID mismatch');
     assert(fetched.branch === 'Clifton', 'Order branch should persist');
     assert(fetched.items?.[0]?.quantity === 2, 'Order quantity should persist');
+    assert(!fetched.customer && !Object.hasOwn(fetched, 'notes'), 'Public order lookup must not expose customer PII or private notes');
+
+    response = await fetch(baseUrl + '/api/orders/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId: created.orderId, phone: '03001234567' }),
+    });
+    assert(response.status === 200, 'Correct phone should authorize order tracking');
+    const tracked = await readJson(response);
+    assert(tracked.orderId === created.orderId, 'Verified tracking should return the order');
+    assert(!tracked.customer && !Object.hasOwn(tracked, 'notes'), 'Tracking response must not reveal private address or notes');
+
+    response = await fetch(baseUrl + '/api/orders/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId: created.orderId, phone: '03009999999' }),
+    });
+    assert(response.status === 403, 'Incorrect phone must not authorize order tracking');
     console.log('  PASS');
 
     for (const branch of ['Gulshan-e-Iqbal', 'North Nazimabad']) {
