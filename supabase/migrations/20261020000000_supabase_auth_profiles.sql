@@ -36,6 +36,9 @@ create trigger on_auth_user_created_profile
   after insert on auth.users
   for each row execute function public.handle_new_auth_user();
 
+-- The function is only for the Auth trigger; API roles must not invoke it directly.
+revoke all on function public.handle_new_auth_user() from public, anon, authenticated;
+
 -- Safely backfill existing Auth users without elevating anyone.
 insert into public.auth_profiles (auth_user_id, role)
 select id, 'customer' from auth.users
