@@ -4,6 +4,7 @@
   var menuItems = [];
   var activeCategory = 'All Dishes';
   var isLoading = false;
+  var renderVersion = 0;
 
   var fallbackImages = {
     biryani: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=640&q=55&fm=webp',
@@ -120,71 +121,65 @@
     });
   }
 
+  function renderMenuItem(item, index) {
+    var id = String(item.id);
+    var name = String(item.name);
+    var category = String(item.category || 'Karachi Kitchen');
+    var description = String(item.description || '').trim() || 'Prepared fresh to order by our Karachi Bites kitchen.';
+    var image = itemImage(item, index);
+
+    return '<article class="md:col-span-4 bg-[#2A2622] border border-[#3A342E] rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col h-full">' +
+      '<div class="relative rounded-xl overflow-hidden aspect-[16/10] bg-[#211E1B] mb-4">' +
+        '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(name) + '" class="w-full h-full object-cover" loading="lazy" decoding="async" width="640" height="400" />' +
+        '<span class="absolute top-3 left-3 rounded bg-[#211E1B]/90 border border-[#3A342E] px-2 py-1 text-xs font-semibold text-[#F7F3EC]">' + escapeHtml(category) + '</span>' +
+      '</div>' +
+      '<div class="flex flex-1 flex-col">' +
+        '<h3 class="font-headline-sm text-lg font-semibold text-[#F7F3EC] mb-2">' + escapeHtml(name) + '</h3>' +
+        '<p class="font-body-sm text-sm leading-relaxed text-[#B8B0A6]">' + escapeHtml(description) + '</p>' +
+        '<div class="pt-5 mt-auto flex items-center justify-between gap-3">' +
+          '<span class="text-lg font-semibold text-[#B42318]">' + escapeHtml(formatPrice(item.price)) + '</span>' +
+          '<button type="button" data-kb-live-cart="true" data-menu-id="' + escapeHtml(id) + '" class="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#B42318] px-4 py-2 text-sm font-semibold text-white" aria-label="Add ' + escapeHtml(name) + ' to cart">' +
+            '<svg class="kb-add-cart-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 3h2l2.2 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L20 8H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M18 2v6M15 5h6"/></svg><span>Add to Cart</span>' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+    '</article>';
+  }
+
   function renderMenu() {
     var grid = document.getElementById('kb-live-menu');
     if (!grid) return;
 
-    var items = menuItems.filter(matchesActiveCategory);
-    grid.setAttribute('aria-busy', 'false');
+    var version = ++renderVersion;
+    var items = menuItems.filter(matchesActiveCategory).filter(function (item) {
+      return item && item.id != null && Number.isFinite(Number(item.price)) && String(item.name || '').trim();
+    });
+    grid.setAttribute('aria-busy', 'true');
 
     if (!items.length) {
       grid.innerHTML = '<div class="md:col-span-12 rounded-xl border border-[#3A342E] bg-[#211E1B] px-6 py-10 text-center text-[#B8B0A6]">No available dishes match this category yet. Choose another category to keep browsing.</div>';
+      grid.setAttribute('aria-busy', 'false');
       return;
     }
 
-    grid.innerHTML = items.map(function (item, index) {
-      if (item.id == null || !Number.isFinite(Number(item.price)) || !String(item.name || '').trim()) return '';
-      var id = String(item.id);
-      var name = String(item.name);
-      var category = String(item.category || 'Karachi Kitchen');
-      var description = String(item.description || '').trim() || 'Prepared fresh to order by our Karachi Bites kitchen.';
-      var image = itemImage(item, index);
-
-      return '<article class="md:col-span-4 bg-[#2A2622] border border-[#3A342E] rounded-2xl p-4 sm:p-5 shadow-sm hover:border-[#B42318]/60 transition-all flex flex-col h-full">' +
-        '<div class="relative rounded-xl overflow-hidden aspect-[16/10] bg-[#211E1B] mb-4">' +
-          '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(name) + '" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" />' +
-          '<span class="absolute top-3 left-3 rounded bg-[#211E1B]/90 border border-[#3A342E] px-2 py-1 text-xs font-semibold text-[#F7F3EC]">' + escapeHtml(category) + '</span>' +
-        '</div>' +
-        '<div class="flex flex-1 flex-col">' +
-          '<h3 class="font-headline-sm text-lg font-semibold text-[#F7F3EC] mb-2">' + escapeHtml(name) + '</h3>' +
-          '<p class="font-body-sm text-sm leading-relaxed text-[#B8B0A6]">' + escapeHtml(description) + '</p>' +
-          '<div class="pt-5 mt-auto flex items-center justify-between gap-3">' +
-            '<span class="text-lg font-semibold text-[#B42318]">' + escapeHtml(formatPrice(item.price)) + '</span>' +
-            '<button type="button" data-kb-live-cart="true" data-menu-id="' + escapeHtml(id) + '" class="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#B42318] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#C93627] active:scale-95" aria-label="Add ' + escapeHtml(name) + ' to cart">' +
-              '<svg class="kb-add-cart-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 3h2l2.2 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L20 8H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M18 2v6M15 5h6"/></svg><span>Add to Cart</span>' +
-            '</button>' +
-          '</div>' +
-        '</div>' +
-      '</article>';
-    }).join('');
-
-    var liveButtons = grid.querySelectorAll('[data-kb-live-cart]');
-    liveButtons.forEach(function (button) {
-      button.addEventListener('click', function () {
-        var item = menuItems.find(function (candidate) {
-          return String(candidate.id) === button.getAttribute('data-menu-id');
-        });
-        if (!item || !window.cartStore) return;
-
-        window.cartStore.addItem({
-          id: Number(item.id),
-          name: String(item.name),
-          price: Number(item.price),
-          quantity: 1
-        });
-        updateCartCount();
-
-        var label = button.querySelector('span:last-child');
-        var original = label ? label.textContent : 'Add to Cart';
-        if (label) label.textContent = 'Added';
-        button.classList.add('ring-2', 'ring-[#B42318]', 'ring-offset-2', 'ring-offset-[#2A2622]');
-        showCartToast(item);
-        window.setTimeout(function () {
-          if (label) label.textContent = original;
-          button.classList.remove('ring-2', 'ring-[#B42318]', 'ring-offset-2', 'ring-offset-[#2A2622]');
-        }, 1400);
-      });
-    });
+    var cursor = 0;
+    var chunkSize = 4;
+    function appendChunk() {
+      if (version !== renderVersion) return;
+      var chunk = items.slice(cursor, cursor + chunkSize);
+      var markup = chunk.map(function (item, index) {
+        return renderMenuItem(item, cursor + index);
+      }).join('');
+      if (cursor === 0) grid.innerHTML = markup;
+      else grid.insertAdjacentHTML('beforeend', markup);
+      cursor += chunk.length;
+      if (cursor < items.length) {
+        window.requestAnimationFrame(appendChunk);
+      } else {
+        grid.setAttribute('aria-busy', 'false');
+      }
+    }
+    appendChunk();
   }
 
   function showCartToast(item) {
@@ -251,7 +246,32 @@
 
     if (grid) {
       grid.addEventListener('click', function (event) {
-        if (event.target.closest('[data-kb-retry]')) loadMenu();
+        if (event.target.closest('[data-kb-retry]')) {
+          loadMenu();
+          return;
+        }
+        var button = event.target.closest('[data-kb-live-cart]');
+        if (!button || !grid.contains(button)) return;
+        var item = menuItems.find(function (candidate) {
+          return String(candidate.id) === button.getAttribute('data-menu-id');
+        });
+        if (!item || !window.cartStore) return;
+
+        window.cartStore.addItem({
+          id: Number(item.id),
+          name: String(item.name),
+          price: Number(item.price),
+          quantity: 1
+        });
+        updateCartCount();
+
+        var label = button.querySelector('span:last-child');
+        var original = label ? label.textContent : 'Add to Cart';
+        if (label) label.textContent = 'Added';
+        showCartToast(item);
+        window.setTimeout(function () {
+          if (label) label.textContent = original;
+        }, 1400);
       });
     }
 
