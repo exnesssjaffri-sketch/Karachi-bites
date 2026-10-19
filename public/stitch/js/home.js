@@ -151,7 +151,7 @@
           '<div class="pt-5 mt-auto flex items-center justify-between gap-3">' +
             '<span class="text-lg font-semibold text-[#B42318]">' + escapeHtml(formatPrice(item.price)) + '</span>' +
             '<button type="button" data-kb-live-cart="true" data-menu-id="' + escapeHtml(id) + '" class="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#B42318] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#C93627] active:scale-95" aria-label="Add ' + escapeHtml(name) + ' to cart">' +
-              '<span class="material-symbols-outlined text-[18px]" aria-hidden="true">add_shopping_cart</span><span>Add to Cart</span>' +
+              '<svg class="kb-add-cart-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 3h2l2.2 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L20 8H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M18 2v6M15 5h6"/></svg><span>Add to Cart</span>' +
             '</button>' +
           '</div>' +
         '</div>' +
