@@ -85,6 +85,30 @@ const api = {
   },
 
   /**
+   * Track an order only after verifying the customer's phone number.
+   */
+  async trackOrder(orderId, phone) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/orders/track`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ orderId, phone }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        return { success: false, error: data.error || `Server returned ${response.status} ${response.statusText}` };
+      }
+      return { success: true, data };
+    } catch (error) {
+      console.error('Failed to track order:', error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  /**
    * Admin login for backend access
    * @param {string} username - Username
    * @param {string} password - Password
