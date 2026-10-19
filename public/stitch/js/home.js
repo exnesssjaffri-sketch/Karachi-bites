@@ -99,7 +99,7 @@
       button.classList.remove('bg-[#2A2622]', 'text-[#B42318]', 'border', 'border-[#3A342E]', 'shadow-sm');
       if (selected) {
         button.classList.add('bg-[#2A2622]', 'text-[#B42318]', 'border', 'border-[#3A342E]', 'shadow-sm');
-        button.classList.remove('text-[#B8B0A6']);
+        button.classList.remove('text-[#B8B0A6]');
         if (!button.querySelector('span.rounded-full')) {
           var dot = document.createElement('span');
           dot.className = 'w-1.5 h-1.5 rounded-full bg-[#B42318] inline-block mr-1.5';
