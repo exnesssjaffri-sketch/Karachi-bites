@@ -22,7 +22,7 @@ This is an evidence-based implementation status, not a claim that the entire ass
 | F8 | Order status progression | PASS (automated) | API suite verifies valid transition and rejects invalid status jumps. |
 | F9 | Staff/admin login and protected routes | PASS (automated; real Supabase account E2E pending) | PR #7 merged. Legacy login and server-verified `/api/auth/me` pass CI; staff can access order operations, while menu mutation remains admin-only. `auth_profiles` migration is applied with RLS and a customer-only signup trigger. Existing legacy accounts are preserved and are not auto-linked to Supabase identities. Phone SMS still needs a configured provider. |
 | F10 | Dashboard filters/status updates | PASS (automated) | API suite exercises branch filtering and status transitions; auth failure tests confirm protected endpoints. |
-| F11 | 360px mobile usability | PASS (automated viewport) / manual device check pending | Lighthouse was run against the exact PR code at a 360×800 mobile viewport. Performance scored 96/100 and Accessibility 100/100. A physical Android-device visual/touch pass is still outstanding. |
+| F11 | 360px mobile usability | PASS (automated viewport) / manual device check pending | Latest optimized PR code scored Performance 97/100 and Accessibility 100/100 at 360×800. A physical Android-device visual/touch pass is still outstanding. |
 | F12 | Deployment and persistent production DB | PARTIAL / health PASS | After PR #6 and PR #7 production deploys, live `/api/health` returned HTTP 200 with `database: postgresql` and `ready: true`; live `/api/menu` returned HTTP 200 with 12 items. PR #7 limits the PostgreSQL pool per Vercel function to reduce connection bursts. A non-destructive production order create/read/status/persistence test is still pending; no real customer order was changed. |
 
 ## Security and quality requirements
@@ -40,7 +40,7 @@ This is an evidence-based implementation status, not a claim that the entire ass
 | ID | Requirement | Status | Evidence / remaining work |
 |---|---|---|---|
 | C1 | Urdu/English toggle with RTL | NOT VERIFIED / not evidenced | No completed end-to-end language-toggle test in the current CI evidence. |
-| C2 | Lighthouse mobile score 85+ | PASS (automated PR build) | Workflow run 7 scored Performance 96/100, Accessibility 100/100, Best Practices 96/100, SEO 100/100 at 360×800 against the exact PR code using an isolated SQLite database. Artifact: https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/39320576856/artifacts/12218594103. This is not a production-page Lighthouse run. |
+| C2 | Lighthouse mobile score 85+ | PASS (optimized code in CI; live production pending) | PR #9 head scored Performance 97/100, Accessibility 100/100, Best Practices 100/100, SEO 100/100 at 360×800 against the exact code with isolated SQLite. Artifact: https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/39323273356/artifacts/12220986614. Production still serves an older deployment, so these are not live-production scores. |
 | C3 | Print kitchen ticket | PARTIAL | Admin-only kitchen-ticket API is covered by the API test; real browser print flow has not been verified. |
 | C4 | Order again | PARTIAL | Reorder endpoint/button exist in code; no complete browser E2E test has verified the whole reorder flow. |
 
@@ -72,7 +72,7 @@ Run evidence: https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs
 - Migration `supabase_auth_profiles` applied and verified: profile table exists, RLS is enabled, signup trigger exists, and direct execution by API roles is revoked.
 - GitHub Actions run **107** passed all eight suites on the final pre-merge PR #7 commit.
 - Production order creation/status mutation was intentionally not performed because it would create/change live operational records. Full order → admin status → tracking is covered in automated isolated-database tests, but a safe production-specific order flow is still pending.
-- Lighthouse run 7 passed the 85-point gates at 360×800 (Performance 96, Accessibility 100, Best Practices 96, SEO 100). Physical mobile visual inspection and manual keyboard/screen-reader checks remain pending.
+- Lighthouse run 29 passed the 85-point gates at 360×800 (Performance 97, Accessibility 100, Best Practices 100, SEO 100) on the optimized code in CI. The production site has not yet received PR #9's code; live Lighthouse is therefore pending.
 
 ## Delivery items still outstanding
 
@@ -107,3 +107,12 @@ GitHub Actions run **7** (run ID `39320576856`) completed successfully using the
 - Report artifact (available for 30 days): https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/39320576856/artifacts/12218594103
 
 The earlier baseline run against the old production version was 69 Performance / 89 Accessibility. This baseline is not the score of the optimized PR code. The passing run audits the PR code locally; production will receive the homepage optimizations only after this PR is merged and deployed.
+
+
+## Production deployment blocker — 2026-10-20 UTC
+
+- PR #9 is merged into `main` at `0e2a6e8a888fa420d05566d15fe1109290db631f`. The optimized homepage, inline SVG mobile navigation, static menu styling, deferred API rendering, and image/font optimizations are now in GitHub `main`.
+- The current production deployment remains on older commit `fd35f1fccb0395abc5d4b7ae31c754212d7595c2`; live HTML still contains the Tailwind CDN and does not include `kb-static-menu-styles`.
+- Attempting to create the production deployment through Vercel returned **HTTP 402**: deployment API free-per-day limit exceeded (over 100; retry after 24 hours). The connected Vercel tooling has no local authenticated CLI fallback. No preview deployment was promoted because preview deployments may not have the production database environment variables.
+- Current live API is healthy despite the stale homepage: `GET /api/health` returned HTTP 200 with PostgreSQL `ready: true`; `GET /api/menu` returned HTTP 200 with 12 items.
+- Required user action: in Vercel Project Settings → Git, connect `exnesssjaffri-sketch/Karachi-bites` with production branch `main`, or wait for the Vercel API deployment limit to reset and deploy the merged main commit. Then verify that the production homepage contains `kb-static-menu-styles` and no `cdn.tailwindcss`; the production Lighthouse workflow will run only after that marker is live.

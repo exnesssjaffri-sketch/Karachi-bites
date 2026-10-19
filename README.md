@@ -120,9 +120,13 @@ The deployment and URLs are checked independently from functional behavior. HTTP
 - [Supabase Auth rollout and legacy-login compatibility](docs/SUPABASE_AUTH_SETUP.md).
 - [Three-minute walkthrough recording script](docs/WALKTHROUGH_SCRIPT.md). The script is not the final video; record a real browser session and add its link before submission.
 - [Lighthouse mobile workflow](.github/workflows/lighthouse.yml) measures the exact code at a 360×800 viewport and enforces Performance and Accessibility scores of at least 85.
-- Passing PR-code Lighthouse evidence: [GitHub Actions run 7](https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/39320576856) — Performance 96, Accessibility 100, Best Practices 96, SEO 100. The report is retained as an artifact for 30 days.
+- Passing optimized PR-code Lighthouse evidence: [GitHub Actions run 29](https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/39323273356) — Performance 97, Accessibility 100, Best Practices 100, SEO 100 at 360×800. The report is retained as an artifact for 30 days.
 - Latest eight-suite automated backend/frontend test evidence: [GitHub Actions run 107](https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/39319151736).
 - Production evidence: [health check](https://karachi-bites.vercel.app/api/health) and [live menu API](https://karachi-bites.vercel.app/api/menu).
+
+### Production deployment note
+
+PR #9's optimized homepage is merged into `main`, but the live Vercel alias is still serving an older deployment. Vercel returned HTTP 402 because the deployment API daily quota was exceeded (over 100; retry after 24 hours). The live API/database remain healthy, but the optimized homepage's Lighthouse score is **not yet verified in production**. Connect the GitHub repo under Vercel Project Settings → Git (production branch `main`) or redeploy after the quota resets. Do not promote a preview deployment because it may lack production database environment variables.
 
 ### Remaining manual evidence
 
