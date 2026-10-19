@@ -24,21 +24,24 @@
   async function showIdentity(session, fallbackName, fallbackEmail, isNewAccount = false) {
     saveSession(session);
     if (!session || !session.access_token) return false;
+    let authUser = {};
     try {
-      const response = await fetch('/api/auth/me', { headers: { Authorization: 'Bearer ' + session.access_token, Accept: 'application/json' } });
-      const data = await response.json().catch(() => ({}));
-      if (response.ok && data.user) {
-        const userResponse = await fetch('https://rgejphvmnlwcoojkpcje.supabase.co/auth/v1/user', { headers: { apikey: 'sb_publishable_rdUChKjIijuU2b4Oc1UleQ_dQa_Kioh', Authorization: 'Bearer ' + session.access_token } });
-        const authUser = userResponse.ok ? await userResponse.json() : {};
-        const name = (authUser.user_metadata && authUser.user_metadata.full_name) || fallbackName || data.user.username || 'Customer';
-        const email = authUser.email || fallbackEmail || data.user.email || '';
-        saveDisplayProfile(name, email, 'signed-in');
-        showNotice((isNewAccount ? 'Account created successfully! Welcome, ' : 'Signed in successfully! Welcome back, ') + name + '. Taking you to the home page…');
-        window.setTimeout(redirectHome, 1400);
-        return true;
-      } else showNotice('Account created, but the app could not confirm the profile yet. Apply the Supabase Auth migration and retry.', true);
-    } catch (_) { showNotice('Account created, but the app could not confirm the profile because the server is unreachable.', true); }
-    return false;
+      const userResponse = await fetch('https://rgejphvmnlwcoojkpcje.supabase.co/auth/v1/user', {
+        headers: {
+          apikey: 'sb_publishable_rdUChKjIijuU2b4Oc1UleQ_dQa_Kioh',
+          Authorization: 'Bearer ' + session.access_token,
+        },
+      });
+      if (userResponse.ok) authUser = await userResponse.json();
+    } catch (_) {
+      // The signup response is still a valid session; use the submitted details as a display fallback.
+    }
+    const name = (authUser.user_metadata && authUser.user_metadata.full_name) || fallbackName || authUser.email || 'Customer';
+    const email = authUser.email || fallbackEmail || '';
+    saveDisplayProfile(name, email, 'signed-in');
+    showNotice((isNewAccount ? 'Account created successfully! Welcome, ' : 'Signed in successfully! Welcome back, ') + name + '. Taking you to the home page…');
+    window.setTimeout(redirectHome, 1400);
+    return true;
   }
   $('#emailSignInForm').addEventListener('submit', async (event) => {
     event.preventDefault();
