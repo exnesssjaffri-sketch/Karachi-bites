@@ -27,6 +27,7 @@ app.use(helmet({
       // The existing SPA and Stitch exports use Tailwind's browser CDN.
       // Keep app scripts same-origin; allow the CDN and its runtime compiler explicitly.
       'script-src': ["'self'", 'https://cdn.tailwindcss.com', "'unsafe-eval'"],
+      'connect-src': ["'self'", 'https://rgejphvmnlwcoojkpcje.supabase.co'],
       // Stitch exports use HTTPS-hosted food photography.
       'img-src': ["'self'", 'data:', 'https:'],
     },
