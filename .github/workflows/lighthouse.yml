@@ -31,7 +31,7 @@ jobs:
           node-version: "24"
 
       - name: Install application dependencies
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - name: Start the exact PR code with an isolated SQLite database
         run: |
