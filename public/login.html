@@ -26,6 +26,7 @@ button:disabled{opacity:.6;cursor:wait}.secondary{background:var(--panel);border
 <button type="submit">Sign in</button></form>
 <div style="height:1px;background:var(--border);margin:22px 0"></div>
 <h2>Create account</h2><form id="signUpForm">
+<label for="fullName">Full name</label><input id="fullName" class="field" type="text" autocomplete="name" required minlength="2" maxlength="80">
 <label for="newEmail">Email address</label><input id="newEmail" class="field" type="email" autocomplete="email" required maxlength="254">
 <label for="newPassword">Create password (at least 8 characters)</label><input id="newPassword" class="field" type="password" autocomplete="new-password" required minlength="8">
 <button class="secondary" type="submit">Create customer account</button></form>
