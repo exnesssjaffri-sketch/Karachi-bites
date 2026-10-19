@@ -6,6 +6,10 @@ on:
     paths:
       - "public/**"
       - "src/**"
+      - "docs/**"
+      - "README.md"
+      - "AI_LOG.md"
+      - "REQUIREMENTS_AUDIT.md"
       - ".github/workflows/lighthouse.yml"
   push:
     branches: [main]
