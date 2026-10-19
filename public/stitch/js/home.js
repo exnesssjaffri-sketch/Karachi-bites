@@ -4,14 +4,16 @@
   var menuItems = [];
   var activeCategory = 'All Dishes';
   var isLoading = false;
+  var menuLoaded = false;
+  var renderVersion = 0;
 
   var fallbackImages = {
-    biryani: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=900&q=80',
-    curry: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=900&q=80',
-    bbq: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=80',
-    roll: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=900&q=80',
-    dessert: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=80',
-    general: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=80'
+    biryani: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=640&q=55&fm=webp',
+    curry: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=640&q=55&fm=webp',
+    bbq: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=640&q=55&fm=webp',
+    roll: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=640&q=55&fm=webp',
+    dessert: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=640&q=55&fm=webp',
+    general: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=640&q=55&fm=webp'
   };
 
   var categoryPatterns = {
@@ -69,8 +71,8 @@
     var cartControls = Array.prototype.slice.call(document.querySelectorAll('header a, header button'));
 
     cartControls.forEach(function (control) {
-      var icon = control.querySelector('.material-symbols-outlined');
-      if (!icon || !/shopping_bag/i.test(icon.textContent || '')) return;
+      var icon = control.querySelector('[data-kb-icon="shopping-bag"]');
+      if (!icon) return;
 
       var updated = false;
       Array.prototype.slice.call(control.childNodes).forEach(function (node) {
@@ -95,89 +97,91 @@
 
   function syncCategoryTabs() {
     document.querySelectorAll('.menu-tab-btn').forEach(function (button) {
-      var selected = (button.textContent || '').replace(/\s+/g, ' ').trim() === activeCategory;
-      button.classList.remove('bg-[#2A2622]', 'text-[#B42318]', 'border', 'border-[#3A342E]', 'shadow-sm');
-      if (selected) {
-        button.classList.add('bg-[#2A2622]', 'text-[#B42318]', 'border', 'border-[#3A342E]', 'shadow-sm');
-        button.classList.remove('text-[#B8B0A6']);
-        if (!button.querySelector('span.rounded-full')) {
-          var dot = document.createElement('span');
-          dot.className = 'w-1.5 h-1.5 rounded-full bg-[#B42318] inline-block mr-1.5';
-          button.prepend(dot);
-        }
-      } else {
-        button.classList.add('text-[#B8B0A6]');
-        var oldDot = button.querySelector('span.rounded-full');
-        if (oldDot) oldDot.remove();
+      var selected = (button.textContent || '').replace(/\\s+/g, ' ').trim() === activeCategory;
+      var stateClasses = [
+        'bg-[#2A2622]',
+        'text-[#B42318]',
+        'border',
+        'border-[#3A342E]',
+        'shadow-sm'
+      ];
+      stateClasses.forEach(function (className) {
+        button.classList.toggle(className, selected);
+      });
+      button.classList.toggle('text-[#B8B0A6]', !selected);
+
+      var oldDot = button.querySelector('span.rounded-full');
+      if (selected && !oldDot) {
+        var dot = document.createElement('span');
+        dot.className = 'w-1.5 h-1.5 rounded-full bg-[#B42318] inline-block mr-1.5';
+        dot.setAttribute('aria-hidden', 'true');
+        button.prepend(dot);
+      } else if (!selected && oldDot) {
+        oldDot.remove();
       }
     });
+  }
+
+  function renderMenuItem(item, index) {
+    var id = String(item.id);
+    var name = String(item.name);
+    var category = String(item.category || 'Karachi Kitchen');
+    var description = String(item.description || '').trim() || 'Prepared fresh to order by our Karachi Bites kitchen.';
+    var image = itemImage(item, index);
+
+    return '<article class="md:col-span-4 bg-[#2A2622] border border-[#3A342E] rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col h-full">' +
+      '<div class="relative rounded-xl overflow-hidden aspect-[16/10] bg-[#211E1B] mb-4">' +
+        '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(name) + '" class="w-full h-full object-cover" loading="lazy" decoding="async" width="640" height="400" />' +
+        '<span class="absolute top-3 left-3 rounded bg-[#211E1B]/90 border border-[#3A342E] px-2 py-1 text-xs font-semibold text-[#F7F3EC]">' + escapeHtml(category) + '</span>' +
+      '</div>' +
+      '<div class="flex flex-1 flex-col">' +
+        '<h3 class="font-headline-sm text-lg font-semibold text-[#F7F3EC] mb-2">' + escapeHtml(name) + '</h3>' +
+        '<p class="font-body-sm text-sm leading-relaxed text-[#B8B0A6]">' + escapeHtml(description) + '</p>' +
+        '<div class="pt-5 mt-auto flex items-center justify-between gap-3">' +
+          '<span class="text-lg font-semibold text-[#B42318]">' + escapeHtml(formatPrice(item.price)) + '</span>' +
+          '<button type="button" data-kb-live-cart="true" data-menu-id="' + escapeHtml(id) + '" class="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#B42318] px-4 py-2 text-sm font-semibold text-white" aria-label="Add ' + escapeHtml(name) + ' to cart">' +
+            '<svg class="kb-add-cart-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 3h2l2.2 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L20 8H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M18 2v6M15 5h6"/></svg><span>Add to Cart</span>' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+    '</article>';
   }
 
   function renderMenu() {
     var grid = document.getElementById('kb-live-menu');
     if (!grid) return;
 
-    var items = menuItems.filter(matchesActiveCategory);
-    grid.setAttribute('aria-busy', 'false');
+    var version = ++renderVersion;
+    var items = menuItems.filter(matchesActiveCategory).filter(function (item) {
+      return item && item.id != null && Number.isFinite(Number(item.price)) && String(item.name || '').trim();
+    });
+    grid.setAttribute('aria-busy', 'true');
 
     if (!items.length) {
       grid.innerHTML = '<div class="md:col-span-12 rounded-xl border border-[#3A342E] bg-[#211E1B] px-6 py-10 text-center text-[#B8B0A6]">No available dishes match this category yet. Choose another category to keep browsing.</div>';
+      grid.setAttribute('aria-busy', 'false');
       return;
     }
 
-    grid.innerHTML = items.map(function (item, index) {
-      if (item.id == null || !Number.isFinite(Number(item.price)) || !String(item.name || '').trim()) return '';
-      var id = String(item.id);
-      var name = String(item.name);
-      var category = String(item.category || 'Karachi Kitchen');
-      var description = String(item.description || '').trim() || 'Prepared fresh to order by our Karachi Bites kitchen.';
-      var image = itemImage(item, index);
-
-      return '<article class="md:col-span-4 bg-[#2A2622] border border-[#3A342E] rounded-2xl p-4 sm:p-5 shadow-sm hover:border-[#B42318]/60 transition-all flex flex-col h-full">' +
-        '<div class="relative rounded-xl overflow-hidden aspect-[16/10] bg-[#211E1B] mb-4">' +
-          '<img src="' + escapeHtml(image) + '" alt="' + escapeHtml(name) + '" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" />' +
-          '<span class="absolute top-3 left-3 rounded bg-[#211E1B]/90 border border-[#3A342E] px-2 py-1 text-xs font-semibold text-[#F7F3EC]">' + escapeHtml(category) + '</span>' +
-        '</div>' +
-        '<div class="flex flex-1 flex-col">' +
-          '<h3 class="font-headline-sm text-lg font-semibold text-[#F7F3EC] mb-2">' + escapeHtml(name) + '</h3>' +
-          '<p class="font-body-sm text-sm leading-relaxed text-[#B8B0A6]">' + escapeHtml(description) + '</p>' +
-          '<div class="pt-5 mt-auto flex items-center justify-between gap-3">' +
-            '<span class="text-lg font-semibold text-[#B42318]">' + escapeHtml(formatPrice(item.price)) + '</span>' +
-            '<button type="button" data-kb-live-cart="true" data-menu-id="' + escapeHtml(id) + '" class="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#B42318] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#C93627] active:scale-95" aria-label="Add ' + escapeHtml(name) + ' to cart">' +
-              '<span class="material-symbols-outlined text-[18px]" aria-hidden="true">add_shopping_cart</span><span>Add to Cart</span>' +
-            '</button>' +
-          '</div>' +
-        '</div>' +
-      '</article>';
-    }).join('');
-
-    var liveButtons = grid.querySelectorAll('[data-kb-live-cart]');
-    liveButtons.forEach(function (button) {
-      button.addEventListener('click', function () {
-        var item = menuItems.find(function (candidate) {
-          return String(candidate.id) === button.getAttribute('data-menu-id');
-        });
-        if (!item || !window.cartStore) return;
-
-        window.cartStore.addItem({
-          id: Number(item.id),
-          name: String(item.name),
-          price: Number(item.price),
-          quantity: 1
-        });
-        updateCartCount();
-
-        var label = button.querySelector('span:last-child');
-        var original = label ? label.textContent : 'Add to Cart';
-        if (label) label.textContent = 'Added';
-        button.classList.add('ring-2', 'ring-[#B42318]', 'ring-offset-2', 'ring-offset-[#2A2622]');
-        showCartToast(item);
-        window.setTimeout(function () {
-          if (label) label.textContent = original;
-          button.classList.remove('ring-2', 'ring-[#B42318]', 'ring-offset-2', 'ring-offset-[#2A2622]');
-        }, 1400);
-      });
-    });
+    var cursor = 0;
+    var chunkSize = 4;
+    function appendChunk() {
+      if (version !== renderVersion) return;
+      var chunk = items.slice(cursor, cursor + chunkSize);
+      var markup = chunk.map(function (item, index) {
+        return renderMenuItem(item, cursor + index);
+      }).join('');
+      if (cursor === 0) grid.innerHTML = markup;
+      else grid.insertAdjacentHTML('beforeend', markup);
+      cursor += chunk.length;
+      if (cursor < items.length) {
+        window.requestAnimationFrame(appendChunk);
+      } else {
+        grid.style.minHeight = grid.scrollHeight + 'px';
+        grid.setAttribute('aria-busy', 'false');
+      }
+    }
+    appendChunk();
   }
 
   function showCartToast(item) {
@@ -202,12 +206,13 @@
   }
 
   async function loadMenu() {
-    if (isLoading) return;
+    if (isLoading || menuLoaded) return;
     isLoading = true;
     var grid = document.getElementById('kb-live-menu');
     if (grid) {
+      // Keep the server-rendered featured cards visible while the live API responds.
+      // CSS reserves the full menu's expected height to prevent layout shift.
       grid.setAttribute('aria-busy', 'true');
-      grid.innerHTML = '<div class="md:col-span-12 rounded-xl border border-[#3A342E] bg-[#211E1B] px-6 py-10 text-center text-[#B8B0A6]">Loading available dishes…</div>';
     }
 
     try {
@@ -221,6 +226,7 @@
       menuItems = result.data.filter(function (item) {
         return item && item.available !== false && item.available !== 0 && item.available !== 'false';
       });
+      menuLoaded = true;
       window.cartStore.setCart(window.cartStore.getCart());
       updateCartCount();
       syncCategoryTabs();
@@ -244,19 +250,57 @@
 
     if (grid) {
       grid.addEventListener('click', function (event) {
-        if (event.target.closest('[data-kb-retry]')) loadMenu();
+        if (event.target.closest('[data-kb-retry]')) {
+          loadMenu();
+          return;
+        }
+        var button = event.target.closest('[data-kb-live-cart]');
+        if (!button || !grid.contains(button)) return;
+        var item = menuItems.find(function (candidate) {
+          return String(candidate.id) === button.getAttribute('data-menu-id');
+        });
+        if (!item || !window.cartStore) return;
+
+        window.cartStore.addItem({
+          id: Number(item.id),
+          name: String(item.name),
+          price: Number(item.price),
+          quantity: 1
+        });
+        updateCartCount();
+
+        var label = button.querySelector('span:last-child');
+        var original = label ? label.textContent : 'Add to Cart';
+        if (label) label.textContent = 'Added';
+        showCartToast(item);
+        window.setTimeout(function () {
+          if (label) label.textContent = original;
+        }, 1400);
       });
     }
 
     document.querySelectorAll('.menu-tab-btn').forEach(function (button) {
       button.addEventListener('click', function () {
         activeCategory = (button.textContent || '').replace(/\s+/g, ' ').trim();
+        if (menuLoaded) {
+          grid.style.minHeight = '0px';
+          renderMenu();
+        }
         syncCategoryTabs();
-        renderMenu();
       });
     });
 
     window.addEventListener('cartUpdated', updateCartCount);
-    loadMenu();
+    if (grid && 'IntersectionObserver' in window) {
+      var menuObserver = new IntersectionObserver(function (entries) {
+        if (entries.some(function (entry) { return entry.isIntersecting; })) {
+          menuObserver.disconnect();
+          loadMenu();
+        }
+      }, { rootMargin: '350px 0px' });
+      menuObserver.observe(grid);
+    } else {
+      loadMenu();
+    }
   });
 })();
