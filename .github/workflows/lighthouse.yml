@@ -34,6 +34,10 @@ jobs:
         run: >-
           npx --yes lighthouse@12.8.2 https://karachi-bites.vercel.app/
           --only-categories=performance,accessibility,best-practices,seo
+          --screenEmulation.mobile
+          --screenEmulation.width=360
+          --screenEmulation.height=800
+          --screenEmulation.deviceScaleFactor=1
           --chrome-flags="--headless --no-sandbox"
           --output=json
           --output-path=./lighthouse-report.json
