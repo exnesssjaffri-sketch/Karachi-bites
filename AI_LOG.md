@@ -67,3 +67,15 @@ This log records AI-assisted work that can be tied to the available project hist
 - **Finding:** The code originally seeded `admin/admin123` and `staff/staff123` without regard to environment, creating a known-credential risk if the public deployment initialized a fresh database.
 - **Change made:** Production user seeding now requires encrypted `ADMIN_USERNAME` / `ADMIN_PASSWORD` and optional staff variables. Existing seeded demo accounts are removed only if their stored bcrypt hashes match the known demo passwords and their usernames are not the configured production usernames.
 - **Verification still required:** Confirm production env variables are available to the new deployment, then verify an authorized admin login, staff denial from admin routes, and that known demo credentials cannot authenticate in production.
+
+
+## 2026-10-20 — production health, privacy, auth integration, and audit evidence
+
+- Audited the PDF F1–F12, S1–S5, C1–C4 requirements against repository files, GitHub Actions and live production endpoints.
+- Merged PR #6 after its eight automated suites passed. It integrates the live Stitch homepage with the API-backed ordering flow, requires phone verification for tracking, removes customer PII/private notes from public order lookup, validates order notes/idempotency headers, and makes health readiness verify an initialized/queryable menu schema.
+- Live evidence after deployment: `GET /api/health` HTTP 200 with PostgreSQL `ready: true`; `GET /api/menu` HTTP 200 with 12 items.
+- Merged PR #7 after GitHub Actions run 107 passed all eight suites. It integrates Supabase Auth while preserving legacy username/password auth, adds `GET /api/auth/me`, allows staff order operations while keeping menu CRUD admin-only, caps the PostgreSQL pool per serverless instance, and adds the `auth_profiles` migration.
+- Applied and verified the additive Supabase migration. The table has RLS enabled; the signup trigger inserts customer roles only; direct execution of the trigger function is revoked from `anon` and `authenticated`.
+- Added a Lighthouse mobile CI workflow that collects a report and gates performance/accessibility scores at 85, plus an evidence-based requirements audit and a real-recording walkthrough script.
+- Explicit limitations: real Supabase signup/confirmation and SMS OTP were not tested with a new human account; production order mutation was avoided to protect live restaurant operations; Lighthouse results and physical 360px/manual keyboard checks are pending; the actual screen-recorded MP4 must still be recorded and attached.
+- No service-role key, database URL, JWT secret, customer phone, or delivery address was committed to documentation.
