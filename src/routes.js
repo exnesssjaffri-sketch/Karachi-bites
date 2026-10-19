@@ -215,7 +215,7 @@ router.post('/orders/reorder', async (req, res) => {
 });
 
 // GET /api/admin/kitchen/:id — C3: print-friendly kitchen ticket (admin only)
-router.get('/admin/kitchen/:id', auth.authMiddleware, auth.requireAdmin, async (req, res) => {
+router.get('/admin/kitchen/:id', auth.authMiddleware, auth.requireStaffOrAdmin, async (req, res) => {
   const orderId = req.params.id;
   try {
     const ticket = await orderService.getKitchenTicket(orderId);
@@ -230,6 +230,17 @@ router.get('/admin/kitchen/:id', auth.authMiddleware, auth.requireAdmin, async (
 });
 
 // POST /api/auth/login
+// GET /api/auth/me — return the server-verified identity and current application role.
+router.get('/auth/me', auth.authMiddleware, (req, res) => {
+  res.json({ user: {
+    id: req.user.id,
+    username: req.user.username || null,
+    email: req.user.email || null,
+    phone: req.user.phone || null,
+    role: req.user.role,
+  } });
+});
+
 router.post('/auth/login', async (req, res) => {
   const body = req.body || {};
   const username = body.username;
@@ -253,7 +264,7 @@ router.post('/auth/login', async (req, res) => {
 });
 
 // GET /api/admin/orders
-router.get('/admin/orders', auth.authMiddleware, auth.requireAdmin, async (req, res) => {
+router.get('/admin/orders', auth.authMiddleware, auth.requireStaffOrAdmin, async (req, res) => {
   const branch = req.query.branch || null;
   const date = req.query.date || null;
 
@@ -267,7 +278,7 @@ router.get('/admin/orders', auth.authMiddleware, auth.requireAdmin, async (req, 
 });
 
 // PATCH /api/admin/orders/:id/status
-router.patch('/admin/orders/:id/status', auth.authMiddleware, auth.requireAdmin, async (req, res) => {
+router.patch('/admin/orders/:id/status', auth.authMiddleware, auth.requireStaffOrAdmin, async (req, res) => {
   const orderId = req.params.id;
   const newStatus = req.body && req.body.status;
 

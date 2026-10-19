@@ -2,6 +2,7 @@
   'use strict';
 
   const TOKEN_KEY = 'karachi_bites_admin_token';
+  const REFRESH_TOKEN_KEY = 'karachi_bites_admin_refresh_token';
   const API_BASE_URL = '';
   const $ = (selector) => document.querySelector(selector);
   const loginPanel = $('#loginPanel');
@@ -57,7 +58,7 @@
   }
 
   function clearToken() {
-    try { sessionStorage.removeItem(TOKEN_KEY); } catch (_) {}
+    try { sessionStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem(REFRESH_TOKEN_KEY); } catch (_) {}
   }
 
   function showLogin() {
@@ -79,7 +80,18 @@
     if (token) headers.set('Authorization', 'Bearer ' + token);
     if (options.body) headers.set('Content-Type', 'application/json');
 
-    const response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
+    let response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
+    if (response.status === 401 && window.KBAuth && sessionStorage.getItem(REFRESH_TOKEN_KEY)) {
+      try {
+        const refreshed = await window.KBAuth.refreshSession(sessionStorage.getItem(REFRESH_TOKEN_KEY));
+        if (refreshed.access_token) {
+          saveToken(refreshed.access_token);
+          if (refreshed.refresh_token) sessionStorage.setItem(REFRESH_TOKEN_KEY, refreshed.refresh_token);
+          headers.set('Authorization', 'Bearer ' + refreshed.access_token);
+          response = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
+        }
+      } catch (_) { clearToken(); }
+    }
     const body = await response.json().catch(() => ({}));
     if (!response.ok) {
       const error = new Error(body.error || ('Request failed (' + response.status + ')'));
@@ -102,6 +114,7 @@
         body: JSON.stringify({ username, password })
       });
       if (!response.token) throw new Error('The login API did not return a token.');
+      clearToken();
       saveToken(response.token);
       await loadOrders();
       $('#password').value = '';
@@ -115,6 +128,72 @@
           : (error.message || 'Unable to sign in.'), true);
     } finally {
       setBusy(loginBtn, false);
+    }
+  }
+
+  async function emailAuthLogin(event) {
+    event.preventDefault();
+    clearNotice();
+    setBusy($('#emailAuthBtn'), true, 'Signing in…');
+    try {
+      const email = $('#authEmail').value.trim();
+      const password = $('#authPassword').value;
+      const response = await window.KBAuth.signInWithPassword(email, password);
+      if (!response.access_token) throw new Error('Supabase did not return a session. Confirm your email if prompted.');
+      saveToken(response.access_token);
+      if (response.refresh_token) sessionStorage.setItem(REFRESH_TOKEN_KEY, response.refresh_token);
+      $('#authPassword').value = '';
+      await loadOrders();
+    } catch (error) {
+      clearToken();
+      showLogin();
+      showNotice(error.message || 'Unable to sign in with email.', true);
+    } finally {
+      setBusy($('#emailAuthBtn'), false);
+    }
+  }
+
+  async function sendStaffOtp() {
+    clearNotice();
+    const phone = $('#authPhone').value.trim();
+    if (!/^\\+[1-9][0-9]{7,14}$/.test(phone)) {
+      showNotice('Enter the phone number in international format, for example +923001234567.', true);
+      return;
+    }
+    setBusy($('#sendOtpBtn'), true, 'Sending OTP…');
+    try {
+      await window.KBAuth.sendPhoneOtp(phone, false);
+      $('#otpEntry').classList.remove('hidden');
+      showNotice('If this phone belongs to an existing Auth account and SMS is configured, an OTP has been sent.');
+    } catch (error) {
+      showNotice(error.message || 'Could not send the OTP. The SMS provider may not be configured yet.', true);
+    } finally {
+      setBusy($('#sendOtpBtn'), false);
+    }
+  }
+
+  async function verifyStaffOtp() {
+    clearNotice();
+    const phone = $('#authPhone').value.trim();
+    const otp = $('#authOtp').value.trim();
+    if (!/^\\+[1-9][0-9]{7,14}$/.test(phone) || !/^[0-9]{6}$/.test(otp)) {
+      showNotice('Enter a valid international phone number and the 6-digit OTP.', true);
+      return;
+    }
+    setBusy($('#verifyOtpBtn'), true, 'Verifying…');
+    try {
+      const response = await window.KBAuth.verifyPhoneOtp(phone, otp);
+      if (!response.access_token) throw new Error('Supabase did not return a session.');
+      saveToken(response.access_token);
+      if (response.refresh_token) sessionStorage.setItem(REFRESH_TOKEN_KEY, response.refresh_token);
+      $('#authOtp').value = '';
+      await loadOrders();
+    } catch (error) {
+      clearToken();
+      showLogin();
+      showNotice(error.message || 'OTP verification failed.', true);
+    } finally {
+      setBusy($('#verifyOtpBtn'), false);
     }
   }
 
@@ -272,7 +351,7 @@
         showLogin();
         emptyTable('Sign in with an admin account to view orders.');
         showNotice(error.status === 403
-          ? 'This user is not authorized to manage orders. An admin account is required.'
+          ? 'This user is not authorized to manage orders. A staff or admin account is required.'
           : 'Your session has expired. Please sign in again.', true);
         return;
       }
@@ -284,6 +363,9 @@
   }
 
   loginForm.addEventListener('submit', login);
+  $('#emailAuthForm').addEventListener('submit', emailAuthLogin);
+  $('#sendOtpBtn').addEventListener('click', sendStaffOtp);
+  $('#verifyOtpBtn').addEventListener('click', verifyStaffOtp);
   logoutBtn.addEventListener('click', () => {
     clearToken();
     showLogin();
