@@ -2,7 +2,9 @@ const crypto = require('crypto');
 const { getOne, getAll, run, withTransaction, isSqlite, get, query } = require('./db');
 const { isValidTransition, isValidNotes, sanitizeString } = require('./validate');
 
-const DELIVERY_FEE = parseInt(process.env.DELIVERY_FEE || '150', 10);
+const DELIVERY_FEE = parseInt(process.env.DELIVERY_FEE || '250', 10);
+const PACKAGING_FEE = parseInt(process.env.PACKAGING_FEE || '50', 10);
+const GST_RATE = parseFloat(process.env.GST_RATE || '0.05');
 
 // Server-authoritative promo codes. Keys are codes, values are the fractional
 // discount applied to the menu subtotal. Client-side callers send a promo code
@@ -12,6 +14,12 @@ const PROMO_CODES = {
   KARACHIBITES: 0.10,
   WELCOME: 0.10,
 };
+
+function resolvePromoDiscount(promoCode) {
+  if (!promoCode) return 0;
+  const code = String(promoCode).trim().toUpperCase();
+  return PROMO_CODES[code] || 0;
+}
 
 function generatePublicOrderId() {
   const date = new Date();
@@ -55,7 +63,7 @@ function releaseOrderLock() {
   }
 }
 
-async function createOrder(customer, branch, items, notes, idempotencyKey) {
+async function createOrder(customer, branch, items, notes, idempotencyKey, promoCode) {
   await acquireOrderLock();
   try {
     const { name, phone, address } = customer;
@@ -96,12 +104,15 @@ async function createOrder(customer, branch, items, notes, idempotencyKey) {
         });
       }
 
-      const total = subtotal + DELIVERY_FEE;
+      const promoDiscount = resolvePromoDiscount(promoCode);
+      const discount = Math.round(subtotal * promoDiscount);
+      const taxGst = Math.round(subtotal * GST_RATE);
+      const total = subtotal - discount + taxGst + DELIVERY_FEE + PACKAGING_FEE;
       const publicId = await generateUniquePublicOrderId();
 
       const orderResult = await run(
-        'INSERT INTO orders (public_order_id, customer_name, customer_phone, customer_address, branch, status, total, customer_notes, idempotency_key) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [publicId, name, phone, address, branch, 'Received', total, safeNotes, idempotencyKey || null],
+        'INSERT INTO orders (public_order_id, customer_name, customer_phone, customer_address, branch, status, total, customer_notes, idempotency_key, subtotal, discount, tax_gst, packaging_fee, promo_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [publicId, name, phone, address, branch, 'Received', total, safeNotes, idempotencyKey || null, subtotal, discount, taxGst, PACKAGING_FEE, promoCode ? String(promoCode).trim().toUpperCase() : null],
         client
       );
       const orderId = orderResult.lastID;
@@ -116,6 +127,12 @@ async function createOrder(customer, branch, items, notes, idempotencyKey) {
 
       return {
         orderId: publicId,
+        subtotal,
+        discount,
+        tax_gst: taxGst,
+        packaging_fee: PACKAGING_FEE,
+        delivery_fee: DELIVERY_FEE,
+        promo_code: promoCode ? String(promoCode).trim().toUpperCase() : null,
         total,
         status: 'Received',
         items: orderItems.map((item) => ({
@@ -210,6 +227,12 @@ function getOrderById(orderId) {
           price: i.price_at_order,
           lineTotal: i.price_at_order * i.quantity,
         })),
+        subtotal: order.subtotal,
+        discount: order.discount,
+        tax_gst: order.tax_gst,
+        packaging_fee: order.packaging_fee,
+        delivery_fee: DELIVERY_FEE,
+        promo_code: order.promo_code || null,
         total: order.total,
         branch: order.branch,
         createdAt: order.created_at,

@@ -65,6 +65,13 @@ For production, set `ADMIN_USERNAME` and a strong `ADMIN_PASSWORD` (at least 12 
 
 **Existing data**: The local SQLite database contains 2 orders, 2 users, 12 menu items, 3 branches, and 2 order items. These are NOT automatically migrated to PostgreSQL. If production SQLite data must be preserved, run a one-time export/import (e.g. `sqlite3 .dump` filtered to the relevant tables, then load into PostgreSQL with ID mapping) before flipping `USE_SQLITE`.
 
+**Migration-runner limitations and reconciliation rules**:
+- The runner is **manual** (`npm run migrate`), never automatic on cold start. If `USE_SQLITE=false` and migrations have not been applied, the app will fail loudly on the first query rather than silently serving an empty database.
+- The runner checks for data conflicts before applying each migration and aborts rather than overwrite. It does **not** reconcile schema drift: if a migration was partially applied or a column was added by hand, the runner will not detect or fix it.
+- Sequence reconciliation (e.g. `menu_items_id_seq`) is performed **inside** the initial-schema migration using `pg_get_serial_sequence` with safe `is_called` handling. The runner does **not** re-run this reconciliation on every start; it is idempotent and safe to re-apply, but it is not a general-purpose sequence-sync tool for other tables.
+- The runner records applied files in `schema_migrations`. If that table is missing or out of date, the runner may re-apply migrations. Drop-and-recreate is **not** supported; migrations must be written to be additive and re-runnable.
+- When flipping from SQLite to PostgreSQL, the local SQLite data (orders, users, menu items, branches) is **not** automatically migrated. A one-time export/import is required before relying on production storage for real customer orders.
+
 ## Branches
 
 The order API supports these branch names:

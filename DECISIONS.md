@@ -150,6 +150,16 @@ All customer inputs are validated on the server side. Never trust the client.
 - Test status transition enforcement
 - Tests run against actual server instance (not mocked)
 
+### Migration Runner Limitations and Sequence Reconciliation
+ - The migration runner (`scripts/migrate.js`) is **manual** — invoked via `npm run migrate`, never automatic on cold start. If `USE_SQLITE=false` and migrations have not been applied, the app fails loudly on the first query rather than silently serving an empty database.
+ - The runner is transaction-safe and tracks applied files in a `schema_migrations` table, but it does **not** reconcile schema drift: a partially applied migration or a hand-added column is not detected or repaired.
+ - The initial-schema migration (`20261012112806`) advances the `menu_items` IDENTITY sequence using `pg_get_serial_sequence` with safe `is_called` handling. The old `COALESCE(MAX(id), 0)` fallback was invalid: `setval(seq, 0)` violates the sequence's `MINVALUE 1` constraint. The corrected logic branches on table state:
+   * Empty table → `setval(seq, 1, false)` so the next `nextval()` returns 1 (the sequence minimum).
+   * Existing rows → `setval(seq, max, true)` so the next `nextval()` returns `max + 1` and never collides.
+ - This reconciliation is performed **inside** the migration, not by the runner. The runner does not re-run it on every start; the migration is idempotent and safe to re-apply, but it is not a general-purpose sequence-sync tool for other tables.
+ - Drop-and-recreate is **not** supported by the runner; migrations must be written to be additive and re-runnable.
+ - SQLite data is **not** automatically migrated to PostgreSQL. A one-time export/import is required before flipping `USE_SQLITE`.
+
 ### Extensibility
 - Adding new menu items: Insert into menu_items table
 - Adding new branches: Insert into branches table

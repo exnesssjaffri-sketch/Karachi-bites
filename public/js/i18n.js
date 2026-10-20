@@ -23,6 +23,7 @@ const I18N = (() => {
       'nav.cart': 'Cart',
       'nav.switchToUrdu': 'اردو',
       'nav.switchToEnglish': 'English',
+      'Order Now':'Order Now',
       'common.items': '{count} item(s)',
       'common.loading': 'Loading order details...',
       'common.total': 'Total',
@@ -70,7 +71,7 @@ const I18N = (() => {
       'cart.deliveryFee': 'Delivery Fee',
       'cart.discount': 'Discount',
       'cart.gst': 'GST (5%)',
-      'cart.packaging': 'Packaging & Thermal Seal',
+      'cart.packagingFee': 'Packaging & Thermal Seal',
       'cart.total': 'Total',
       'cart.orderSummary': 'Order Summary',
       'cart.instructions': 'Special Instructions',
@@ -123,6 +124,7 @@ const I18N = (() => {
       'nav.cart': 'کارٹ',
       'nav.switchToUrdu': 'اردو',
       'nav.switchToEnglish': 'English',
+      'Order Now':'ابھی آرڈر کریں',
       'common.items': '{count} اشیاء',
       'common.loading': 'آرڈر کی تفصیلات لوڈ ہو رہی ہیں...',
       'common.total': 'کل رقم',
@@ -244,6 +246,8 @@ const I18N = (() => {
     if (!html) return;
     html.setAttribute('lang', current);
     html.setAttribute('dir', current === 'ur' ? 'rtl' : 'ltr');
+    const lang = current;
+    document.documentElement.dir=lang==='ur'?'rtl':'ltr';
   }
 
   function t(key, params) {
