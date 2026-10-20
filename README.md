@@ -51,10 +51,19 @@ The server creates the SQLite schema and seeds the sample menu, supported branch
 | `PORT` | Local HTTP port | `3000` |
 | `NODE_ENV` | Runtime mode | `development` |
 | `JWT_SECRET` | Secret used to sign JWT tokens; required | Generated random value |
-| `DATABASE_PATH` | SQLite file path | `./karachi_bites.db` |
+| `DATABASE_PATH` | SQLite file path (development only) | `./karachi_bites.db` |
+| `USE_SQLITE` | `true` for SQLite, `false` for PostgreSQL (production) | `true` |
+| `DATABASE_URL` | PostgreSQL connection string (required when `USE_SQLITE=false`) | `postgresql://user:password@localhost:5432/karachi_bites` |
+| `PG_TEST_DATABASE_URL` | Dedicated test DB for `test/test_persistence_pg.js`; if unset that test reports NOT RUN | `postgresql://user:password@localhost:5432/karachi_bites_test` |
 | `DELIVERY_FEE` | Flat delivery charge in rupees | `150` |
 
 For production, set `ADMIN_USERNAME` and a strong `ADMIN_PASSWORD` (at least 12 characters) in the hosting provider's encrypted environment-variable settings. Set `STAFF_USERNAME` and `STAFF_PASSWORD` only when a staff account is required. Production does not seed the predictable `admin/admin123` or `staff/staff123` demo credentials; the known demo accounts are only for local development. Never commit `.env`, access tokens, real passwords or production credentials. Vercel/serverless persistence must be verified in the target runtime before relying on it for real customer orders; a local SQLite persistence test does not by itself prove that production storage survives separate function instances or deployments.
+
+**Production database (Supabase PostgreSQL)**: Set `USE_SQLITE=false` and `DATABASE_URL=<postgresql connection string>` in the hosting provider's encrypted environment variables. There is no silent fallback to SQLite — if `DATABASE_URL` is missing the server fails loudly. SQLite is development-only and is NOT a supported production configuration; there is no rollback path from PostgreSQL to SQLite.
+
+**Applying migrations**: Run `node scripts/migrate.js` against the production Supabase database once. The runner is transaction-safe, tracks applied files in a `schema_migrations` table, and aborts if existing menu IDs 1-12 contain conflicting data. Use `node scripts/migrate.js --check` for a dry run. Migrations are a manual deployment step — they are never run automatically on Vercel cold starts.
+
+**Existing data**: The local SQLite database contains 2 orders, 2 users, 12 menu items, 3 branches, and 2 order items. These are NOT automatically migrated to PostgreSQL. If production SQLite data must be preserved, run a one-time export/import (e.g. `sqlite3 .dump` filtered to the relevant tables, then load into PostgreSQL with ID mapping) before flipping `USE_SQLITE`.
 
 ## Branches
 

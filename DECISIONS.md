@@ -110,6 +110,38 @@ All customer inputs are validated on the server side. Never trust the client.
   - DELIVERY_FEE
 - Default values provided for development only
 
+### Database Choice: Supabase PostgreSQL (Production) vs SQLite (Development Only)
+- **Production storage is Supabase PostgreSQL**, selected because SQLite on Vercel
+  serverless is ephemeral: each function instance gets its own copy of the
+  database file, which does not survive redeployments or separate function
+  instances. This is the F12 blocker.
+- **SQLite is development-only.** It is fast, zero-configuration, and sufficient
+  for local `npm start` and `npm test`. It is NOT a supported production
+  configuration, and there is no rollback path from PostgreSQL to SQLite.
+- **`USE_SQLITE=false` requires a valid `DATABASE_URL`.** If `USE_SQLITE` is not
+  `'true'` and `DATABASE_URL` is missing, `getDb()` throws loudly — there is no
+  silent fallback to SQLite.
+- **Supabase connection string**: `postgresql://user:password@host:5432/database`.
+  The `pg` pool uses `ssl: { rejectUnauthorized: false }`, `max: 1-3` connections,
+  `connectionTimeoutMillis: 10000`, `allowExitOnIdle: true`.
+- **Migrations**: Six Supabase SQL files live in `supabase/migrations/` and are
+  applied by `scripts/migrate.js` (manually invoked, never automatic on cold
+  start). The runner is transaction-safe and tracks applied files in a
+  `schema_migrations` table. Before seeding menu IDs 1-12 it checks for data
+  conflicts and aborts rather than overwriting.
+- **Existing data**: The local SQLite database contains 2 orders, 2 users, 12
+  menu items, 3 branches, and 2 order items. These are NOT automatically
+  migrated to PostgreSQL. If production SQLite data must be preserved, run a
+  one-time export/import (e.g. `sqlite3 .dump` filtered to the relevant tables,
+  then load into PostgreSQL with ID mapping) before flipping `USE_SQLITE`.
+- **Menu IDs**: The Express backend queries menu items by explicit IDs 1-12.
+  The Supabase migration now seeds with explicit IDs 1-12 and `ON CONFLICT (id)
+  DO NOTHING` to match. The migration runner verifies no conflicting data exists
+  before applying.
+- **Credentials**: `DATABASE_URL` is set only in Vercel Project Settings →
+  Environment Variables (encrypted). `.env.example` contains placeholders only.
+  `.gitignore` already excludes `.env`, `.env.local`, `*.env.local`.
+
 ### Testing Approach
 - Automated tests for success and failure cases
 - Test database persistence across server restarts

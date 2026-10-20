@@ -69,21 +69,24 @@ ALTER TABLE public.admin_sessions ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON TABLE public.menu_items, public.branches, public.users, public.orders, public.order_items, public.admin_sessions FROM PUBLIC, anon, authenticated;
 GRANT ALL ON TABLE public.menu_items, public.branches, public.users, public.orders, public.order_items, public.admin_sessions TO service_role;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO service_role;
-INSERT INTO public.menu_items (name, price, category, tags, available)
+-- Menu seed with explicit IDs 1-12 to match the Express backend's expectations.
+-- The migration runner checks for conflicts before applying this seed.
+-- ON CONFLICT (id) DO NOTHING prevents accidental overwrites on re-runs.
+INSERT INTO public.menu_items (id, name, price, category, tags, available)
 VALUES
- ('Chicken Malai Boti', 850, 'BBQ', 'mild', true),
- ('Beef Seekh Kebab', 780, 'BBQ', 'spicy', true),
- ('Mutton Karahi (half)', 1650, 'Karahi', 'spicy', true),
- ('Chicken Karahi (half)', 1250, 'Karahi', 'spicy', true),
- ('Chicken Biryani', 550, 'Rice', 'spicy', true),
- ('Vegetable Pulao', 420, 'Rice', 'veg', true),
- ('Zinger Paratha Roll', 450, 'Rolls', 'spicy', true),
- ('Paneer Tikka Roll', 480, 'Rolls', 'veg', true),
- ('Mint Margarita', 220, 'Drinks', 'veg', true),
- ('Doodh Patti Chai', 150, 'Drinks', 'veg', true),
- ('Gulab Jamun (2 pcs)', 250, 'Desserts', 'veg', true),
- ('Kheer', 300, 'Desserts', 'veg', true)
-ON CONFLICT (name) DO NOTHING;
+ (1, 'Chicken Malai Boti', 850, 'BBQ', 'mild', true),
+ (2, 'Beef Seekh Kebab', 780, 'BBQ', 'spicy', true),
+ (3, 'Mutton Karahi (half)', 1650, 'Karahi', 'spicy', true),
+ (4, 'Chicken Karahi (half)', 1250, 'Karahi', 'spicy', true),
+ (5, 'Chicken Biryani', 550, 'Rice', 'spicy', true),
+ (6, 'Vegetable Pulao', 420, 'Rice', 'veg', true),
+ (7, 'Zinger Paratha Roll', 450, 'Rolls', 'spicy', true),
+ (8, 'Paneer Tikka Roll', 480, 'Rolls', 'veg', true),
+ (9, 'Mint Margarita', 220, 'Drinks', 'veg', true),
+ (10, 'Doodh Patti Chai', 150, 'Drinks', 'veg', true),
+ (11, 'Gulab Jamun (2 pcs)', 250, 'Desserts', 'veg', true),
+ (12, 'Kheer', 300, 'Desserts', 'veg', true)
+ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.branches (name)
 VALUES ('Clifton'), ('Gulshan-e-Iqbal'), ('North Nazimabad')
 ON CONFLICT (name) DO NOTHING;
