@@ -19,6 +19,8 @@ jobs:
           node-version: 24
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Check syntax of every frontend JavaScript file
+        run: find public src test -type f -name '*.js' -print0 | xargs -0 -n1 node --check
       - name: Run database, API, failure and persistence tests
         env:
           JWT_SECRET: ci-only-not-a-production-secret-value

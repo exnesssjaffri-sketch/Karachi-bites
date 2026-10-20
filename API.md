@@ -121,15 +121,12 @@ GET /api/orders/KB-20261002-ABC123
     }
   ],
   "total": 1850,
-  "customer": {
-    "name": "Ali",
-    "phone": "03001234567",
-    "address": "Karachi address"
-  },
   "branch": "Clifton",
   "createdAt": "2026-10-02T10:30:00.000Z"
 }
 ```
+
+**Privacy:** This public lookup returns order progress and item totals only; it must not return the customer's name, phone, delivery address, or private order notes. Use `POST /api/orders/track` with both the order ID and checkout phone number to verify ownership before showing tracking details.
 
 **Error Responses**
 - 404 Not Found: `{ "error": "Order not found" }`
@@ -478,3 +475,11 @@ Content-Type: application/json
 - 400 Bad Request: `{ "error": "originalOrderId is required" }`
 - 404 Not Found: `{ "error": "Original order not found" }`
 - 500 Internal Server Error
+
+### POST /api/orders/reorder
+
+Repeats an earlier order. Requires `originalOrderId` and a valid `customer` object (name, Pakistani phone, delivery address and optional notes). The supplied phone must match the original checkout phone or the server returns HTTP 403. Current menu prices, availability, delivery fee and total are recalculated; original branch and quantities are reused. Success returns HTTP 201 with a new order ID.
+
+### GET /api/admin/kitchen/:id
+
+Requires a staff/admin Bearer token. Returns order ID, branch, timestamp, status, item names/quantities and kitchen notes. Unauthorized requests return 401/403; unknown orders return 404. The print-friendly page is `/kitchen-ticket.html?order=<orderId>`.

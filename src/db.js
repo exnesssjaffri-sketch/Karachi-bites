@@ -35,9 +35,12 @@ function getDb() {
   pool = new Pool({
     connectionString: DATABASE_URL,
     ssl: { rejectUnauthorized: false },
-    max: 10,
-    idleTimeoutMillis: 30000,
+    // Vercel can create many short-lived function instances. Keep the pool
+    // small per instance to avoid exhausting Supabase's shared connection budget.
+    max: Math.max(1, Math.min(3, Number.parseInt(process.env.PG_POOL_MAX || '2', 10) || 2)),
+    idleTimeoutMillis: 10000,
     connectionTimeoutMillis: 10000,
+    allowExitOnIdle: true,
   });
   // Handle pool-level errors to prevent unhandled rejections in serverless
   pool.on('error', (err) => {

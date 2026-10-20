@@ -1,3 +1,0 @@
-◇ injected env (3) from .env
-◇ injected env (0) from .env
-Order creation error: Menu item with id 13 is currently unavailable

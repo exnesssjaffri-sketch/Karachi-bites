@@ -108,6 +108,15 @@ router.post('/orders', async (req, res) => {
     return res.status(400).json({ error: 'branch is required and must be one of: Clifton, Gulshan-e-Iqbal, North Nazimabad' });
   }
 
+  if (customer.notes !== undefined && !validate.isValidNotes(customer.notes)) {
+    return res.status(400).json({ error: 'customer.notes must be a string of 500 characters or fewer' });
+  }
+
+  const idempotencyKey = req.get('Idempotency-Key') || null;
+  if (idempotencyKey && !/^[A-Za-z0-9._:-]{8,128}$/.test(idempotencyKey)) {
+    return res.status(400).json({ error: 'Idempotency-Key must be 8-128 characters using letters, numbers, dot, underscore, colon or hyphen' });
+  }
+
   if (!Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'items are required and must be a non-empty array' });
   }
@@ -121,7 +130,7 @@ router.post('/orders', async (req, res) => {
   }
 
   try {
-    const order = await orderService.createOrder(customer, branch, items);
+    const order = await orderService.createOrder(customer, branch, items, customer.notes, idempotencyKey);
     res.status(201).json(order);
   } catch (err) {
     console.error('Order creation error:', err.message);
@@ -187,9 +196,13 @@ router.post('/orders/reorder', async (req, res) => {
   const body = req.body || {};
   const originalOrderId = body.originalOrderId;
   const customer = body.customer || {};
-  if (!originalOrderId || typeof originalOrderId !== 'string') {
-    return res.status(400).json({ error: 'originalOrderId is required' });
+  if (!originalOrderId || typeof originalOrderId !== 'string' || originalOrderId.length > 80) {
+    return res.status(400).json({ error: 'A valid originalOrderId is required' });
   }
+  if (!validate.isValidName(customer.name)) return res.status(400).json({ error: 'customer.name is required and must be a valid name' });
+  if (!validate.isValidPhone(customer.phone)) return res.status(400).json({ error: 'customer.phone is required and must be a valid Pakistani phone number' });
+  if (!validate.isValidAddress(customer.address)) return res.status(400).json({ error: 'customer.address is required and must be a valid address' });
+  if (customer.notes !== undefined && !validate.isValidNotes(customer.notes)) return res.status(400).json({ error: 'customer.notes must be a string of 500 characters or fewer' });
   try {
     const result = await orderService.reorderFromOrder(originalOrderId, customer);
     res.status(201).json(result);
@@ -201,12 +214,15 @@ router.post('/orders/reorder', async (req, res) => {
     if (err.statusCode === 400) {
       return res.status(400).json({ error: err.message });
     }
+    if (err.statusCode === 403) {
+      return res.status(403).json({ error: err.message });
+    }
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // GET /api/admin/kitchen/:id — C3: print-friendly kitchen ticket (admin only)
-router.get('/admin/kitchen/:id', auth.authMiddleware, auth.requireAdmin, async (req, res) => {
+router.get('/admin/kitchen/:id', auth.authMiddleware, auth.requireStaffOrAdmin, async (req, res) => {
   const orderId = req.params.id;
   try {
     const ticket = await orderService.getKitchenTicket(orderId);
@@ -221,6 +237,17 @@ router.get('/admin/kitchen/:id', auth.authMiddleware, auth.requireAdmin, async (
 });
 
 // POST /api/auth/login
+// GET /api/auth/me — return the server-verified identity and current application role.
+router.get('/auth/me', auth.authMiddleware, (req, res) => {
+  res.json({ user: {
+    id: req.user.id,
+    username: req.user.username || null,
+    email: req.user.email || null,
+    phone: req.user.phone || null,
+    role: req.user.role,
+  } });
+});
+
 router.post('/auth/login', async (req, res) => {
   const body = req.body || {};
   const username = body.username;
@@ -244,7 +271,7 @@ router.post('/auth/login', async (req, res) => {
 });
 
 // GET /api/admin/orders
-router.get('/admin/orders', auth.authMiddleware, auth.requireAdmin, async (req, res) => {
+router.get('/admin/orders', auth.authMiddleware, auth.requireStaffOrAdmin, async (req, res) => {
   const branch = req.query.branch || null;
   const date = req.query.date || null;
 
@@ -258,7 +285,7 @@ router.get('/admin/orders', auth.authMiddleware, auth.requireAdmin, async (req, 
 });
 
 // PATCH /api/admin/orders/:id/status
-router.patch('/admin/orders/:id/status', auth.authMiddleware, auth.requireAdmin, async (req, res) => {
+router.patch('/admin/orders/:id/status', auth.authMiddleware, auth.requireStaffOrAdmin, async (req, res) => {
   const orderId = req.params.id;
   const newStatus = req.body && req.body.status;
 

@@ -19,6 +19,13 @@
     document.head.appendChild(responsiveStyles);
   }
 
+  function mobileMenuIcon(name) {
+    var path = name === "close"
+      ? '<path d="m6 6 12 12M18 6 6 18"/>'
+      : '<path d="M4 6h16M4 12h16M4 18h16"/>';
+    return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + path + '</svg>';
+  }
+
   function enhanceStaticMobileNavigation() {
     const header = document.querySelector("header");
     if (!header) return;
@@ -92,14 +99,14 @@
       toggle.setAttribute("aria-label", "Open navigation menu");
       toggle.setAttribute("aria-controls", "kb-mobile-nav-panel");
       toggle.setAttribute("aria-expanded", "false");
-      toggle.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">menu</span>';
+      toggle.innerHTML = mobileMenuIcon("menu");
       actions.appendChild(toggle);
       toggle.addEventListener("click", () => {
         const open = panel.getAttribute("data-open") !== "true";
         panel.setAttribute("data-open", String(open));
         toggle.setAttribute("aria-expanded", String(open));
         toggle.setAttribute("aria-label", open ? "Close navigation menu" : "Open navigation menu");
-        toggle.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">' + (open ? "close" : "menu") + '</span>';
+        toggle.innerHTML = mobileMenuIcon(open ? "close" : "menu");
       });
     }
     document.addEventListener("keydown", event => {
@@ -107,7 +114,7 @@
         panel.setAttribute("data-open", "false");
         toggle.setAttribute("aria-expanded", "false");
         toggle.setAttribute("aria-label", "Open navigation menu");
-        toggle.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">menu</span>';
+        toggle.innerHTML = mobileMenuIcon("menu");
       }
     });
     document.addEventListener("click", event => {
@@ -115,7 +122,7 @@
         panel.setAttribute("data-open", "false");
         toggle.setAttribute("aria-expanded", "false");
         toggle.setAttribute("aria-label", "Open navigation menu");
-        toggle.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">menu</span>';
+        toggle.innerHTML = mobileMenuIcon("menu");
       }
     });
   }
@@ -161,6 +168,10 @@
         return;
       }
     }
+
+    // Live Stitch menu buttons now add the selected API-backed item to the shared cart.
+    // Let their own handler run instead of redirecting to the generic menu.
+    if (event.target.closest("[data-kb-live-cart]")) return;
 
     const control = event.target.closest("a,button");
     if (!control) return;

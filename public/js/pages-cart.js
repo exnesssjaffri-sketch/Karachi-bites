@@ -4,7 +4,15 @@ const cartPage = {
     this.promoDiscount = 0;
     this.render();
     this.bindEvents();
-    window.addEventListener('cartUpdated', () => this.render());
+    if (!this._cartListenerBound) {
+      window.addEventListener('cartUpdated', () => {
+        if ((window.location.hash || '').split('?')[0] === '#cart') {
+          this.render();
+          this.bindEvents();
+        }
+      });
+      this._cartListenerBound = true;
+    }
   },
 
   _calcTotals(cart) {
@@ -182,4 +190,3 @@ const cartPage = {
   },
 };
 
-window.addEventListener('DOMContentLoaded', () => cartPage.init());

@@ -1,0 +1,174 @@
+name: Lighthouse and Accessibility Audit
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "public/**"
+      - "src/**"
+      - "docs/**"
+      - "README.md"
+      - "AI_LOG.md"
+      - "docs/REQUIREMENTS_AUDIT.md"
+      - ".github/workflows/lighthouse.yml"
+  push:
+    branches: [main]
+    paths:
+      - "public/**"
+      - "src/**"
+      - ".github/workflows/lighthouse.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install application dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Start the exact PR code with an isolated SQLite database
+        run: |
+          JWT_SECRET=ci-only-test-secret-not-for-production \
+          USE_SQLITE=true \
+          DATABASE_PATH=/tmp/karachi-bites-lighthouse.sqlite \
+          PORT=3000 \
+          npm start > /tmp/karachi-bites-server.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:3000/api/health; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/karachi-bites-server.log
+          exit 1
+
+      - name: Run Lighthouse on the exact PR code (360px mobile viewport)
+        run: >-
+          npx --yes lighthouse@12.8.2 http://127.0.0.1:3000/
+          --only-categories=performance,accessibility,best-practices,seo
+          --screenEmulation.mobile
+          --screenEmulation.width=360
+          --screenEmulation.height=800
+          --screenEmulation.deviceScaleFactor=1
+          --chrome-flags="--headless --no-sandbox"
+          --output=json
+          --output-path=./lighthouse-report.json
+          --quiet
+
+      - name: Print scores and enforce the brief's 85-point targets
+        if: always()
+        run: |
+          if [ ! -f lighthouse-report.json ]; then
+            echo "Lighthouse report was not created."
+            exit 1
+          fi
+          node - <<'NODE'
+          const report = require('./lighthouse-report.json');
+          const names = ['performance', 'accessibility', 'best-practices', 'seo'];
+          let failed = false;
+          for (const name of names) {
+            const score = report.categories?.[name]?.score;
+            if (typeof score !== 'number') {
+              console.log(name + ': no score available');
+              failed = true;
+              continue;
+            }
+            const points = Math.round(score * 100);
+            console.log(name + ': ' + points + '/100');
+            if ((name === 'performance' || name === 'accessibility') && points < 85) failed = true;
+          }
+          if (failed) process.exit(1);
+          NODE
+
+      - name: Upload Lighthouse report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: karachi-bites-lighthouse-mobile
+          path: lighthouse-report.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  lighthouse-production:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Wait for the optimized homepage deployment
+        id: deployment
+        run: |
+          for attempt in $(seq 1 12); do
+            html="$(curl --fail --silent https://karachi-bites.vercel.app/ || true)"
+            if printf '%s' "$html" | grep -q 'kb-static-menu-styles' && ! printf '%s' "$html" | grep -q 'cdn.tailwindcss'; then
+              echo "ready=true" >> "$GITHUB_OUTPUT"
+              echo "Optimized homepage is live."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "ready=false" >> "$GITHUB_OUTPUT"
+          echo "::warning::Production is still serving an older deployment. Live Lighthouse was skipped; deploy main to Vercel and rerun."
+          exit 0
+
+      - name: Run Lighthouse against the live production site at 360px
+        if: steps.deployment.outputs.ready == 'true'
+        run: >-
+          npx --yes lighthouse@12.8.2 https://karachi-bites.vercel.app/
+          --only-categories=performance,accessibility,best-practices,seo
+          --screenEmulation.mobile
+          --screenEmulation.width=360
+          --screenEmulation.height=800
+          --screenEmulation.deviceScaleFactor=1
+          --chrome-flags="--headless --no-sandbox"
+          --output=json
+          --output-path=./lighthouse-production-report.json
+          --quiet
+
+      - name: Enforce live production scores
+        if: always() && steps.deployment.outputs.ready == 'true'
+        run: |
+          if [ ! -f lighthouse-production-report.json ]; then
+            echo "Production Lighthouse report was not created."
+            exit 1
+          fi
+          node - <<'NODE'
+          const report = require('./lighthouse-production-report.json');
+          let failed = false;
+          for (const name of ['performance', 'accessibility', 'best-practices', 'seo']) {
+            const score = report.categories?.[name]?.score;
+            if (typeof score !== 'number') {
+              console.log(name + ': no score available');
+              failed = true;
+              continue;
+            }
+            const points = Math.round(score * 100);
+            console.log(name + ': ' + points + '/100');
+            if ((name === 'performance' || name === 'accessibility') && points < 85) failed = true;
+          }
+          if (failed) process.exit(1);
+          NODE
+
+      - name: Upload live production Lighthouse report
+        if: always() && steps.deployment.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: karachi-bites-lighthouse-production-mobile
+          path: lighthouse-production-report.json
+          if-no-files-found: warn
+          retention-days: 30

@@ -67,3 +67,34 @@ This log records AI-assisted work that can be tied to the available project hist
 - **Finding:** The code originally seeded `admin/admin123` and `staff/staff123` without regard to environment, creating a known-credential risk if the public deployment initialized a fresh database.
 - **Change made:** Production user seeding now requires encrypted `ADMIN_USERNAME` / `ADMIN_PASSWORD` and optional staff variables. Existing seeded demo accounts are removed only if their stored bcrypt hashes match the known demo passwords and their usernames are not the configured production usernames.
 - **Verification still required:** Confirm production env variables are available to the new deployment, then verify an authorized admin login, staff denial from admin routes, and that known demo credentials cannot authenticate in production.
+
+
+## 2026-10-20 — production health, privacy, auth integration, and audit evidence
+
+- Audited the PDF F1–F12, S1–S5, C1–C4 requirements against repository files, GitHub Actions and live production endpoints.
+- Merged PR #6 after its eight automated suites passed. It integrates the live Stitch homepage with the API-backed ordering flow, requires phone verification for tracking, removes customer PII/private notes from public order lookup, validates order notes/idempotency headers, and makes health readiness verify an initialized/queryable menu schema.
+- Live evidence after deployment: `GET /api/health` HTTP 200 with PostgreSQL `ready: true`; `GET /api/menu` HTTP 200 with 12 items.
+- Merged PR #7 after GitHub Actions run 107 passed all eight suites. It integrates Supabase Auth while preserving legacy username/password auth, adds `GET /api/auth/me`, allows staff order operations while keeping menu CRUD admin-only, caps the PostgreSQL pool per serverless instance, and adds the `auth_profiles` migration.
+- Applied and verified the additive Supabase migration. The table has RLS enabled; the signup trigger inserts customer roles only; direct execution of the trigger function is revoked from `anon` and `authenticated`.
+- Added a Lighthouse mobile CI workflow that collects a report and gates performance/accessibility scores at 85, plus an evidence-based requirements audit and a real-recording walkthrough script.
+- Explicit limitations: real Supabase signup/confirmation and SMS OTP were not tested with a new human account; production order mutation was avoided to protect live restaurant operations; Lighthouse results and physical 360px/manual keyboard checks are pending; the actual screen-recorded MP4 must still be recorded and attached.
+- No service-role key, database URL, JWT secret, customer phone, or delivery address was committed to documentation.
+
+
+## 2026-10-20 — Lighthouse findings and measured optimization
+
+- Lighthouse baseline against the previous production homepage found Performance 69/100, Accessibility 89/100, Best Practices 96/100, SEO 75/100.
+- Main causes included a 3.9 MB Material Symbols font, large image payloads, missing `alt` and intrinsic image dimensions, a malformed/missing `robots.txt`, missing description metadata, low-contrast red text, and layout shift while web fonts loaded.
+- Updated the homepage to use lightweight inline SVG icons instead of the oversized icon font; optimized Unsplash image URLs; added descriptive alt text and intrinsic image dimensions; adjusted font-display behavior and red text contrast; added meta description, `robots.txt`, and `sitemap.xml`.
+- GitHub Actions Lighthouse run 7 tested the exact PR code with an isolated SQLite database at 360×800. Results: Performance 96/100, Accessibility 100/100, Best Practices 96/100, SEO 100/100. Artifact: https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/39320576856/artifacts/12218594103.
+- These are local PR-code measurements, not a claim that the unmerged optimization is already deployed. Physical Android interaction, manual keyboard/screen-reader testing, and a final post-deploy Lighthouse run remain to be done.
+
+
+## 2026-10-20 — production Lighthouse discrepancy and deployment quota
+
+- Lighthouse run 29 against the exact optimized PR code at 360×800 passed with Performance 97, Accessibility 100, Best Practices 100, SEO 100. Artifact: https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/39323273356/artifacts/12220986614.
+- Production Lighthouse after PR #8 showed Performance 74 on the older homepage. After PR #9 merged, the live alias still serves an older commit; checking live HTML confirms it still loads Tailwind CDN and does not contain the new static-menu stylesheet marker.
+- Attempted a fresh Vercel production deployment of the merged main SHA. Vercel returned HTTP 402 because the deployment API free-per-day quota was exceeded (>100; retry after 24 hours). No preview deployment was promoted because it may not have production environment variables.
+- The live database remains healthy (health HTTP 200, PostgreSQL `ready: true`; menu API HTTP 200, 12 items). The merged homepage optimization is in GitHub main but is **not yet live**.
+- Updated the Lighthouse workflow to skip the production audit with a warning when the unique optimized-homepage marker is absent, rather than falsely scoring an older deployment.
+- Required follow-up: connect GitHub repo `exnesssjaffri-sketch/Karachi-bites` to the Vercel project with `main` as production branch, or redeploy after the quota resets; then verify live Lighthouse and mobile interactions.

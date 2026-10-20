@@ -3,178 +3,158 @@ const orderTrackingPage = {
   orderId: null,
   loading: false,
   error: null,
+  verifiedPhone: null,
 
-  phone: '',
-
-  async init() {
-    const params = new URLSearchParams(window.location.hash.split('?')[1]);
-    this.orderId = params.get('order') || null;
-    this.phone = params.get('phone') || '';
-    if (this.orderId) {
-      await this.fetchOrder();
-    }
-    this.render();
+  escapeHtml(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   },
 
-  async fetchOrder() {
-    this.loading = true;
+  async init() {
+    const params = new URLSearchParams(window.location.hash.split("?")[1] || "");
+    this.orderId = params.get("order") || "";
+    this.orderData = null;
     this.error = null;
-    this.render();
-
-    try {
-      const result = await api.trackOrder(this.orderId, this.phone);
-      if (result.success) {
-        this.orderData = result.data;
-        this.orderId = result.data.orderId || this.orderId;
-      } else {
-        this.error = result.error || 'Order not found';
-      }
-    } catch (err) {
-      console.error('Failed to track order:', err);
-      this.error = 'Failed to load order details';
-    }
-
+    this.verifiedPhone = null;
     this.loading = false;
     this.render();
   },
 
+  async track(orderId, phone) {
+    this.orderId = String(orderId || "").trim();
+    this.error = null;
+    this.verifiedPhone = null;
+    this.loading = true;
+    this.render();
+
+    try {
+      if (!window.api || typeof window.api.trackOrder !== "function") {
+        throw new Error("Order tracking is temporarily unavailable. Please try again.");
+      }
+      const result = await window.api.trackOrder(this.orderId, String(phone || "").trim());
+      if (!result.success) {
+        this.orderData = null;
+        this.error = result.error || "We could not find an order matching those details.";
+      } else {
+        this.orderData = result.data;
+        this.verifiedPhone = String(phone || '').trim();
+      }
+    } catch (error) {
+      console.error("Failed to track order:", error);
+      this.orderData = null;
+      this.error = "We could not verify your order right now. Please try again.";
+    } finally {
+      this.loading = false;
+      this.render();
+    }
+  },
+
   render() {
-    const container = document.getElementById('app');
+    const container = document.getElementById("app");
     if (!container) return;
 
     if (this.loading) {
-      container.innerHTML = `
-        <section class="pt-28 pb-24 px-6">
-          <div class="max-w-3xl mx-auto text-center">
-            <span class="material-symbols-outlined text-6xl text-[#B42318] animate-pulse">hourglass_bottom</span>
-            <p class="text-[#B8B0A6] mt-4" data-i18l-text="common.loading">Loading order details...</p>
-          </div>
-        </section>
-      `;
+      container.innerHTML = '<section class="px-4 pb-24 pt-28 sm:px-6"><div class="mx-auto max-w-2xl rounded-xl border border-[#3A342E] bg-[#211E1B] p-8 text-center" role="status"><span class="material-symbols-outlined animate-pulse text-5xl text-[#B42318]" aria-hidden="true">hourglass_bottom</span><p class="mt-4 text-[#B8B0A6]">Verifying your order details…</p></div></section>';
       return;
     }
 
-    if (this.error || !this.orderData) {
-      container.innerHTML = `
-        <section class="pt-28 pb-24 px-6">
-          <div class="max-w-3xl mx-auto text-center">
-            <span class="material-symbols-outlined text-6xl text-[#B42318] mb-4">search_off</span>
-            <h2 class="font-headline text-2xl text-[#F7F3EC] mb-2" data-i18l-text="tracking.notFound">Order Not Found</h2>
-            <p class="text-[#B8B0A6] mb-6">${this.error || 'Enter the order ID and phone number from your confirmation to check its latest status.'}</p>
-            <form id="orderLookupForm" class="max-w-xl mx-auto mb-5 flex flex-col gap-3 text-left">
-              <div>
-                <label for="orderLookupId" class="sr-only">Order ID</label>
-                <input id="orderLookupId" name="orderId" type="text" required maxlength="80" autocomplete="off" placeholder="e.g. KB-20261010-ABC123" class="w-full px-4 py-3 rounded-lg bg-[#211E1B] border border-[#3A342E] text-white placeholder-[#B8B0A6]/60 focus:outline-none focus:border-[#B42318]">
-              </div>
-              <div>
-                <label for="orderLookupPhone" class="sr-only">Phone Number</label>
-                <input id="orderLookupPhone" name="phone" type="tel" required autocomplete="tel" placeholder="03001234567" pattern="03[0-9]{9}" class="w-full px-4 py-3 rounded-lg bg-[#211E1B] border border-[#3A342E] text-white placeholder-[#B8B0A6]/60 focus:outline-none focus:border-[#B42318]">
-              </div>
-              <button type="submit" class="bg-[#B42318] hover:bg-[#9E1C13] text-white px-6 py-3 rounded-lg font-title" data-i18l-text="tracking.trackOrder">Track Order</button>
-            </form>
-            <a href="#home" class="text-[#B8B0A6] hover:text-white px-6 py-2 rounded-lg font-title inline-flex items-center gap-2" data-link>
-              <span class="material-symbols-outlined text-sm">home</span>
-              <span data-i18l-text="common.goHome">Go Home</span>
-            </a>
-          </div>
-        </section>
-      `;
-      const lookupForm = container.querySelector('#orderLookupForm');
-      if (lookupForm) {
-        lookupForm.addEventListener('submit', (event) => {
-          event.preventDefault();
-          const input = container.querySelector('#orderLookupId');
-          const phoneInput = container.querySelector('#orderLookupPhone');
-          const orderId = input ? input.value.trim() : '';
-          const phone = phoneInput ? phoneInput.value.trim() : '';
-          if (!orderId || !phone) return;
-          window.location.hash = '#tracking?order=' + encodeURIComponent(orderId) + '&phone=' + encodeURIComponent(phone);
-        });
-      }
+    if (!this.orderData) {
+      container.innerHTML =
+        '<section class="px-4 pb-24 pt-28 sm:px-6"><div class="mx-auto max-w-xl">' +
+          '<nav class="mb-6 flex items-center gap-2 text-sm text-[#B8B0A6]"><a href="/" class="hover:text-white" data-link>Home</a><span aria-hidden="true">›</span><span class="text-[#F7F3EC]">Track Order</span></nav>' +
+          '<div class="rounded-2xl border border-[#3A342E] bg-[#211E1B] p-6 sm:p-8">' +
+            '<span class="material-symbols-outlined mb-3 text-4xl text-[#B42318]" aria-hidden="true">local_shipping</span>' +
+            '<h1 class="font-headline text-2xl font-semibold text-[#F7F3EC]">Track Your Order</h1>' +
+            '<p class="mb-6 mt-2 text-sm leading-6 text-[#B8B0A6]">Enter the order ID from your confirmation and the Pakistani mobile number used at checkout. We verify both before showing order details.</p>' +
+            (this.error ? '<p class="mb-4 rounded-lg border border-[#B42318]/50 bg-[#B42318]/10 p-3 text-sm text-[#ffd9d3]" role="alert">' + this.escapeHtml(this.error) + '</p>' : '') +
+            '<form id="orderLookupForm" class="space-y-4">' +
+              '<div><label for="orderLookupId" class="mb-2 block text-sm font-medium text-[#F7F3EC]">Order ID</label><input id="orderLookupId" name="orderId" type="text" required maxlength="80" autocomplete="off" value="' + this.escapeHtml(this.orderId) + '" placeholder="e.g. KB-20261010-ABC123" class="min-h-12 w-full rounded-lg border border-[#3A342E] bg-[#181614] px-4 py-3 text-[#F7F3EC] placeholder-[#B8B0A6]/60 focus:border-[#B42318] focus:outline-none" /></div>' +
+              '<div><label for="orderLookupPhone" class="mb-2 block text-sm font-medium text-[#F7F3EC]">Checkout phone number</label><input id="orderLookupPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required maxlength="20" placeholder="03XXXXXXXXX" class="min-h-12 w-full rounded-lg border border-[#3A342E] bg-[#181614] px-4 py-3 text-[#F7F3EC] placeholder-[#B8B0A6]/60 focus:border-[#B42318] focus:outline-none" /></div>' +
+              '<button type="submit" class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#B42318] px-5 py-3 font-semibold text-white transition hover:bg-[#C93627]"><span class="material-symbols-outlined" aria-hidden="true">search</span>Verify & Track Order</button>' +
+            '</form>' +
+          '</div>' +
+        '</div></section>';
+
+      const form = container.querySelector("#orderLookupForm");
+      form?.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const orderId = container.querySelector("#orderLookupId")?.value || "";
+        const phone = container.querySelector("#orderLookupPhone")?.value || "";
+        if (!orderId.trim() || !phone.trim()) return;
+        void this.track(orderId, phone);
+      });
       return;
     }
 
     const order = this.orderData;
-    const status = (order.status || 'pending').toLowerCase();
-    const statusSteps = ['received', 'preparing', 'out-for-delivery', 'delivered'];
+    const status = String(order.status || "received").toLowerCase().replace(/\s+/g, "-");
+    const statusSteps = ["received", "preparing", "out-for-delivery", "delivered"];
     const currentStepIndex = statusSteps.indexOf(status);
-    const statusLabels = {
-      delivered: 'tracking.status.delivered',
-      'out-for-delivery': 'tracking.status.out-for-delivery',
-      preparing: 'tracking.status.preparing',
-      received: 'tracking.status.received'
-    };
+    const safeStatus = currentStepIndex < 0 ? 0 : currentStepIndex;
+    const items = Array.isArray(order.items) ? order.items : [];
 
-    container.innerHTML = `
-      <section class="pt-28 pb-24 px-6">
-        <div class="max-w-3xl mx-auto">
-          <nav class="flex items-center gap-2 text-[#B8B0A6] text-sm mb-6">
-            <a href="#home" class="hover:text-[#B42318]" data-link data-i18l-text="common.home">Home</a>
-            <span>&rsaquo;</span>
-            <span class="text-[#F7F3EC] font-medium" data-i18l-text="tracking.breadcrumb">Track Order</span>
-          </nav>
+    container.innerHTML =
+      '<section class="px-4 pb-24 pt-28 sm:px-6"><div class="mx-auto max-w-3xl">' +
+        '<div class="mb-6 flex flex-wrap items-center justify-between gap-3"><div><p class="mb-1 text-xs font-semibold uppercase tracking-wider text-[#B8B0A6]">Order tracking</p><h1 class="font-headline text-2xl font-semibold text-[#F7F3EC]">Your Order Status</h1></div><span class="rounded-lg border border-[#3A342E] bg-[#211E1B] px-3 py-2 text-sm text-[#F7F3EC]">' + this.escapeHtml(order.orderId || this.orderId) + '</span></div>' +
+        '<div class="mb-6 rounded-2xl border border-[#3A342E] bg-[#211E1B] p-6"><div class="mb-6 flex items-center gap-4"><div class="flex h-14 w-14 items-center justify-center rounded-full bg-[#B42318]/15"><span class="material-symbols-outlined text-2xl text-[#B42318]" aria-hidden="true">motorcycle</span></div><div><h2 class="font-semibold text-[#F7F3EC]">' + this.escapeHtml(statusSteps[safeStatus].replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase())) + '</h2><p class="mt-1 text-sm text-[#B8B0A6]">Latest status reported by the kitchen</p></div></div>' +
+        '<ol class="space-y-4">' + statusSteps.map((step, index) => {
+          const completed = index <= safeStatus;
+          const current = index === safeStatus;
+          return '<li class="flex items-start gap-3"><span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full ' + (completed ? 'bg-[#B42318]' : 'bg-[#3A342E]') + '"><span class="material-symbols-outlined text-sm text-white" aria-hidden="true">' + (completed ? 'check' : 'radio_button_unchecked') + '</span></span><div><p class="' + (completed ? 'text-[#F7F3EC]' : 'text-[#B8B0A6]') + '">' + this.escapeHtml(step.replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase())) + '</p><p class="text-xs text-[#B8B0A6]">' + (current ? 'Current status' : completed ? 'Completed' : 'Pending') + '</p></div></li>';
+        }).join("") + '</ol></div>' +
+        '<div class="rounded-2xl border border-[#3A342E] bg-[#211E1B] p-6"><h2 class="mb-4 font-semibold text-[#F7F3EC]">Order Summary</h2>' +
+          (items.length ? items.map((item) => '<div class="flex justify-between gap-4 border-b border-[#3A342E] py-3 text-sm"><span class="text-[#B8B0A6]">' + this.escapeHtml(item.name || "Item") + ' × ' + this.escapeHtml(item.quantity || 1) + '</span><span class="text-[#F7F3EC]">' + this.escapeHtml(window.cartStore.formatPrice(Number(item.price || 0) * Number(item.quantity || 1))) + '</span></div>').join("") : '<p class="py-3 text-sm text-[#B8B0A6]">Order items are not available.</p>') +
+          '<div class="mt-4 flex justify-between gap-4"><span class="text-sm text-[#B8B0A6]">Total</span><span class="font-semibold text-[#F7F3EC]">' + this.escapeHtml(window.cartStore.formatPrice(Number(order.total || 0))) + '</span></div>' +
+        '</div><div class="mt-5 rounded-2xl border border-[#3A342E] bg-[#211E1B] p-6"><button id="showReorderForm" type="button" class="min-h-11 rounded-lg bg-[#B42318] px-4 py-2 text-sm font-semibold text-white">Order Again</button>' +
+          '<form id="reorderForm" class="hidden mt-4 space-y-4" novalidate><p class="text-sm text-[#B8B0A6]">We will repeat available items from this order. The original checkout phone must match.</p>' +
+            '<div><label for="reorderName" class="mb-2 block text-sm font-medium text-[#F7F3EC]">Full name</label><input id="reorderName" required maxlength="100" autocomplete="name" class="min-h-11 w-full rounded-lg border border-[#3A342E] bg-[#181614] px-3 py-2 text-[#F7F3EC]" /></div>' +
+            '<div><label for="reorderPhone" class="mb-2 block text-sm font-medium text-[#F7F3EC]">Verified checkout phone</label><input id="reorderPhone" readonly value="' + this.escapeHtml(this.verifiedPhone || "") + '" class="min-h-11 w-full rounded-lg border border-[#3A342E] bg-[#181614] px-3 py-2 text-[#F7F3EC]" /></div>' +
+            '<div><label for="reorderAddress" class="mb-2 block text-sm font-medium text-[#F7F3EC]">Delivery address</label><textarea id="reorderAddress" required minlength="5" maxlength="500" autocomplete="street-address" rows="3" class="w-full rounded-lg border border-[#3A342E] bg-[#181614] px-3 py-2 text-[#F7F3EC]"></textarea></div>' +
+            '<div><label for="reorderNotes" class="mb-2 block text-sm font-medium text-[#F7F3EC]">Order notes (optional)</label><textarea id="reorderNotes" maxlength="500" rows="2" class="w-full rounded-lg border border-[#3A342E] bg-[#181614] px-3 py-2 text-[#F7F3EC]"></textarea></div>' +
+            '<p id="reorderFeedback" class="hidden text-sm" role="alert" aria-live="polite"></p><button id="submitReorder" type="submit" class="min-h-11 rounded-lg bg-[#B42318] px-4 py-2 text-sm font-semibold text-white">Place Same Order Again</button></form></div>' +
+        '<button id="trackAnotherOrder" type="button" class="mt-5 min-h-11 rounded-lg border border-[#3A342E] px-4 py-2 text-sm font-semibold text-[#F7F3EC] hover:border-[#B42318]">Track another order</button>' +
+      '</div></section>';
 
-          <div class="flex items-center justify-between mb-8">
-            <h1 class="font-headline text-2xl font-semibold" data-i18l-text="tracking.title">Track Your Order</h1>
-            <span class="text-[#B8B0A6] bg-[#2A2622] px-3 py-1 rounded-full text-sm">${order.orderId || this.orderId}</span>
-          </div>
-
-          <div class="bg-[#2A2622] rounded-xl border border-[#3A342E] p-6 mb-6">
-            <div class="flex items-center gap-4 mb-6">
-              <div class="w-14 h-14 rounded-full bg-[#B42318]/20 flex items-center justify-center">
-                <span class="material-symbols-outlined text-2xl text-[#B42318]">motorcycle</span>
-              </div>
-              <div>
-                <h3 class="font-title text-[#F7F3EC] font-semibold" data-i18l-text="${statusLabels[status] || 'tracking.status.received'}">${statusLabels[status] || 'tracking.status.received'}</h3>
-                <p class="text-[#B8B0A6] text-sm" data-i18l-text="tracking.eta">Estimated delivery: 30-45 minutes</p>
-              </div>
-            </div>
-
-            <div class="space-y-4">
-              ${statusSteps.map((step, i) => {
-                const isCompleted = i <= currentStepIndex;
-                const isCurrent = i === currentStepIndex;
-                const labelKey = 'tracking.step.' + step;
-                const stateKey = isCurrent ? 'tracking.inProgress' : isCompleted ? 'tracking.completed' : 'tracking.pending';
-                return `
-                  <div class="flex items-start gap-3">
-                    <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${isCompleted ? 'bg-green-600' : 'bg-[#3A342E]'}">
-                      ${isCompleted ? '<span class="material-symbols-outlined text-sm text-white">check</span>' : ''}
-                    </div>
-                    <div>
-                      <div class="text-[#F7F3EC] font-medium ${isCompleted ? '' : 'text-[#B8B0A6]'}" data-i18l-text="${labelKey}">${labelKey}</div>
-                      <div class="text-[#B8B0A6] text-sm" data-i18l-text="${stateKey}">${stateKey}</div>
-                    </div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          </div>
-
-          <div class="bg-[#2A2622] rounded-xl border border-[#3A342E] p-6">
-            <h3 class="font-title text-[#F7F3EC] font-semibold mb-4" data-i18l-text="tracking.summary">Order Summary</h3>
-            <div id="orderItems" class="space-y-3 mb-4">
-              ${(order.items || []).map(item => `
-                <div class="flex justify-between text-[#B8B0A6] text-sm">
-                  <span>${item.name || 'Item'} x${item.quantity || 'N/A'}</span>
-                  <span class="text-[#F7F3EC]">${cartStore.formatPrice(item.price * (item.quantity || 0))}</span>
-                </div>
-              `).join('')}
-            </div>
-            ${order.notes ? `<div class="mt-4 pt-4 border-t border-[#3A342E]"><div class="text-[#B8B0A6] text-sm mb-1" data-i18l-text="tracking.notes">Order Notes</div><div class="text-[#F7F3EC] text-sm">${order.notes}</div></div>` : ''}
-            <div class="border-t border-[#3A342E] pt-4">
-              <div class="flex justify-between text-[#B8B0A6] text-sm">
-                <span data-i18l-text="common.total">Total</span>
-                <span class="text-[#B42318] font-price">${cartStore.formatPrice(order.total || 0)}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    `;
-    applyI18n(container);
-
+    container.querySelector("#showReorderForm")?.addEventListener("click", () => {
+      container.querySelector("#reorderForm")?.classList.toggle("hidden");
+    });
+    container.querySelector("#reorderForm")?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const feedback = container.querySelector("#reorderFeedback");
+      const submit = container.querySelector("#submitReorder");
+      const name = container.querySelector("#reorderName").value.trim();
+      const address = container.querySelector("#reorderAddress").value.trim();
+      const notes = container.querySelector("#reorderNotes").value.trim();
+      if (name.length < 2 || address.length < 5 || !this.verifiedPhone) {
+        feedback.textContent = "Enter your name and a valid delivery address.";
+        feedback.classList.remove("hidden");
+        return;
+      }
+      submit.disabled = true;
+      submit.textContent = "Placing order…";
+      feedback.classList.add("hidden");
+      try {
+        const result = await window.api.reorderOrder(this.orderId, { name, phone: this.verifiedPhone, address, notes });
+        if (!result.success || !result.data || !result.data.orderId) throw new Error(result.error || "Could not place the repeat order.");
+        window.location.hash = "#order-placed?order=" + encodeURIComponent(result.data.orderId);
+      } catch (error) {
+        feedback.textContent = error.message || "Could not place the repeat order. Please try again.";
+        feedback.classList.remove("hidden");
+      } finally {
+        submit.disabled = false;
+        submit.textContent = "Place Same Order Again";
+      }
+    });
+    container.querySelector("#trackAnotherOrder")?.addEventListener("click", () => {
+      this.orderData = null;
+      this.verifiedPhone = null;
+      this.error = null;
+      this.orderId = "";
+      this.render();
+    });
   },
 };
-
-window.addEventListener('DOMContentLoaded', () => orderTrackingPage.init());

@@ -23,6 +23,7 @@ const navbar = {
     }
     this.cartCountBadge = document.getElementById('cart-count-badge');
     this.updateBadge();
+
   },
 
   updateBadge() {
@@ -30,14 +31,14 @@ const navbar = {
     this.cartCount = cart.itemCount;
     this.cartTotal = cart.total;
 
-    if (this.cartCountBadge) {
-      this.cartCountBadge.textContent = this.cartCount;
+    document.querySelectorAll('[data-cart-count-badge]').forEach((badge) => {
+      badge.textContent = this.cartCount;
       if (this.cartCount > 0) {
-        this.cartCountBadge.classList.remove('hidden');
+        badge.classList.remove('hidden');
       } else {
-        this.cartCountBadge.classList.add('hidden');
+        badge.classList.add('hidden');
       }
-    }
+    });
   },
 
   // Template
@@ -46,18 +47,18 @@ const navbar = {
       <nav class="fixed top-0 left-0 right-0 z-50 bg-[#211E1B] border-b border-[#3A342E] shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
         <div class="h-20 max-w-7xl mx-auto px-6 flex items-center justify-between">
           <!-- Logo -->
-          <a href="#home" class="flex items-center gap-2" data-link aria-label="Karachi Bites home">
+          <a href="/" class="flex items-center gap-2" data-link aria-label="Karachi Bites home">
             <img src="/logo.svg" alt="Karachi Bites logo" class="w-10 h-10 object-contain shrink-0" width="40" height="40" decoding="async" />
             <span class="font-headline text-[#F7F3EC] font-semibold text-xl">Karachi Bites</span>
           </a>
 
           <!-- Desktop Navigation -->
           <div class="hidden md:flex items-center gap-1">
-            <a href="#home" class="nav-link px-4 py-2 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link>Home</a>
+            <a href="/" class="nav-link px-4 py-2 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link>Home</a>
             <a href="#menu" class="nav-link px-4 py-2 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link>Menu</a>
             <a href="#cart" class="nav-link px-4 py-2 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label relative" data-link>
               Cart
-              <span id="cart-count-badge" class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#B42318] text-white text-xs flex items-center justify-center hidden">0</span>
+              <span data-cart-count-badge class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#B42318] text-white text-xs flex items-center justify-center hidden">0</span>
             </a>
           </div>
 
@@ -76,11 +77,11 @@ const navbar = {
         <!-- Mobile Navigation -->
         <div id="mobile-menu" class="hidden md:hidden bg-[#2A2622] border-t border-[#3A342E]">
           <div class="px-4 py-3 space-y-1">
-            <a href="#home" class="block px-4 py-3 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link>Home</a>
+            <a href="/" class="block px-4 py-3 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link>Home</a>
             <a href="#menu" class="block px-4 py-3 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link>Menu</a>
             <a href="#cart" class="block px-4 py-3 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label relative" data-link>
               Cart
-              <span id="cart-count-badge" class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#B42318] text-white text-xs flex items-center justify-center hidden">0</span>
+              <span data-cart-count-badge class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#B42318] text-white text-xs flex items-center justify-center hidden">0</span>
             </a>
           </div>
         </div>

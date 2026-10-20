@@ -116,22 +116,18 @@ async function runTests() {
 
     // Formula-injection protection: values starting with = + - @ must be quoted/prefixed
     console.log('Testing CSV formula-injection protection...');
+    const hostileName = "\"; =cmd|'!A1' & =HYPERLINK(\"http://evil\")";
     response = await fetch(baseUrl + '/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        customer: { name: '"; =cmd|\'!A1\' & =HYPERLINK("http://evil")', phone: '03001234567', address: 'Test address' },
+        customer: { name: hostileName, phone: '03001234567', address: 'Test address' },
         branch: 'Clifton',
         items: [{ id: 1, qty: 1 }],
       }),
     });
     assert(response.status === 201, 'Order with hostile name should be created (server stores raw name)');
     const injectionOrder = await readJson(response);
-    // Fetch full order to obtain the raw customer name stored in the DB
-    response = await fetch(baseUrl + '/api/orders/' + injectionOrder.orderId);
-    assert(response.status === 200, 'Should be able to fetch the injection order');
-    const fetchedInjectionOrder = await readJson(response);
-    const hostileName = fetchedInjectionOrder.customer.name;
     response = await fetch(baseUrl + '/api/admin/orders/export?date_from=1999-01-01', {
       headers: { Authorization: 'Bearer ' + adminToken },
     });
@@ -158,10 +154,6 @@ async function runTests() {
     });
     assert(response.status === 201, 'Order with leading-whitespace formula name should be created');
     const wsOrder = await readJson(response);
-    response = await fetch(baseUrl + '/api/orders/' + wsOrder.orderId);
-    assert(response.status === 200, 'Should be able to fetch the whitespace order');
-    const wsFetched = await readJson(response);
-    const wsName = wsFetched.customer.name;
     response = await fetch(baseUrl + '/api/admin/orders/export?date_from=1999-01-01', {
       headers: { Authorization: 'Bearer ' + adminToken },
     });

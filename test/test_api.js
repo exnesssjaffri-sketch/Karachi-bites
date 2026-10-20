@@ -50,6 +50,7 @@ function makeOrderPayload(branch, quantity = 1) {
       name: 'Test Customer',
       phone: '03001234567',
       address: 'Test address, Karachi',
+      notes: 'Please call on arrival',
     },
     branch,
     items: [{ id: 1, qty: quantity }],
@@ -67,6 +68,13 @@ async function runTests() {
     });
     const baseUrl = 'http://127.0.0.1:' + server.address().port;
     await waitForServer(baseUrl);
+
+    console.log('Testing health endpoint readiness...');
+    const healthResponse = await fetch(baseUrl + '/api/health');
+    assert(healthResponse.status === 200, 'Health endpoint should return 200 when schema is ready');
+    const health = await readJson(healthResponse);
+    assert(health.status === 'ok' && health.ready === true, 'Health endpoint must not report success until the menu schema is queryable');
+    console.log('  PASS');
 
     console.log('Testing customer homepage, preserved app and admin page routes...');
     let pageResponse = await fetch(baseUrl + '/');
@@ -123,6 +131,52 @@ async function runTests() {
     assert(fetched.orderId === created.orderId, 'Public order ID mismatch');
     assert(fetched.branch === 'Clifton', 'Order branch should persist');
     assert(fetched.items?.[0]?.quantity === 2, 'Order quantity should persist');
+    assert(!fetched.customer && !Object.hasOwn(fetched, 'notes'), 'Public order lookup must not expose customer PII or private notes');
+
+    response = await fetch(baseUrl + '/api/admin/kitchen/' + encodeURIComponent(created.orderId), {
+      headers: { Authorization: 'Bearer ' + adminLogin.token },
+    });
+    assert(response.status === 200, 'Admin kitchen ticket should be available to admin');
+    const kitchenTicket = await readJson(response);
+    assert(kitchenTicket.notes === 'Please call on arrival', 'Customer order notes should persist and be visible on the admin kitchen ticket');
+
+    response = await fetch(baseUrl + '/api/orders/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId: created.orderId, phone: '03001234567' }),
+    });
+    assert(response.status === 200, 'Correct phone should authorize order tracking');
+    const tracked = await readJson(response);
+    assert(tracked.orderId === created.orderId, 'Verified tracking should return the order');
+    assert(!tracked.customer && !Object.hasOwn(tracked, 'notes'), 'Tracking response must not reveal private address or notes');
+
+    response = await fetch(baseUrl + '/api/orders/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId: created.orderId, phone: '03009999999' }),
+    });
+    assert(response.status === 403, 'Incorrect phone must not authorize order tracking');
+    console.log('  PASS');
+
+    console.log('Testing secure order again...');
+    const repeatCustomer = { name: 'Repeat Customer', phone: '03009999999', address: 'New address, Karachi', notes: 'Repeat order test' };
+    response = await fetch(baseUrl + '/api/orders/reorder', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ originalOrderId: created.orderId, customer: repeatCustomer }),
+    });
+    assert(response.status === 403, 'Reorder must reject a mismatched original checkout phone');
+    repeatCustomer.phone = '03001234567';
+    response = await fetch(baseUrl + '/api/orders/reorder', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ originalOrderId: created.orderId, customer: repeatCustomer }),
+    });
+    assert(response.status === 201, 'Reorder with verified original phone should succeed');
+    const repeated = await readJson(response);
+    assert(repeated.orderId && repeated.orderId !== created.orderId, 'Repeat order should get a new unique order ID');
+    const repeatedResponse = await fetch(baseUrl + '/api/orders/' + encodeURIComponent(repeated.orderId));
+    const repeatedDetails = await readJson(repeatedResponse);
+    assert(repeatedResponse.status === 200 && repeatedDetails.branch === 'Clifton', 'Repeat order should preserve original branch');
+    assert(repeatedDetails.items?.[0]?.quantity === 2 && repeatedDetails.total === 1850, 'Repeat order should preserve quantities and recalculate total');
     console.log('  PASS');
 
     for (const branch of ['Gulshan-e-Iqbal', 'North Nazimabad']) {
@@ -184,7 +238,7 @@ async function runTests() {
     assert(response.status === 400 && /Invalid status transition/.test(invalidTransition.error || ''), 'Invalid status jump must be rejected');
     console.log('  PASS');
 
-    console.log('Testing staff cannot access admin endpoints...');
+    console.log('Testing staff can access order operations but not menu administration...');
     response = await fetch(baseUrl + '/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -195,7 +249,13 @@ async function runTests() {
     response = await fetch(baseUrl + '/api/admin/orders', {
       headers: { Authorization: 'Bearer ' + staffLogin.token },
     });
-    assert(response.status === 403, 'Staff account must receive 403 on admin endpoints');
+    assert(response.status === 200, 'Staff account should access order operations');
+    response = await fetch(baseUrl + '/api/admin/menu', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + staffLogin.token },
+      body: JSON.stringify({ name: 'Forbidden Test Item', price: 100, category: 'Drinks', tags: 'veg' }),
+    });
+    assert(response.status === 403, 'Staff account must not mutate the menu');
     console.log('  PASS');
 
     console.log('Testing unknown orders return 404...');

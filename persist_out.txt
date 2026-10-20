@@ -1,2 +1,0 @@
---- Persistence Test (separate server processes) ---
-Persistence test PASSED: the order was retrieved after the first server process stopped.

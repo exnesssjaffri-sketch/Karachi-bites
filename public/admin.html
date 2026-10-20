@@ -82,6 +82,35 @@
         </div>
         <button id="loginBtn" class="btn btn-primary w-full" type="submit" data-i18l-text="signIn">Sign in</button>
       </form>
+      <div class="my-5 border-t border-[#3A342E]"></div>
+      <h2 class="text-lg font-semibold mb-2">Email and password</h2>
+      <p class="text-[#B8B0A6] text-sm mb-4">Use an existing Supabase Auth staff account. Its server-side role must be staff or admin.</p>
+      <form id="emailAuthForm" class="space-y-3">
+        <div>
+          <label for="authEmail" class="block text-sm mb-2">Email</label>
+          <input id="authEmail" name="email" class="field" type="email" autocomplete="username" required maxlength="254">
+        </div>
+        <div>
+          <label for="authPassword" class="block text-sm mb-2">Password</label>
+          <input id="authPassword" name="password" class="field" type="password" autocomplete="current-password" required minlength="8">
+        </div>
+        <button id="emailAuthBtn" class="btn btn-primary w-full" type="submit">Sign in with email</button>
+      </form>
+      <div class="my-5 border-t border-[#3A342E]"></div>
+      <h2 class="text-lg font-semibold mb-2">Phone OTP</h2>
+      <p class="text-[#B8B0A6] text-sm mb-4">Requires an existing staff phone identity and a configured SMS provider.</p>
+      <form id="phoneAuthForm" class="space-y-3">
+        <div>
+          <label for="authPhone" class="block text-sm mb-2">Phone number (international format)</label>
+          <input id="authPhone" name="phone" class="field" type="tel" autocomplete="tel" placeholder="+923001234567" required pattern="\\+[1-9][0-9]{7,14}">
+        </div>
+        <button id="sendOtpBtn" class="btn btn-muted w-full" type="button">Send OTP</button>
+        <div id="otpEntry" class="hidden">
+          <label for="authOtp" class="block text-sm mb-2">6-digit OTP</label>
+          <input id="authOtp" name="otp" class="field" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6">
+          <button id="verifyOtpBtn" class="btn btn-primary w-full mt-3" type="button">Verify and sign in</button>
+        </div>
+      </form>
     </section>
 
     <section id="dashboardPanel" class="hidden">
@@ -146,6 +175,7 @@
       </div>
     </section>
   </main>
+  <script src="/js/supabase-auth.js"></script>
   <script src="/js/admin.js"></script>
 </body>
 </html>

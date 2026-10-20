@@ -82,3 +82,20 @@ Thumbs.db
 !.env.example
 .vercel
 .env*
+
+# Test output and dump files
+*_out.txt
+*_err.txt
+test_db_run.txt
+pdf_dump.txt
+pdf_full.txt
+pdf_clean.txt
+extract_pdf.py
+cowork-workspace-test-*.txt
+test_output.txt
+test_run_output.txt
+*.log
+server.log
+server_err.log
+test_api_err.log
+test_api_out.log

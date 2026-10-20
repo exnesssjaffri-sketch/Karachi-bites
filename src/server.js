@@ -27,6 +27,7 @@ app.use(helmet({
       // The existing SPA and Stitch exports use Tailwind's browser CDN.
       // Keep app scripts same-origin; allow the CDN and its runtime compiler explicitly.
       'script-src': ["'self'", 'https://cdn.tailwindcss.com', "'unsafe-eval'"],
+      'connect-src': ["'self'", 'https://rgejphvmnlwcoojkpcje.supabase.co'],
       // Stitch exports use HTTPS-hosted food photography.
       'img-src': ["'self'", 'data:', 'https:'],
     },
@@ -76,18 +77,30 @@ app.get('/api/health', async (req, res) => {
   }
 
   try {
+    // Readiness means the schema is initialized and a real application table is queryable,
+    // not merely that the database accepts SELECT 1 on a fresh serverless invocation.
+    await databaseReady;
+    if (dbError) {
+      return res.status(503).json({
+        status: 'error',
+        database: isPg ? 'postgresql' : 'sqlite',
+        detail: dbError.message,
+      });
+    }
+
     const dbHandle = getDb();
     if (isSqlite()) {
       await new Promise((resolve, reject) => {
-        dbHandle.get('SELECT 1', (err) => (err ? reject(err) : resolve()));
+        dbHandle.get('SELECT 1 FROM menu_items LIMIT 1', (err) => (err ? reject(err) : resolve()));
       });
     } else {
-      await dbHandle.query('SELECT 1');
+      await dbHandle.query('SELECT 1 FROM menu_items LIMIT 1');
     }
+    dbConnected = true;
     res.json({
       status: 'ok',
       database: isPg ? 'postgresql' : 'sqlite',
-      ready: dbConnected,
+      ready: true,
       time: new Date().toISOString(),
     });
   } catch (err) {

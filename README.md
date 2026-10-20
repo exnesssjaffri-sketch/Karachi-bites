@@ -9,7 +9,7 @@ A lightweight Karachi restaurant ordering project built with vanilla HTML/CSS/Ja
 - API-backed ordering app: https://karachi-bites.vercel.app/app.html
 - Individual Stitch design exports: https://karachi-bites.vercel.app/stitch/
 
-**Important:** the Stitch exports under `/stitch/` are visual design previews. Their sample cart, checkout, confirmation and tracking screens are not yet wired to the real order API. Use `/app.html` for the current API-backed order flow. Browser end-to-end verification of the Stitch-to-API flow is still required.
+**Important:** the root homepage (`/`) now loads featured dishes from `GET /api/menu` and connects its live add-to-cart controls to the shared cart used by `/app.html`. Use `/app.html` for the complete API-backed menu, checkout, confirmation and phone-verified tracking flow. Other standalone exports under `/stitch/` remain visual previews unless specifically wired. Automated frontend wiring and cart persistence tests are included; real-browser E2E, real mobile-device testing and the performance target still require separate verification.
 
 ## Requirements
 
@@ -112,3 +112,29 @@ This invokes the repository's current test runner, which runs the database, API,
 ## Current verification limitations
 
 The deployment and URLs are checked independently from functional behavior. HTTP 200 confirms that a page or API route responds, not that all buttons work or an order successfully persists. Before accepting real orders, verify the production database's write access and persistence, browser test the full customer order flow, test all three branches, and run the performance check against the actual production site.
+
+
+## Verification and submission evidence
+
+- [PDF requirement-by-requirement audit](REQUIREMENTS_AUDIT.md) — distinguishes automated PASS from manual/production checks still pending.
+- [Supabase Auth rollout and legacy-login compatibility](docs/SUPABASE_AUTH_SETUP.md).
+- [Three-minute walkthrough recording script](docs/WALKTHROUGH_SCRIPT.md). The script is not the final video; record a real browser session and add its link before submission.
+- [Lighthouse mobile workflow](.github/workflows/lighthouse.yml) measures the exact code at a 360×800 viewport and enforces Performance and Accessibility scores of at least 85.
+- Passing optimized PR-code Lighthouse evidence: [GitHub Actions run 29](https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/39323273356) — Performance 97, Accessibility 100, Best Practices 100, SEO 100 at 360×800. The report is retained as an artifact for 30 days.
+- Latest eight-suite automated backend/frontend test evidence: [GitHub Actions run 107](https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/39319151736).
+- Production evidence: [health check](https://karachi-bites.vercel.app/api/health) and [live menu API](https://karachi-bites.vercel.app/api/menu).
+
+### Production deployment note
+
+PR #9's optimized homepage is merged into `main`, but the live Vercel alias is still serving an older deployment. Vercel returned HTTP 402 because the deployment API daily quota was exceeded (over 100; retry after 24 hours). The live API/database remain healthy, but the optimized homepage's Lighthouse score is **not yet verified in production**. Connect the GitHub repo under Vercel Project Settings → Git (production branch `main`) or redeploy after the quota resets. Do not promote a preview deployment because it may lack production database environment variables.
+
+### Remaining manual evidence
+
+A real Android 360px touch/visual pass, keyboard-only and screen-reader review, live Supabase signup/email-confirmation testing, actual SMS OTP testing with a configured provider, a production-safe order-flow rehearsal, and the final screen-recorded MP4 are not replaced by automated tests. Do not use real customer details in a demo or create a production order without an agreed safe test plan.
+
+
+## Bonus features
+
+- Customer homepage and ordering app include an Urdu/English toggle with saved preference and RTL layout for Urdu.
+- Staff order rows open a print-friendly kitchen ticket protected by the current staff session.
+- After phone-verified tracking, customers can repeat an order; the server verifies the original phone and recalculates totals from currently available items.

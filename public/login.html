@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark">
+<title>Karachi Bites — Account Login</title>
+<style>
+:root{color-scheme:dark;--bg:#181614;--panel:#211e1b;--card:#2a2622;--border:#3a342e;--text:#f7f3ec;--muted:#b8b0a6;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:16px 20px;border-bottom:1px solid var(--border);background:var(--panel)}header a{color:var(--text);text-decoration:none;font-weight:700}
+main{max-width:560px;margin:32px auto;padding:0 16px 40px}.panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin:16px 0}
+h1,h2{margin:0 0 10px}p{color:var(--muted);margin:0 0 16px}.field{display:block;width:100%;margin:6px 0 14px;padding:12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text)}
+button{width:100%;padding:12px;border:1px solid var(--red);border-radius:8px;background:var(--red);color:white;font-weight:700;cursor:pointer;margin-top:4px}
+button:disabled{opacity:.6;cursor:wait}.secondary{background:var(--panel);border-color:var(--border)}.notice{padding:12px;border:1px solid var(--border);border-radius:8px;background:var(--panel);margin-bottom:16px;white-space:pre-wrap}
+.hidden{display:none}label{font-size:14px}.muted{font-size:13px;color:var(--muted)}a{color:#f7b2aa}
+</style></head>
+<body><header><a href="/">← Karachi Bites</a></header>
+<main>
+<h1>Welcome to Karachi Bites</h1>
+<p>Sign in or create a customer account. New public accounts receive the customer role; staff/admin permissions are assigned separately by an authorized operator.</p>
+<div id="notice" class="notice hidden" role="status" aria-live="polite"></div>
+<section class="panel">
+<h2>Email and password</h2>
+<form id="emailSignInForm">
+<label for="email">Email address</label><input id="email" class="field" type="email" autocomplete="email" required maxlength="254">
+<label for="password">Password</label><input id="password" class="field" type="password" autocomplete="current-password" required minlength="8">
+<button type="submit">Sign in</button></form>
+<div style="height:1px;background:var(--border);margin:22px 0"></div>
+<h2>Create account</h2><form id="signUpForm">
+<label for="fullName">Full name</label><input id="fullName" class="field" type="text" autocomplete="name" required minlength="2" maxlength="80">
+<label for="newEmail">Email address</label><input id="newEmail" class="field" type="email" autocomplete="email" required maxlength="254">
+<label for="newPassword">Create password (at least 8 characters)</label><input id="newPassword" class="field" type="password" autocomplete="new-password" required minlength="8">
+<button class="secondary" type="submit">Create customer account</button></form>
+</section>
+<section class="panel">
+<h2>Phone OTP</h2><p>Use international format, e.g. +923001234567. Real SMS delivery remains unavailable until the Supabase phone provider and Twilio are configured.</p>
+<form id="phoneForm">
+<label for="phone">Phone number</label><input id="phone" class="field" type="tel" autocomplete="tel" required placeholder="+923001234567" pattern="\+[1-9][0-9]{7,14}">
+<button id="sendOtpBtn" class="secondary" type="button">Send OTP</button>
+<div id="otpPanel" class="hidden"><label for="otp">6-digit code</label><input id="otp" class="field" inputmode="numeric" autocomplete="one-time-code" required maxlength="6" pattern="[0-9]{6}"><button id="verifyOtpBtn" type="button">Verify and sign in</button></div>
+</form></section>
+<p class="muted">Signing in here does not change guest checkout. Order creation and tracking continue to work as before.</p>
+<p><a href="/admin">Staff / Admin portal</a> · <a href="/stitch/menu.html">Browse menu</a></p>
+</main>
+<script src="/js/supabase-auth.js"></script><script src="/js/login.js"></script>
+</body></html>

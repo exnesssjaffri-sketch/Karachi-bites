@@ -85,7 +85,7 @@ const api = {
   },
 
   /**
-   * Track an order by order ID and phone number (phone-verified tracking)
+* Track an order by order ID and phone number (phone-verified tracking)
    * @param {string} orderId - The order ID
    * @param {string} phone - Customer phone number for verification
    */
@@ -93,7 +93,7 @@ const api = {
     try {
       const response = await fetch(`${API_BASE_URL}/orders/track`, {
         method: 'POST',
-        headers: {
+headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
@@ -115,8 +115,7 @@ const api = {
       return { success: false, error: error.message };
     }
   },
-
-  /**
+/**
    * Reorder from a previous order
    * @param {string} originalOrderId - The original order ID to reorder from
    * @param {Object} customer - Optional customer info {name, phone, address, notes}
@@ -168,6 +167,14 @@ const api = {
       console.error('Failed to fetch kitchen ticket:', error);
       return { success: false, error: error.message };
     }
+  },
+
+  /**
+   * Repeat a prior order after the server verifies the original checkout phone.
+   * Alias for reorderItems; kept for backward compatibility with tracking page.
+   */
+  async reorderOrder(originalOrderId, customer) {
+    return this.reorderItems(originalOrderId, customer);
   },
 
   /**
