@@ -4,7 +4,7 @@ const path = require('path');
 require('dotenv').config();
 
 const DB_PATH = process.env.DATABASE_PATH || path.join(__dirname, '..', 'karachi_bites.db');
-const USE_SQLITE = process.env.USE_SQLITE === 'true' || process.env.NODE_ENV !== 'production';
+const USE_SQLITE = process.env.USE_SQLITE === 'true';
 const DATABASE_URL = process.env.DATABASE_URL;
 
 let db = null;
@@ -238,12 +238,12 @@ async function rollbackTransaction(client) {
   await client.query('ROLLBACK');
 }
 
-async function getOne(sql, params = []) {
-  return get(sql, params);
+async function getOne(sql, params = [], client = null) {
+  return get(sql, params, client);
 }
 
-async function getAll(sql, params = []) {
-  return query(sql, params);
+async function getAll(sql, params = [], client = null) {
+  return query(sql, params, client);
 }
 
 function prepare(sql) {
@@ -675,3 +675,7 @@ module.exports = {
   parameterizeSql,
   ensureReturning,
 };
+
+
+
+

@@ -17,13 +17,12 @@ const navbar = {
   cartCountBadge: null,
 
   init() {
+    if (!this._cartListener) {
+      this._cartListener = () => this.updateBadge();
+      window.addEventListener('cartUpdated', this._cartListener);
+    }
     this.cartCountBadge = document.getElementById('cart-count-badge');
     this.updateBadge();
-
-    // Listen for cart changes
-    window.addEventListener('cartUpdated', () => {
-      this.updateBadge();
-    });
   },
 
   updateBadge() {
@@ -62,10 +61,16 @@ const navbar = {
             </a>
           </div>
 
-          <!-- Mobile Menu Button -->
-          <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-[#2A2622] text-[#B8B0A6]" aria-label="Open navigation menu">
-            <span class="material-symbols-outlined">menu</span>
-          </button>
+          <!-- Language toggle + Mobile Menu Button -->
+          <div class="flex items-center gap-1">
+            <button id="lang-toggle-btn" type="button" class="px-3 py-2 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label text-sm flex items-center gap-1" aria-label="Switch language">
+              <span class="material-symbols-outlined text-base" aria-hidden="true">translate</span>
+              <span data-i18l-lang-toggle>اردو</span>
+            </button>
+            <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-[#2A2622] text-[#B8B0A6]" aria-label="Open navigation menu">
+              <span class="material-symbols-outlined">menu</span>
+            </button>
+          </div>
         </div>
 
         <!-- Mobile Navigation -->
@@ -118,6 +123,26 @@ const navbar = {
         mobileMenu.classList.toggle('hidden');
       });
     }
+
+    // Language toggle
+    const langToggleBtn = document.getElementById('lang-toggle-btn');
+    if (langToggleBtn) {
+      langToggleBtn.addEventListener('click', () => {
+        const next = getCurrentLanguage() === 'en' ? 'ur' : 'en';
+        setLanguage(next);
+      });
+    }
+
+    // Re-render the active page when the language changes
+    window.addEventListener('kb:language-changed', () => {
+      const hash = (window.location.hash || '#home').split('?')[0];
+      if (hash === '#home') homePage.init();
+      else if (hash === '#menu') menuPage.init();
+      else if (hash === '#cart') cartPage.init();
+      else if (hash === '#checkout') checkoutPage.init();
+      else if (hash === '#order-placed') orderPlacedPage.init();
+      else if (hash === '#tracking') orderTrackingPage.init();
+    });
 
     // Edit cart button
     const editCartBtn = document.getElementById('edit-cart-btn');

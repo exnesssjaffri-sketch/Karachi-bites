@@ -1,0 +1,70 @@
+/* Karachi Bites — Global CSS Variables & Font Declarations
+ * Warm cream background, white cards, deep red accent, EB Garamond / Geist typography.
+ * Sharp 90-degree corners throughout the design system.
+ */
+:root {
+  /* Core surface colors */
+  --kb-cream: #FAF7F2;
+  --kb-cream-dim: #F0EDE9;
+  --kb-white: #FFFFFF;
+  --kb-text: #1C1C19;
+  --kb-text-muted: #5A413D;
+  --kb-text-subtle: #71717A;
+  --kb-border: #E4E4E7;
+  --kb-red: #B42318;
+  --kb-red-dark: #9E1C14;
+  --kb-red-light: #FFB4A9;
+  --kb-red-container: #FFDAD5;
+  --kb-outline: #8E706C;
+
+  /* Dark theme (current app shell) */
+  --kb-bg-dark: #181614;
+  --kb-card-dark: #2A2622;
+  --kb-bar-dark: #211E1B;
+  --kb-border-dark: #3A342E;
+  --kb-text-dark: #F7F3EC;
+  --kb-muted-dark: #B8B0A6;
+  --kb-disabled-dark: #5c534b;
+
+  /* Spacing */
+  --kb-gutter: 1.5rem;
+  --kb-gutter-mobile: 1rem;
+  --kb-margin: 3rem;
+  --kb-margin-mobile: 1.25rem;
+  --kb-space-xs: 0.25rem;
+  --kb-space-sm: 0.5rem;
+  --kb-space-md: 1rem;
+  --kb-space-lg: 1.5rem;
+  --kb-space-xl: 2.5rem;
+
+  /* Typography */
+  --kb-font-display:  EB Garamond, Newsreader, Georgia, serif;
+  --kb-font-headline: EB Garamond, Newsreader, Georgia, serif;
+  --kb-font-body: Hanken Grotesk, Geist, Inter, system-ui, sans-serif;
+  --kb-font-label: Hanken Grotesk, Geist, Inter, system-ui, sans-serif;
+
+  /* Radius — strict 0 for design system */
+  --kb-radius-none: 0;
+  --kb-radius-sm: 0.125rem;
+  --kb-radius-lg: 0.25rem;
+  --kb-radius-xl: 0.5rem;
+}
+
+/* Dark theme overrides for the current app shell */
+[data-theme=dark] {
+  --kb-bg: var(--kb-bg-dark);
+  --kb-card: var(--kb-card-dark);
+  --kb-bar: var(--kb-bar-dark);
+  --kb-border: var(--kb-border-dark);
+  --kb-text: var(--kb-text-dark);
+  --kb-muted: var(--kb-muted-dark);
+  --kb-disabled: var(--kb-disabled-dark);
+}
+
+/* Utility: sharp corners for design-system elements */
+.kb-sharp { border-radius: 0 !important; }
+.kb-card { background-color: var(--kb-white); border: 1px solid var(--kb-border); border-radius: 0; }
+.kb-input { background-color: var(--kb-white); border: 1px solid var(--kb-border); border-radius: 0; color: var(--kb-text); }
+.kb-input:focus { outline: none; border-color: var(--kb-text); }
+.kb-btn-primary { background-color: var(--kb-red); color: var(--kb-white); border-radius: 0; }
+.kb-btn-primary:hover { background-color: var(--kb-red-dark); }

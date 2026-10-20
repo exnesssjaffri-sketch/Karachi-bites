@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/responsive.css">
+  <script src="/js/i18n.js"></script>
   <script defer src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script src="/js/tailwind-config.js"></script>
   <style>
@@ -23,6 +24,28 @@
     td,th{padding:.8rem .9rem;text-align:left;vertical-align:top}
     th{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:#B8B0A6;background:#211E1B}
     tbody tr+tr{border-top:1px solid #3A342E}
+    @media print {
+      body * { visibility:hidden; }
+      #kitchenTicketPrintable, #kitchenTicketPrintable * { visibility:visible; }
+      #kitchenTicketPrintable {
+        position:absolute;
+        left:0;
+        top:0;
+        width:100%;
+        background:#fff;
+        color:#111;
+        padding:1.5rem 2rem;
+        font-family:Geist,system-ui,sans-serif;
+      }
+      #kitchenTicketPrintable h1, #kitchenTicketPrintable h2, #kitchenTicketPrintable h3 { color:#111; }
+      #kitchenTicketPrintable .text-[#B8B0A6] { color:#555; }
+      #kitchenTicketPrintable .text-[#F7F3EC] { color:#111; }
+      #kitchenTicketPrintable .text-[#B42318] { color:#B42318; }
+      #kitchenTicketPrintable table { border-collapse:collapse; width:100%; }
+      #kitchenTicketPrintable th, #kitchenTicketPrintable td { border:1px solid #ccc; padding:0.5rem; text-align:left; }
+      #kitchenTicketPrintable th { background:#f2f2f2; }
+      #kitchenTicketPrintable .no-print { display:none; }
+    }
   </style>
 </head>
 <body class="min-h-screen">
@@ -33,8 +56,12 @@
         <p class="text-sm text-[#B8B0A6]">Staff and order management</p>
       </div>
       <div class="flex gap-2 items-center">
-        <a href="/" class="btn btn-muted text-sm">Customer site</a>
-        <button id="logoutBtn" class="btn btn-muted text-sm hidden" type="button">Sign out</button>
+        <button id="lang-toggle-admin" type="button" class="px-3 py-2 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label text-sm flex items-center gap-1" aria-label="Switch language">
+          <span class="material-symbols-outlined text-base" aria-hidden="true">translate</span>
+          <span data-i18l-lang-toggle>اردو</span>
+        </button>
+        <a href="/" class="btn btn-muted text-sm" data-i18l-text="admin/customerSite">Customer site</a>
+        <button id="logoutBtn" class="btn btn-muted text-sm hidden" type="button" data-i18l-text="admin/signOut">Sign out</button>
       </div>
     </div>
   </header>
@@ -53,7 +80,7 @@
           <label for="password" class="block text-sm mb-2">Password</label>
           <input id="password" name="password" class="field" type="password" autocomplete="current-password" required>
         </div>
-        <button id="loginBtn" class="btn btn-primary w-full" type="submit">Sign in</button>
+        <button id="loginBtn" class="btn btn-primary w-full" type="submit" data-i18l-text="signIn">Sign in</button>
       </form>
     </section>
 
@@ -64,7 +91,7 @@
           <h1 class="text-3xl sm:text-4xl">Order dashboard</h1>
           <p class="text-[#B8B0A6] mt-2">Orders are loaded from the API. Status updates follow the server's allowed transition rules.</p>
         </div>
-        <button id="refreshBtn" class="btn btn-muted self-start" type="button">Refresh orders</button>
+        <button id="refreshBtn" class="btn btn-muted self-start" type="button" data-i18l-text="refreshOrders">Refresh orders</button>
       </div>
       <form id="filters" class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-[#211E1B] border border-[#3A342E] rounded-xl p-4 mb-5">
         <div>
@@ -81,7 +108,7 @@
           <input id="dateFilter" class="field" type="date">
         </div>
         <div class="flex items-end">
-          <button class="btn btn-primary w-full" type="submit">Apply filters</button>
+          <button class="btn btn-primary w-full" type="submit" data-i18l-text="applyFilters">Apply filters</button>
         </div>
       </form>
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
@@ -100,6 +127,21 @@
             <thead><tr><th>Order / date</th><th>Customer</th><th>Branch</th><th>Total</th><th>Status</th><th>Next action</th></tr></thead>
             <tbody id="ordersBody"><tr><td colspan="6" class="text-[#B8B0A6]">Sign in to load orders.</td></tr></tbody>
           </table>
+        </div>
+      </div>
+
+      <div id="kitchenTicketModal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+        <div class="bg-[#2A2622] border border-[#3A342E] rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div class="px-6 py-4 border-b border-[#3A342E] flex items-center justify-between gap-3">
+            <h3 class="text-xl font-semibold" id="kitchenTicketTitle">Kitchen Ticket</h3>
+            <div class="flex items-center gap-2">
+              <button id="printKitchenBtn" type="button" class="btn btn-muted text-sm no-print" data-i18l-text="admin.printTicket">Print Ticket</button>
+              <button id="closeKitchenBtn" class="text-[#B8B0A6] hover:text-white text-2xl leading-none" aria-label="Close">&times;</button>
+            </div>
+          </div>
+          <div id="kitchenTicketBody" class="p-6">
+            <div class="text-center text-[#B8B0A6]">Loading kitchen ticket...</div>
+          </div>
         </div>
       </div>
     </section>

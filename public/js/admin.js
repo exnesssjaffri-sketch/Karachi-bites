@@ -15,12 +15,26 @@
   const filters = $('#filters');
   const branchFilter = $('#branchFilter');
   const dateFilter = $('#dateFilter');
+  const kitchenModal = $('#kitchenTicketModal');
+  const closeKitchenBtn = $('#closeKitchenBtn');
+  const printKitchenBtn = $('#printKitchenBtn');
+  const kitchenTicketTitle = $('#kitchenTicketTitle');
+  const kitchenTicketBody = $('#kitchenTicketBody');
   const transitions = {
     'Received': ['Preparing'],
     'Preparing': ['Out for Delivery'],
     'Out for Delivery': ['Delivered'],
     'Delivered': []
   };
+
+  // Language toggle button in the admin header
+  const langToggleBtnAdmin = $('#lang-toggle-admin');
+  if (langToggleBtnAdmin) {
+    langToggleBtnAdmin.addEventListener('click', () => {
+      const next = getCurrentLanguage() === 'en' ? 'ur' : 'en';
+      setLanguage(next);
+    });
+  }
 
   function showNotice(message, isError = false) {
     notice.textContent = message;
@@ -148,7 +162,13 @@
       const complete = document.createElement('span');
       complete.className = 'status';
       complete.textContent = 'Complete';
+      const kitchenBtn = document.createElement('button');
+      kitchenBtn.type = 'button';
+      kitchenBtn.className = 'btn btn-muted text-xs ml-2';
+      kitchenBtn.textContent = 'Kitchen Ticket';
+      kitchenBtn.addEventListener('click', () => openKitchenTicket(order.orderId));
       cell.appendChild(complete);
+      cell.appendChild(kitchenBtn);
       return cell;
     }
 
@@ -190,8 +210,100 @@
         setBusy(button, false);
       }
     });
+
+    const kitchenBtn = document.createElement('button');
+    kitchenBtn.type = 'button';
+    kitchenBtn.className = 'btn btn-muted text-xs ml-2';
+    kitchenBtn.textContent = 'Kitchen Ticket';
+    kitchenBtn.addEventListener('click', () => openKitchenTicket(order.orderId));
+
     cell.appendChild(form);
+    cell.appendChild(kitchenBtn);
     return cell;
+  }
+
+  function openKitchenTicket(orderId) {
+    kitchenTicketTitle.textContent = `Kitchen Ticket — ${orderId}`;
+    kitchenTicketBody.innerHTML = '<div class="text-center text-[#B8B0A6]">Loading kitchen ticket...</div>';
+    kitchenModal.classList.remove('hidden');
+
+    requestJson(`/api/admin/kitchen/${encodeURIComponent(orderId)}`)
+      .then((ticket) => {
+        renderKitchenTicket(ticket);
+      })
+      .catch((error) => {
+        kitchenTicketBody.innerHTML = `<div class="text-center text-rose-400">Failed to load kitchen ticket: ${error.message}</div>`;
+      });
+  }
+
+  function renderKitchenTicket(ticket) {
+    const items = ticket.items || [];
+    const customer = ticket.customer || {};
+    const summary = ticket.summary || {};
+
+    kitchenTicketBody.innerHTML = `
+      <div class="grid grid-cols-2 gap-4 mb-6 pb-4 border-b border-[#3A342E]">
+        <div>
+          <p class="text-xs text-[#B8B0A6] uppercase tracking-wide">Order ID</p>
+          <p class="font-semibold text-[#F7F3EC]">${ticket.orderId || '—'}</p>
+        </div>
+        <div>
+          <p class="text-xs text-[#B8B0A6] uppercase tracking-wide">Customer</p>
+          <p class="font-semibold text-[#F7F3EC]">${customer.name || '—'}</p>
+        </div>
+        <div>
+          <p class="text-xs text-[#B8B0A6] uppercase tracking-wide">Phone</p>
+          <p class="font-semibold text-[#F7F3EC]">${customer.phone || '—'}</p>
+        </div>
+        <div>
+          <p class="text-xs text-[#B8B0A6] uppercase tracking-wide">Branch</p>
+          <p class="font-semibold text-[#F7F3EC]">${ticket.branch || '—'}</p>
+        </div>
+        <div>
+          <p class="text-xs text-[#B8B0A6] uppercase tracking-wide">Placed</p>
+          <p class="font-semibold text-[#F7F3EC]">${formatDate(ticket.createdAt)}</p>
+        </div>
+        <div>
+          <p class="text-xs text-[#B8B0A6] uppercase tracking-wide">Status</p>
+          <p class="font-semibold text-[#F7F3EC]">${ticket.status || '—'}</p>
+        </div>
+      </div>
+
+      ${ticket.specialInstructions ? `
+        <div class="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+          <p class="text-xs text-amber-400 uppercase tracking-wide mb-1">Special Instructions</p>
+          <p class="text-amber-200 text-sm">${ticket.specialInstructions}</p>
+        </div>
+      ` : ''}
+
+      <h3 class="font-semibold text-[#F7F3EC] mb-3">Order Items</h3>
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-xs text-[#B8B0A6] uppercase tracking-wide">
+            <th class="pb-2">Item</th>
+            <th class="pb-2 text-right">Qty</th>
+            <th class="pb-2 text-right">Price</th>
+            <th class="pb-2 text-right">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${items.map(item => `
+            <tr class="border-t border-[#3A342E]">
+              <td class="py-2 text-[#F7F3EC]">${item.name || '—'}</td>
+              <td class="py-2 text-right text-[#B8B0A6]">${item.quantity || 0}</td>
+              <td class="py-2 text-right text-[#B8B0A6]">${cartStore ? cartStore.formatPrice(item.price) : 'Rs. ' + Number(item.price).toLocaleString('en-PK')}</td>
+              <td class="py-2 text-right text-[#F7F3EC]">${cartStore ? cartStore.formatPrice(item.price * (item.quantity || 0)) : 'Rs. ' + Number(item.price * (item.quantity || 0)).toLocaleString('en-PK')}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+        <tfoot>
+          <tr class="border-t border-[#3A342E]">
+            <td colspan="2" class="py-3 text-right font-semibold text-[#F7F3EC]">Total</td>
+            <td class="py-3 text-right text-[#B42318] font-price text-lg">${cartStore ? cartStore.formatPrice(summary.total || 0) : 'Rs. ' + Number(summary.total || 0).toLocaleString('en-PK')}</td>
+          </tr>
+        </tfoot>
+      </table>
+    `;
   }
 
   function renderOrders(orders) {
@@ -294,6 +406,15 @@
   filters.addEventListener('submit', (event) => {
     event.preventDefault();
     loadOrders();
+  });
+
+  closeKitchenBtn.addEventListener('click', () => {
+    kitchenModal.classList.add('hidden');
+  });
+  kitchenModal.addEventListener('click', (event) => {
+    if (event.target === kitchenModal) {
+      kitchenModal.classList.add('hidden');
+    }
   });
 
   if (getToken()) loadOrders();

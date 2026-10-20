@@ -5,6 +5,8 @@ const orderPlacedPage = {
   error: null,
 
   async init() {
+    if (this._bound) return;
+    this._bound = true;
     const params = new URLSearchParams(window.location.hash.split('?')[1]);
     this.orderId = params.get('order') || null;
 
@@ -14,6 +16,7 @@ const orderPlacedPage = {
 
     this.loading = false;
     this.render();
+    this.bindEvents();
   },
 
   async fetchOrder() {
@@ -47,7 +50,7 @@ const orderPlacedPage = {
         <section class="pt-28 pb-24 px-6">
           <div class="max-w-2xl mx-auto text-center">
             <span class="material-symbols-outlined text-6xl text-[#B42318] animate-pulse">hourglass_bottom</span>
-            <p class="text-[#B8B0A6] mt-4">Loading order details...</p>
+            <p class="text-[#B8B0A6] mt-4" data-i18l-text="common.loading">Loading order details...</p>
           </div>
         </section>
       `;
@@ -66,24 +69,24 @@ const orderPlacedPage = {
             <span class="material-symbols-outlined text-4xl text-green-500">check_circle</span>
           </div>
 
-          <h1 class="font-headline text-3xl font-semibold mb-2">Order Confirmed!</h1>
-          <p class="text-[#B8B0A6] mb-6">Thank you for your order. We're preparing it now.</p>
+          <h1 class="font-headline text-3xl font-semibold mb-2" data-i18l-text="placed.title">Order Confirmed!</h1>
+          <p class="text-[#B8B0A6] mb-6" data-i18l-text="placed.subtitle">Thank you for your order. We're preparing it now.</p>
 
           <div class="bg-[#2A2622] rounded-xl border border-[#3A342E] p-6 mb-8 text-left">
             <div class="flex justify-between text-[#B8B0A6] text-sm mb-2">
-              <span>Order ID</span>
+              <span data-i18l-text="common.orderId">Order ID</span>
               <span class="text-[#F7F3EC] font-medium">${displayId}</span>
             </div>
             <div class="flex justify-between text-[#B8B0A6] text-sm mb-2">
-              <span>Estimated Delivery</span>
+              <span data-i18l-text="common.estimatedDelivery">Estimated Delivery</span>
               <span class="text-[#F7F3EC]">30-45 minutes</span>
             </div>
             <div class="flex justify-between text-[#B8B0A6] text-sm mb-4">
-              <span>Payment Method</span>
-              <span class="text-[#F7F3EC]">Cash on Delivery</span>
+              <span data-i18l-text="common.paymentMethod">Payment Method</span>
+              <span class="text-[#F7F3EC]" data-i18l-text="common.cashOnDelivery">Cash on Delivery</span>
             </div>
             <div class="border-t border-[#3A342E] pt-4">
-              <div class="font-title text-[#F7F3EC] mb-2">Order Items</div>
+              <div class="font-title text-[#F7F3EC] mb-2" data-i18l-text="common.orderItems">Order Items</div>
               ${displayItems.map(item => `
                 <div class="flex justify-between text-[#B8B0A6] text-sm mb-1">
                   <span>${item.name || 'Item'} x${item.quantity || 'N/A'}</span>
@@ -91,7 +94,7 @@ const orderPlacedPage = {
                 </div>
               `).join('')}
               <div class="flex justify-between text-[#B8B0A6] text-sm mt-2 pt-2 border-t border-[#3A342E]">
-                <span>Total</span>
+                <span data-i18l-text="common.total">Total</span>
                 <span class="text-[#B42318] font-price">${cartStore.formatPrice(displayTotal)}</span>
               </div>
             </div>
@@ -108,31 +111,27 @@ const orderPlacedPage = {
             </a>
             <button id="orderAgainBtn" class="bg-[#211E1B] hover:bg-[#3A342E] border border-[#3A342E] text-white px-6 py-3 rounded-lg font-title inline-flex items-center gap-2">
               <span class="material-symbols-outlined">refresh</span>
-              Order Again
+              <span data-i18l-text="placed.orderAgain">Order Again</span>
             </button>
           </div>
         </div>
       </section>
     `;
+    applyI18n(container);
   },
 
   bindEvents() {
-    const btn = document.getElementById("orderAgainBtn");
+    const btn = document.getElementById('orderAgainBtn');
     if (btn) {
-      btn.addEventListener("click", async () => {
+      btn.addEventListener('click', async () => {
         const originalId = this.orderData?.orderId || this.orderId;
-        if (!originalId) { alert("Order ID not available"); return; }
+        if (!originalId) { alert('Order ID not available'); return; }
         try {
-          const res = await fetch("/api/orders/reorder", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ originalOrderId: originalId, customer: {} }),
-          });
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok) { alert(data.error || "Could not reorder"); return; }
+          const result = await api.reorderItems(originalId, {});
+          if (!result.success) { alert(result.error || 'Could not reorder'); return; }
           cartStore.clearCart();
-          window.location.hash = "#order-placed?order=" + data.orderId;
-        } catch (err) { alert("Could not reorder: " + err.message); }
+          window.location.hash = '#order-placed?order=' + result.data.orderId;
+        } catch (err) { alert('Could not reorder: ' + err.message); }
       });
     }
   },

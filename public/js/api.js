@@ -85,6 +85,92 @@ const api = {
   },
 
   /**
+   * Track an order by order ID and phone number (phone-verified tracking)
+   * @param {string} orderId - The order ID
+   * @param {string} phone - Customer phone number for verification
+   */
+  async trackOrder(orderId, phone) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/orders/track`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ orderId, phone }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        if (response.status === 403) {
+          throw new Error('Phone number does not match this order');
+        }
+        throw new Error(errorData.error || `Server returned ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return { success: true, data };
+    } catch (error) {
+      console.error('Failed to track order:', error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  /**
+   * Reorder from a previous order
+   * @param {string} originalOrderId - The original order ID to reorder from
+   * @param {Object} customer - Optional customer info {name, phone, address, notes}
+   */
+  async reorderItems(originalOrderId, customer = {}) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/orders/reorder`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ originalOrderId, customer }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Server returned ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return { success: true, data };
+    } catch (error) {
+      console.error('Failed to reorder items:', error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  /**
+   * Get kitchen ticket for an order (admin only)
+   * @param {string} orderId - The order ID
+   */
+  async getKitchenTicket(orderId) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/admin/kitchen/${encodeURIComponent(orderId)}`, {
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Server returned ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return { success: true, data };
+    } catch (error) {
+      console.error('Failed to fetch kitchen ticket:', error);
+      return { success: false, error: error.message };
+    }
+  },
+
+  /**
    * Admin login for backend access
    * @param {string} username - Username
    * @param {string} password - Password
@@ -99,12 +185,12 @@ const api = {
         },
         body: JSON.stringify({ username, password }),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || 'Invalid credentials');
       }
-      
+
       const data = await response.json();
       return { success: true, data };
     } catch (error) {
