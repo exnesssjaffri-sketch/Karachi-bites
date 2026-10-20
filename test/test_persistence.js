@@ -100,7 +100,7 @@ async function testPersistence() {
     assert.strictEqual(createdResponse.status, 201, 'Order should be created in the first process');
     const createdOrder = await createdResponse.json();
     assert.ok(createdOrder.orderId, 'Created order must include a public order ID');
-    assert.strictEqual(createdOrder.total, 1193, 'Total should be item price (850) + GST (43) + delivery (250) + packaging (50)');
+    assert.strictEqual(createdOrder.total, 1000, 'Total should be item price (850) + delivery fee (150)');
 
     await stopServer(server1);
     server1 = null;
@@ -114,7 +114,7 @@ async function testPersistence() {
     assert.strictEqual(fetchedResponse.status, 200, 'Order should still exist in a new process');
     const fetchedOrder = await fetchedResponse.json();
     assert.strictEqual(fetchedOrder.orderId, createdOrder.orderId);
-    assert.strictEqual(fetchedOrder.total, 1193);
+    assert.strictEqual(fetchedOrder.total, 1000);
     assert.strictEqual(fetchedOrder.items.length, 1);
     assert.strictEqual(fetchedOrder.items[0].name, 'Chicken Malai Boti');
     assert.strictEqual(fetchedOrder.branch, 'Clifton');

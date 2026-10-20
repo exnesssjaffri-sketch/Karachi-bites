@@ -112,13 +112,6 @@ router.post('/orders', async (req, res) => {
     return res.status(400).json({ error: 'customer.notes must be a string of 500 characters or fewer' });
   }
 
-  const promoCode = body.promoCode;
-  if (promoCode !== undefined && promoCode !== null) {
-    if (typeof promoCode !== 'string' || promoCode.trim().length === 0 || promoCode.trim().length > 50) {
-      return res.status(400).json({ error: 'promoCode must be a non-empty string of 50 characters or fewer' });
-    }
-  }
-
   const idempotencyKey = req.get('Idempotency-Key') || null;
   if (idempotencyKey && !/^[A-Za-z0-9._:-]{8,128}$/.test(idempotencyKey)) {
     return res.status(400).json({ error: 'Idempotency-Key must be 8-128 characters using letters, numbers, dot, underscore, colon or hyphen' });
@@ -137,7 +130,7 @@ router.post('/orders', async (req, res) => {
   }
 
   try {
-    const order = await orderService.createOrder(customer, branch, items, customer.notes, idempotencyKey, promoCode);
+    const order = await orderService.createOrder(customer, branch, items, customer.notes, idempotencyKey);
     res.status(201).json(order);
   } catch (err) {
     console.error('Order creation error:', err.message);

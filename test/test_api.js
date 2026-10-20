@@ -120,57 +120,11 @@ async function runTests() {
     if (response.status !== 201) throw new Error('Create order failed: ' + JSON.stringify(await readJson(response)));
     const created = await readJson(response);
     assert(created.orderId, 'Order response should include orderId');
-    // Server-calculated breakdown: subtotal(850*2=1700) - discount(0) + GST(5%=85) + delivery(250) + packaging(50) = 2085
+    // Server-calculated total: subtotal(850*2=1700) + delivery(150) = 1850
     assert(created.subtotal === 1700, 'Expected subtotal 1700, received ' + created.subtotal);
-    assert(created.discount === 0, 'Expected discount 0 without a promo, received ' + created.discount);
-    assert(created.tax_gst === 85, 'Expected 5% GST of 1700 = 85, received ' + created.tax_gst);
-    assert(created.delivery_fee === 250, 'Expected delivery fee 250, received ' + created.delivery_fee);
-    assert(created.packaging_fee === 50, 'Expected packaging fee 50, received ' + created.packaging_fee);
-    assert(created.promo_code === null, 'Expected no promo code, received ' + created.promo_code);
-    assert(created.total === 2085, 'Expected server total 2085, received ' + created.total);
+    assert(created.delivery_fee === 150, 'Expected delivery fee 150, received ' + created.delivery_fee);
+    assert(created.total === 1850, 'Expected server total 1850, received ' + created.total);
     checkHelmetHeaders(response);
-    console.log('  PASS');
-
-    console.log('Testing promo code application and enforcement...');
-    response = await fetch(baseUrl + '/api/orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...makeOrderPayload('Clifton', 2), promoCode: 'SAVE10' }),
-    });
-    if (response.status !== 201) throw new Error('Create order with promo failed: ' + JSON.stringify(await readJson(response)));
-    const promoOrder = await readJson(response);
-    // Promo SAVE10: subtotal 1700, discount 10% = 170, GST 85, delivery 250, packaging 50 => 1700 - 170 + 85 + 250 + 50 = 1915
-    assert(promoOrder.discount === 170, 'Expected 10% discount of 1700 = 170, received ' + promoOrder.discount);
-    assert(promoOrder.promo_code === 'SAVE10', 'Expected stored promo code SAVE10, received ' + promoOrder.promo_code);
-    assert(promoOrder.total === 1915, 'Expected promo total 1915, received ' + promoOrder.total);
-    console.log('  PASS');
-
-    console.log('Testing invalid promo code is ignored (no discount)...');
-    response = await fetch(baseUrl + '/api/orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...makeOrderPayload('Clifton', 2), promoCode: 'NOT_A_REAL_CODE' }),
-    });
-    assert(response.status === 201, 'Order with unknown promo code should still succeed (code ignored)');
-    const invalidPromoOrder = await readJson(response);
-    assert(invalidPromoOrder.discount === 0, 'Unknown promo code must not apply a discount, received ' + invalidPromoOrder.discount);
-    assert(invalidPromoOrder.promo_code === 'NOT_A_REAL_CODE', 'Unknown promo code should be stored as provided, received ' + invalidPromoOrder.promo_code);
-    assert(invalidPromoOrder.total === 2085, 'Expected total without discount 2085, received ' + invalidPromoOrder.total);
-    console.log('  PASS');
-
-    console.log('Testing malformed promoCode is rejected...');
-    response = await fetch(baseUrl + '/api/orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...makeOrderPayload('Clifton', 2), promoCode: 12345 }),
-    });
-    assert(response.status === 400, 'Non-string promoCode must be rejected');
-    response = await fetch(baseUrl + '/api/orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...makeOrderPayload('Clifton', 2), promoCode: '   ' }),
-    });
-    assert(response.status === 400, 'Whitespace-only promoCode must be rejected');
     console.log('  PASS');
 
     console.log('Testing order retrieval...');
@@ -225,7 +179,7 @@ async function runTests() {
     const repeatedResponse = await fetch(baseUrl + '/api/orders/' + encodeURIComponent(repeated.orderId));
     const repeatedDetails = await readJson(repeatedResponse);
     assert(repeatedResponse.status === 200 && repeatedDetails.branch === 'Clifton', 'Repeat order should preserve original branch');
-    assert(repeatedDetails.items?.[0]?.quantity === 2 && repeatedDetails.total === 2085, 'Repeat order should preserve quantities and recalculate total');
+    assert(repeatedDetails.items?.[0]?.quantity === 2 && repeatedDetails.total === 1850, 'Repeat order should preserve quantities and recalculate total');
     console.log('  PASS');
 
     for (const branch of ['Gulshan-e-Iqbal', 'North Nazimabad']) {
@@ -237,8 +191,8 @@ async function runTests() {
       });
       if (response.status !== 201) throw new Error('Expected branch to be accepted: ' + branch + '; response=' + JSON.stringify(await readJson(response)));
       const branchOrder = await readJson(response);
-      // Single item (850): subtotal 850 - discount 0 + GST 43 (round of 42.5) + delivery 250 + packaging 50 = 1193
-      assert(branchOrder.total === 1193, 'Unexpected single-item total for ' + branch + ', received ' + branchOrder.total);
+      // Single item (850): subtotal 850 + delivery 150 = 1000
+      assert(branchOrder.total === 1000, 'Unexpected single-item total for ' + branch + ', received ' + branchOrder.total);
       const branchFetchedResponse = await fetch(baseUrl + '/api/orders/' + encodeURIComponent(branchOrder.orderId));
       const branchFetched = await readJson(branchFetchedResponse);
       assert(branchFetchedResponse.status === 200 && branchFetched.branch === branch, 'Branch should persist for ' + branch);

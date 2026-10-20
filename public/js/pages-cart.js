@@ -1,7 +1,5 @@
 const cartPage = {
   init() {
-    this.promoCode = '';
-    this.promoDiscount = 0;
     this.render();
     this.bindEvents();
     if (!this._cartListenerBound) {
@@ -17,12 +15,9 @@ const cartPage = {
 
   _calcTotals(cart) {
     const subtotal = cart.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const discount = subtotal * (this.promoDiscount || 0);
-    const gst = subtotal * 0.05;
-    const deliveryFee = 250;
-    const packagingFee = 50;
-    const grandTotal = subtotal - discount + gst + deliveryFee + packagingFee;
-    return { subtotal, discount, gst, deliveryFee, packagingFee, grandTotal };
+    const deliveryFee = 150;
+    const grandTotal = subtotal + deliveryFee;
+    return { subtotal, deliveryFee, grandTotal };
   },
 
   _renderActiveCart(cart, totals) {
@@ -62,20 +57,9 @@ const cartPage = {
           <div class="bg-[#2A2622] rounded-xl p-6 sticky top-28">
             <h3 class="font-headline text-lg font-semibold mb-4" data-i18l-text="cart.orderSummary">Order Summary</h3>
 
-            <div class="mb-4">
-              <div class="flex gap-2">
-                <input type="text" id="promoInput" placeholder="Promo code" class="flex-1 bg-[#1A1816] border border-[#3A3530] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#B42318]" data-i18l-text="cart.promoPlaceholder">
-                <button id="applyPromoBtn" class="bg-[#B42318] hover:bg-[#9E1C13] text-white px-4 py-2 rounded-lg text-sm font-medium" data-i18l-text="cart.apply">Apply</button>
-              </div>
-              <div id="promoStatus" class="text-xs mt-2 ${totals.discount > 0 ? 'text-green-400' : 'text-[#B8B0A6]'}"></div>
-            </div>
-
             <div class="space-y-2 text-sm">
               <div class="flex justify-between"><span data-i18l-text="cart.subtotal">Subtotal</span><span>Rs. ${totals.subtotal.toFixed(0)}</span></div>
-              ${totals.discount > 0 ? `<div class="flex justify-between text-green-400"><span data-i18l-text="cart.discount">Discount</span><span>- Rs. ${totals.discount.toFixed(0)}</span></div>` : ''}
-              <div class="flex justify-between"><span data-i18l-text="cart.gst">GST (5%)</span><span>Rs. ${totals.gst.toFixed(0)}</span></div>
-              <div class="flex justify-between"><span data-i18l-text="cart.delivery">Delivery (Clifton/DHA)</span><span>Rs. ${totals.deliveryFee.toFixed(0)}</span></div>
-              <div class="flex justify-between"><span data-i18l-text="cart.packaging">Packaging & Thermal Seal</span><span>Rs. ${totals.packagingFee.toFixed(0)}</span></div>
+              <div class="flex justify-between"><span data-i18l-text="cart.deliveryFee">Delivery Fee</span><span>Rs. ${totals.deliveryFee.toFixed(0)}</span></div>
             </div>
 
             <div class="border-t border-[#3A3530] mt-4 pt-4 flex justify-between items-center">
@@ -144,44 +128,9 @@ const cartPage = {
       });
     });
 
-    const applyPromoBtn = document.getElementById('applyPromoBtn');
-    if (applyPromoBtn) {
-      applyPromoBtn.addEventListener('click', () => this._applyPromo());
-    }
-    const promoInput = document.getElementById('promoInput');
-    if (promoInput) {
-      promoInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') this._applyPromo();
-      });
-    }
-
     document.getElementById('checkoutBtn')?.addEventListener('click', () => {
       window.location.hash = '#checkout';
     });
-  },
-
-  _applyPromo() {
-    const input = document.getElementById('promoInput');
-    const status = document.getElementById('promoStatus');
-    const code = (input?.value || '').trim().toUpperCase();
-    const validCodes = ['SAVE10', 'KARACHIBITES', 'WELCOME'];
-    if (validCodes.includes(code)) {
-      this.promoCode = code;
-      this.promoDiscount = 0.10;
-      if (status) {
-        status.textContent = '✓ 10% discount applied!';
-        status.className = 'text-xs mt-2 text-green-400';
-      }
-      this.render();
-    } else if (code) {
-      this.promoCode = '';
-      this.promoDiscount = 0;
-      if (status) {
-        status.textContent = 'Invalid promo code';
-        status.className = 'text-xs mt-2 text-red-400';
-      }
-      this.render();
-    }
   },
 
   updateBadge() {
