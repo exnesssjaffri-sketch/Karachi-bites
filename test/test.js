@@ -11,6 +11,7 @@ const files = [
   'test_csv_export.js',
   'test_frontend_wiring.js',
   'test_cart_store.js',
+  'test_cart_total_property.js',
 ];
 
 let allPassed = true;

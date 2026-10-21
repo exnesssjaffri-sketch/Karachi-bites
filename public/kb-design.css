@@ -1,30 +1,91 @@
-/* Karachi Bites — Global CSS Variables & Font Declarations
- * Warm cream background, white cards, deep red accent, EB Garamond / Geist typography.
- * Sharp 90-degree corners throughout the design system.
+/* Karachi Bites - Stitch Design System Global CSS Variables & Font Declarations
+ * Dark theme, EB Garamond / Geist typography.
  */
+
+/* EB Garamond Font Faces */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 400;
+  src: local('EB Garamond'), local('EBGaramond-Regular'),
+       url('/fonts/eb-garamond-v26-latin-regular.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 500;
+  src: local('EB Garamond Medium'), local('EBGaramond-Medium'),
+       url('/fonts/eb-garamond-v26-latin-500.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 600;
+  src: local('EB Garamond SemiBold'), local('EBGaramond-SemiBold'),
+       url('/fonts/eb-garamond-v26-latin-600.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 700;
+  src: local('EB Garamond Bold'), local('EBGaramond-Bold'),
+       url('/fonts/eb-garamond-v26-latin-700.woff2') format('woff2');
+  font-display: swap;
+}
+
+/* Geist Font Faces */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Geist'), local('Geist-Regular'),
+       url('/fonts/geist-v1-latin-400.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 500;
+  src: local('Geist Medium'), local('Geist-Medium'),
+       url('/fonts/geist-v1-latin-500.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Geist SemiBold'), local('Geist-SemiBold'),
+       url('/fonts/geist-v1-latin-600.woff2') format('woff2');
+  font-display: swap;
+}
+
 :root {
-  /* Core surface colors */
+  /* Stitch Dark Theme Palette */
+  --kb-bg: #181614;
+  --kb-card: #2A2622;
+  --kb-bar: #211E1B;
+  --kb-border: #3A342E;
+  --kb-text: #F7F3EC;
+  --kb-muted: #B8B0A6;
+  --kb-disabled: #5c534b;
+
+  --kb-red: #B42318;
+  --kb-red-hover: #C93627;
+  --kb-red-dark: #931A12;
+  --kb-red-light: #FFB4A8;
+  --kb-red-container: #3A211E;
+
+  /* Legacy Light Theme (for reference) */
   --kb-cream: #FAF7F2;
   --kb-cream-dim: #F0EDE9;
   --kb-white: #FFFFFF;
-  --kb-text: #1C1C19;
-  --kb-text-muted: #5A413D;
+  --kb-text-light: #1C1C19;
+  --kb-text-muted-light: #5A413D;
   --kb-text-subtle: #71717A;
-  --kb-border: #E4E4E7;
-  --kb-red: #B42318;
-  --kb-red-dark: #9E1C14;
-  --kb-red-light: #FFB4A9;
-  --kb-red-container: #FFDAD5;
-  --kb-outline: #8E706C;
-
-  /* Dark theme (current app shell) */
-  --kb-bg-dark: #181614;
-  --kb-card-dark: #2A2622;
-  --kb-bar-dark: #211E1B;
-  --kb-border-dark: #3A342E;
-  --kb-text-dark: #F7F3EC;
-  --kb-muted-dark: #B8B0A6;
-  --kb-disabled-dark: #5c534b;
+  --kb-border-light: #E4E4E7;
 
   /* Spacing */
   --kb-gutter: 1.5rem;
@@ -38,12 +99,12 @@
   --kb-space-xl: 2.5rem;
 
   /* Typography */
-  --kb-font-display:  EB Garamond, Newsreader, Georgia, serif;
-  --kb-font-headline: EB Garamond, Newsreader, Georgia, serif;
-  --kb-font-body: Hanken Grotesk, Geist, Inter, system-ui, sans-serif;
-  --kb-font-label: Hanken Grotesk, Geist, Inter, system-ui, sans-serif;
+  --kb-font-display: 'EB Garamond', 'Newsreader', Georgia, serif;
+  --kb-font-headline: 'EB Garamond', 'Newsreader', Georgia, serif;
+  --kb-font-body: 'Geist', 'Hanken Grotesk', Inter, system-ui, sans-serif;
+  --kb-font-label: 'Geist', 'Hanken Grotesk', Inter, system-ui, sans-serif;
 
-  /* Radius — strict 0 for design system */
+  /* Radius */
   --kb-radius-none: 0;
   --kb-radius-sm: 0.125rem;
   --kb-radius-lg: 0.25rem;
@@ -52,19 +113,36 @@
 
 /* Dark theme overrides for the current app shell */
 [data-theme=dark] {
-  --kb-bg: var(--kb-bg-dark);
-  --kb-card: var(--kb-card-dark);
-  --kb-bar: var(--kb-bar-dark);
-  --kb-border: var(--kb-border-dark);
-  --kb-text: var(--kb-text-dark);
-  --kb-muted: var(--kb-muted-dark);
-  --kb-disabled: var(--kb-disabled-dark);
+  --kb-bg: var(--kb-bg);
+  --kb-card: var(--kb-card);
+  --kb-bar: var(--kb-bar);
+  --kb-border: var(--kb-border);
+  --kb-text: var(--kb-text);
+  --kb-muted: var(--kb-muted);
+  --kb-disabled: var(--kb-disabled);
+}
+
+/* Base styles */
+body {
+  background-color: var(--kb-bg);
+  color: var(--kb-text);
+  font-family: var(--kb-font-body);
 }
 
 /* Utility: sharp corners for design-system elements */
 .kb-sharp { border-radius: 0 !important; }
-.kb-card { background-color: var(--kb-white); border: 1px solid var(--kb-border); border-radius: 0; }
-.kb-input { background-color: var(--kb-white); border: 1px solid var(--kb-border); border-radius: 0; color: var(--kb-text); }
-.kb-input:focus { outline: none; border-color: var(--kb-text); }
-.kb-btn-primary { background-color: var(--kb-red); color: var(--kb-white); border-radius: 0; }
-.kb-btn-primary:hover { background-color: var(--kb-red-dark); }
+.kb-card { background-color: var(--kb-card); border: 1px solid var(--kb-border); border-radius: var(--kb-radius-lg); }
+.kb-input { background-color: var(--kb-bar); border: 1px solid var(--kb-border); border-radius: var(--kb-radius-lg); color: var(--kb-text); }
+.kb-input:focus { outline: none; border-color: var(--kb-red); }
+.kb-btn-primary { background-color: var(--kb-red); color: var(--kb-text); border-radius: var(--kb-radius-lg); }
+.kb-btn-primary:hover { background-color: var(--kb-red-hover); }
+
+/* Stitch Typography Utility Classes */
+.font-headline-sm { font-family: var(--kb-font-headline); font-size: 1.25rem; line-height: 1.75rem; font-weight: 600; }
+.font-headline-lg { font-family: var(--kb-font-headline); font-size: 2rem; line-height: 2.5rem; font-weight: 600; }
+.font-title-md { font-family: var(--kb-font-body); font-size: 1rem; line-height: 1.5rem; font-weight: 600; }
+.font-body-md { font-family: var(--kb-font-body); font-size: 0.875rem; line-height: 1.25rem; font-weight: 400; }
+.font-body-sm { font-family: var(--kb-font-body); font-size: 0.75rem; line-height: 1rem; font-weight: 400; }
+.font-label-sm { font-family: var(--kb-font-label); font-size: 0.6875rem; line-height: 1rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.font-label-md { font-family: var(--kb-font-label); font-size: 0.8125rem; line-height: 1.125rem; font-weight: 500; letter-spacing: 0.02em; }
+.font-price-display { font-family: var(--kb-font-body); font-size: 1.125rem; line-height: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }

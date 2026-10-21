@@ -14,7 +14,7 @@ const cartPage = {
   },
 
   _calcTotals(cart) {
-    const subtotal = cart.items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const subtotal = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const deliveryFee = 150;
     const grandTotal = subtotal + deliveryFee;
     return { subtotal, deliveryFee, grandTotal };
@@ -39,7 +39,7 @@ const cartPage = {
                 </div>
                 <div class="flex items-center gap-2">
                   <button class="qty-btn w-8 h-8 rounded-lg bg-[#3A3530] hover:bg-[#4A4540] flex items-center justify-center" data-id="${item.id}" data-action="decrease">-</button>
-                  <span class="w-8 text-center font-medium">${item.qty}</span>
+                  <span class="w-8 text-center font-medium">${item.quantity}</span>
                   <button class="qty-btn w-8 h-8 rounded-lg bg-[#3A3530] hover:bg-[#4A4540] flex items-center justify-center" data-id="${item.id}" data-action="increase">+</button>
                 </div>
                 <button class="remove-btn text-[#B8B0A6] hover:text-[#B42318] text-sm" data-id="${item.id}" data-i18l-text="cart.remove">Remove</button>
