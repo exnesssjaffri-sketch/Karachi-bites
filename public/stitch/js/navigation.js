@@ -84,6 +84,7 @@
         const cta = document.createElement("a");
         cta.href = orderNow.getAttribute("href") || destinations["order-now"];
         cta.setAttribute("data-path", "order-now");
+        cta.setAttribute("data-i18l-text", "Order Now");
         cta.className = "kb-mobile-nav-cta";
         cta.textContent = "Order Now";
         panel.appendChild(cta);
