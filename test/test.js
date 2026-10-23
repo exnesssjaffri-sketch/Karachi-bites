@@ -12,6 +12,7 @@ const files = [
   'test_frontend_wiring.js',
   'test_cart_store.js',
   'test_cart_total_property.js',
+  'test_staff_2fa_contract.js',
 ];
 
 let allPassed = true;
