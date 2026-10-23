@@ -16,7 +16,7 @@ assert.ok(home.includes('id="kb-account-avatar"'), 'Account icon must include av
 assert.ok(!home.includes('Account / Login</a>'), 'Header must not show a text login link');
 assert.ok(responsive.includes('overflow-y:auto !important'), 'Mobile document must remain vertically scrollable');
 assert.ok(responsive.includes('body > main { padding-top:92px !important; }'), 'Fixed header must not cover homepage content');
-assert.ok(auth.includes('provider=google'), 'Auth helper must initiate Google OAuth');
+assert.ok(auth.includes("provider: 'google'") && auth.includes('code_challenge_method'), 'Auth helper must initiate Google OAuth using PKCE');
 assert.ok(login.includes('id="googleSignInBtn"'), 'Login page must show Google sign-in under email/password');
 assert.ok(loginJs.includes('window.KBAuth.signInWithGoogle()'), 'Google button must be wired');
 assert.ok(account.includes('avatar_url') && account.includes('kb-account-avatar'), 'Account icon must render Google profile avatar');
