@@ -43,6 +43,11 @@
     window.setTimeout(redirectHome, 1400);
     return true;
   }
+  $('#googleSignInBtn').addEventListener('click', () => {
+    try { window.KBAuth.signInWithGoogle(); }
+    catch (error) { showNotice(error.message || 'Google sign-in could not start.', true); }
+  });
+
   $('#emailSignInForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const button = event.currentTarget.querySelector('button[type="submit"]');

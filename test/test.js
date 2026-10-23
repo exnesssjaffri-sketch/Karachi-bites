@@ -12,6 +12,7 @@ const files = [
   'test_frontend_wiring.js',
   'test_cart_store.js',
   'test_cart_total_property.js',
+  'test_account_google_mobile.js',
 ];
 
 let allPassed = true;

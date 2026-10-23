@@ -41,9 +41,27 @@
     return authRequest('/auth/v1/verify', { phone, token, type: 'sms' });
   }
 
+  async function signInWithGoogle() {
+    const random = new Uint8Array(48);
+    crypto.getRandomValues(random);
+    const verifier = Array.from(random, (byte) => byte.toString(16).padStart(2, '0')).join('');
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
+    const challenge = btoa(String.fromCharCode(...new Uint8Array(digest)))
+      .replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/g, '');
+    sessionStorage.setItem('kb_oauth_code_verifier', verifier);
+    const redirectTo = window.location.origin + '/auth-callback.html';
+    const params = new URLSearchParams({
+      provider: 'google',
+      redirect_to: redirectTo,
+      code_challenge: challenge,
+      code_challenge_method: 's256',
+    });
+    window.location.assign(SUPABASE_URL + '/auth/v1/authorize?' + params.toString());
+  }
+
   function refreshSession(refresh_token) {
     return authRequest('/auth/v1/token?grant_type=refresh_token', { refresh_token });
   }
 
-  window.KBAuth = { signUpWithPassword, signInWithPassword, sendPhoneOtp, verifyPhoneOtp, refreshSession };
+  window.KBAuth = { signUpWithPassword, signInWithPassword, signInWithGoogle, sendPhoneOtp, verifyPhoneOtp, refreshSession };
 })();
