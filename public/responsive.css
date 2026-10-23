@@ -297,3 +297,37 @@ p, h1, h2, h3, h4, span, a, label { overflow-wrap: break-word; }
     display: none !important;
   }
 }
+
+
+/* Mobile recovery: reserve space for the fixed header and keep the document scrollable even if utility CDN CSS fails. */
+html { height:auto !important; min-height:100%; overflow-x:hidden !important; overflow-y:auto !important; }
+body { height:auto !important; min-height:100vh; overflow-x:hidden !important; overflow-y:auto !important; overscroll-behavior-y:auto !important; }
+body > header { position:fixed; top:0; left:0; right:0; width:100%; min-height:68px; }
+body > header > div { display:flex !important; width:100%; min-height:68px; height:auto !important; flex-wrap:nowrap !important; align-items:center; gap:8px !important; padding:10px 12px !important; }
+body > header > div > div { min-width:0; }
+body > header > div > div:first-child { flex:1 1 auto; min-width:0; }
+body > header > div > div:last-child { flex:0 0 auto; margin-left:auto; }
+body > header > div > div:first-child a[data-path="home"] { min-width:0; }
+body > header > div > div:first-child a[data-path="home"] span:first-child { font-size:clamp(15px,4.4vw,20px) !important; white-space:nowrap; }
+body > header > div > div:first-child a[data-path="home"] span:nth-child(2) { font-size:9px !important; white-space:nowrap; }
+body > header > div > div:last-child { display:flex; align-items:center; gap:6px !important; }
+body > header > div > div:last-child > button,
+body > header > div > div:last-child > a { flex:0 0 auto; }
+body > main { padding-top:92px !important; }
+.kb-account-icon { width:40px; height:40px; display:inline-flex !important; align-items:center; justify-content:center; flex:0 0 40px; border:1px solid #3A342E; border-radius:50%; color:#F7F3EC; background:#211E1B; overflow:hidden; }
+.kb-account-icon svg { width:22px; height:22px; }
+.kb-account-avatar { display:block; width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.kb-account-icon .hidden { display:none !important; }
+@media (max-width:767px) {
+  body > header { min-height:64px; }
+  body > header > div { min-height:64px; padding:8px 10px !important; gap:6px !important; }
+  body > header > div > div:first-child { gap:7px !important; }
+  body > header > div > div:first-child > img { width:30px !important; height:30px !important; }
+  body > header > div > div:first-child a[data-path="home"] span:first-child { font-size:15px !important; }
+  body > header > div > div:first-child a[data-path="home"] span:nth-child(2) { font-size:8px !important; letter-spacing:.06em !important; }
+  body > header nav { display:none !important; }
+  body > header > div > div:last-child > button[aria-label="Search menu items"],
+  body > header > div > div:last-child > a[data-path="staff-portal"] { display:none !important; }
+  body > header > div > div:last-child > a[data-path="order-now"] { padding:9px 10px !important; font-size:12px !important; white-space:nowrap; }
+  body > main { padding-top:80px !important; }
+}
