@@ -15,6 +15,7 @@ const files = [
   'test_account_google_mobile.js',
   'test_live_translation_performance.js',
   'test_mobile_header_translation.js',
+  'test_mobile_responsive_layout.js',
 ];
 
 let allPassed = true;

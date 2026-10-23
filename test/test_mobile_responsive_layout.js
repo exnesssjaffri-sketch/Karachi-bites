@@ -1,0 +1,13 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const css = fs.readFileSync(path.join(__dirname, '..', 'public', 'responsive.css'), 'utf8');
+const html = fs.readFileSync(path.join(__dirname, '..', 'public', 'index.html'), 'utf8');
+assert.ok(css.includes('Comprehensive small-screen layout pass'), 'Responsive rules must be present');
+assert.ok(css.includes('max-width: 767px'), 'Phone breakpoint must exist');
+assert.ok(css.includes('max-width: 380px'), 'Narrow phone breakpoint must exist');
+assert.ok(css.includes('min-height:46px !important'), 'Mobile nav links need touch-friendly hit areas');
+assert.ok(css.includes('padding-top:76px !important'), 'Main content must clear the fixed mobile header');
+assert.ok(css.includes('grid-template-columns:repeat(3,minmax(0,1fr)) !important'), 'Three-column metrics must fit without overflow');
+assert.ok(html.includes('name="viewport"'), 'Page must have a responsive viewport');
+console.log('Mobile responsive layout contract checks passed.');
