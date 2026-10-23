@@ -41,9 +41,15 @@
     return authRequest('/auth/v1/verify', { phone, token, type: 'sms' });
   }
 
+  function signInWithGoogle() {
+    const redirectTo = window.location.origin + '/auth-callback.html';
+    const url = SUPABASE_URL + '/auth/v1/authorize?provider=google&redirect_to=' + encodeURIComponent(redirectTo);
+    window.location.assign(url);
+  }
+
   function refreshSession(refresh_token) {
     return authRequest('/auth/v1/token?grant_type=refresh_token', { refresh_token });
   }
 
-  window.KBAuth = { signUpWithPassword, signInWithPassword, sendPhoneOtp, verifyPhoneOtp, refreshSession };
+  window.KBAuth = { signUpWithPassword, signInWithPassword, signInWithGoogle, sendPhoneOtp, verifyPhoneOtp, refreshSession };
 })();
