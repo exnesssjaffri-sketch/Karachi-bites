@@ -1,0 +1,18 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.join(__dirname, '..');
+const css = fs.readFileSync(path.join(root, 'public/responsive.css'), 'utf8');
+const nav = fs.readFileSync(path.join(root, 'public/stitch/js/navigation.js'), 'utf8');
+const html = fs.readFileSync(path.join(root, 'public/index.html'), 'utf8');
+const i18n = fs.readFileSync(path.join(root, 'public/js/i18n.js'), 'utf8');
+assert.ok(css.includes('grid-template-columns: repeat(2, minmax(0, 1fr)) !important'), 'Tablet menu must use two stable columns');
+assert.ok(css.includes('grid-template-columns: minmax(0, 1fr) !important'), 'Mobile menu must use a single column');
+assert.ok(css.includes('word-break: normal !important'), 'Navigation labels must not break letter by letter');
+assert.ok(nav.includes('data-i18l-text', 'nav.home'), 'Generated nav must include translation attributes');
+assert.ok(nav.includes('nav.trackOrder'), 'Track order mobile nav must be translated');
+assert.ok(html.includes('data-i18l-text="home.exploreMenu"'), 'Explore Menu button must translate');
+assert.ok(html.includes('data-i18l-text="Order Now"'), 'Order Now button must translate');
+assert.ok(i18n.includes("'nav.trackOrder': 'آرڈر ٹریک کریں'"), 'Urdu Track Order translation must exist');
+assert.ok(i18n.includes("'stats.delivery': 'ڈیلیوری کا اوسط وقت'"), 'Urdu delivery metric must exist');
+console.log('Mobile navigation layout and homepage Urdu translation checks passed.');

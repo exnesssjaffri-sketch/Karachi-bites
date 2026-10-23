@@ -14,6 +14,7 @@ const files = [
   'test_cart_total_property.js',
   'test_account_google_mobile.js',
   'test_live_translation_performance.js',
+  'test_mobile_header_translation.js',
 ];
 
 let allPassed = true;

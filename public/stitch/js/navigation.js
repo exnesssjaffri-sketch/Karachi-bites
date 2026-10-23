@@ -62,6 +62,8 @@
         const link = document.createElement("a");
         link.href = source.getAttribute("href") || destinations[key];
         link.setAttribute("data-path", key);
+        const translationKey = ({ home: "nav.home", menu: "nav.menu", cart: "nav.cart", "track-order": "nav.trackOrder", "staff-portal": "nav.staffPortal", login: "nav.login" })[key];
+        if (translationKey) link.setAttribute("data-i18l-text", translationKey);
         link.textContent = (source.textContent || "").replace(/\s+/g, " ").trim();
         if (source.getAttribute("aria-current") === "page") link.setAttribute("aria-current", "page");
         panel.appendChild(link);
@@ -77,6 +79,8 @@
         const link = document.createElement("a");
         link.href = destinations[key];
         link.setAttribute("data-path", key);
+        const translationKey = ({ home: "nav.home", menu: "nav.menu", cart: "nav.cart", "track-order": "nav.trackOrder" })[key];
+        if (translationKey) link.setAttribute("data-i18l-text", translationKey);
         link.textContent = label;
         panel.appendChild(link);
       });
@@ -84,6 +88,7 @@
         const cta = document.createElement("a");
         cta.href = orderNow.getAttribute("href") || destinations["order-now"];
         cta.setAttribute("data-path", "order-now");
+        cta.setAttribute("data-i18l-text", "Order Now");
         cta.className = "kb-mobile-nav-cta";
         cta.textContent = "Order Now";
         panel.appendChild(cta);
