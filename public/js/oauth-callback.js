@@ -35,8 +35,7 @@
     if (!userResponse.ok) throw new Error('Could not load the Google account profile.');
     const user = await userResponse.json();
     return { user, accessToken };
-  }).then(async ({user, accessToken}) => {
-    if (!response.ok) throw new Error('Could not load the Google account profile.');
+  }).then(({user, accessToken}) => {
     const metadata = user.user_metadata || {};
     const profile = {
       name: metadata.full_name || metadata.name || user.email || 'Customer',
