@@ -1,0 +1,17 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.join(__dirname, '..');
+const html = fs.readFileSync(path.join(root, 'public/index.html'), 'utf8');
+const i18n = fs.readFileSync(path.join(root, 'public/js/i18n.js'), 'utf8');
+assert.ok(html.includes('data-i18l-lang-toggle'), 'Homepage must expose a working language toggle');
+assert.ok(html.includes('data-i18l-text="home.headline"'), 'Homepage hero headline must be translatable');
+assert.ok(html.includes('data-i18l-text="home.description"'), 'Homepage description must be translatable');
+assert.ok(html.includes('data-i18l-text="nav.cart"'), 'Homepage cart label must be translatable');
+assert.ok(!html.includes('#kb-live-menu[aria-busy="true"]{min-height:4500px}'), 'Loading placeholder must not force a huge blank page');
+assert.ok(i18n.includes("'home.headline': 'Charcoal, Clay & Slow Spice.'"), 'English homepage headline must exist');
+assert.ok(i18n.includes("'home.headline': 'کوئلے، مٹی اور دھیمی آنچ کے مصالحے۔'"), 'Urdu homepage headline must exist');
+assert.ok(i18n.includes('new MutationObserver'), 'Dynamically injected content must be translated');
+assert.ok(i18n.includes('ensureUrduFont()'), 'Urdu font must load only when required');
+assert.ok(i18n.includes("replace(/^./, (ch) => ch.toUpperCase())"), 'Missing keys must not show raw i18n implementation keys');
+console.log('Live homepage translation and loading contract checks passed.');
