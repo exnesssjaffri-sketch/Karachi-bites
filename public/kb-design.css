@@ -2,63 +2,57 @@
  * Dark theme, EB Garamond / Geist typography.
  */
 
-/* EB Garamond Font Faces */
+/* EB Garamond Font Faces — loaded via Google Fonts in the HTML shells;
+ * local() only so this stylesheet never requests missing font files. */
 @font-face {
   font-family: 'EB Garamond';
   font-style: normal;
   font-weight: 400;
-  src: local('EB Garamond'), local('EBGaramond-Regular'),
-       url('/fonts/eb-garamond-v26-latin-regular.woff2') format('woff2');
+  src: local('EB Garamond'), local('EBGaramond-Regular');
   font-display: swap;
 }
 @font-face {
   font-family: 'EB Garamond';
   font-style: normal;
   font-weight: 500;
-  src: local('EB Garamond Medium'), local('EBGaramond-Medium'),
-       url('/fonts/eb-garamond-v26-latin-500.woff2') format('woff2');
+  src: local('EB Garamond Medium'), local('EBGaramond-Medium');
   font-display: swap;
 }
 @font-face {
   font-family: 'EB Garamond';
   font-style: normal;
   font-weight: 600;
-  src: local('EB Garamond SemiBold'), local('EBGaramond-SemiBold'),
-       url('/fonts/eb-garamond-v26-latin-600.woff2') format('woff2');
+  src: local('EB Garamond SemiBold'), local('EBGaramond-SemiBold');
   font-display: swap;
 }
 @font-face {
   font-family: 'EB Garamond';
   font-style: normal;
   font-weight: 700;
-  src: local('EB Garamond Bold'), local('EBGaramond-Bold'),
-       url('/fonts/eb-garamond-v26-latin-700.woff2') format('woff2');
+  src: local('EB Garamond Bold'), local('EBGaramond-Bold');
   font-display: swap;
 }
 
-/* Geist Font Faces */
+/* Geist Font Faces — loaded via Google Fonts in the HTML shells. */
 @font-face {
   font-family: 'Geist';
   font-style: normal;
   font-weight: 400;
-  src: local('Geist'), local('Geist-Regular'),
-       url('/fonts/geist-v1-latin-400.woff2') format('woff2');
+  src: local('Geist'), local('Geist-Regular');
   font-display: swap;
 }
 @font-face {
   font-family: 'Geist';
   font-style: normal;
   font-weight: 500;
-  src: local('Geist Medium'), local('Geist-Medium'),
-       url('/fonts/geist-v1-latin-500.woff2') format('woff2');
+  src: local('Geist Medium'), local('Geist-Medium');
   font-display: swap;
 }
 @font-face {
   font-family: 'Geist';
   font-style: normal;
   font-weight: 600;
-  src: local('Geist SemiBold'), local('Geist-SemiBold'),
-       url('/fonts/geist-v1-latin-600.woff2') format('woff2');
+  src: local('Geist SemiBold'), local('Geist-SemiBold');
   font-display: swap;
 }
 

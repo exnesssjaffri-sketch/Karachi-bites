@@ -46,14 +46,15 @@ app.use(express.json({ limit: '10kb' }));
 // Vercel/Express sits behind a trusted reverse proxy. This is required so rate limiting can safely read the client IP.
 app.set('trust proxy', 1);
 
-// Rate limiting
+// Rate limiting (API endpoints only — static assets are exempt so page loads
+// don't consume the quota and risk 429s on subsequent API calls).
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
 });
-app.use(limiter);
+app.use('/api', limiter);
 
 // Health check endpoint — registered BEFORE the databaseReady middleware so it
 // responds even while the DB is still initializing or has failed to initialize.

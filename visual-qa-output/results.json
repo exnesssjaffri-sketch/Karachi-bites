@@ -1,0 +1,117 @@
+[
+  {
+    "viewport": "mobile-360",
+    "width": 360,
+    "checks": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "screenshots": [
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\home-mobile-360.png",
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\menu-mobile-360.png",
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\cart-mobile-360.png",
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\checkout-mobile-360.png"
+    ]
+  },
+  {
+    "viewport": "mobile-390",
+    "width": 390,
+    "checks": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "screenshots": [
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\home-mobile-390.png",
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\menu-mobile-390.png",
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\cart-mobile-390.png",
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\checkout-mobile-390.png"
+    ]
+  },
+  {
+    "viewport": "tablet-768",
+    "width": 768,
+    "checks": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "screenshots": [
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\home-tablet-768.png",
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\menu-tablet-768.png",
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\cart-tablet-768.png",
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\checkout-tablet-768.png"
+    ]
+  },
+  {
+    "viewport": "desktop-1024",
+    "width": 1024,
+    "checks": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "screenshots": [
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\home-desktop-1024.png",
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\menu-desktop-1024.png",
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\cart-desktop-1024.png",
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\checkout-desktop-1024.png"
+    ]
+  },
+  {
+    "viewport": "desktop-1280",
+    "width": 1280,
+    "checks": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "screenshots": [
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\home-desktop-1280.png",
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\menu-desktop-1280.png",
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\cart-desktop-1280.png",
+      "C:\\Users\\ALI HAIDER\\OneDrive\\Desktop\\Karachi bites\\visual-qa-output\\checkout-desktop-1280.png"
+    ]
+  }
+]

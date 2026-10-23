@@ -65,10 +65,24 @@ async function main() {
   const browser = await puppeteer.connect({
     browserURL: 'http://localhost:9222',
     defaultViewport: null,
-    timeout: 30000
+    timeout: 30000,
+    protocolTimeout: 180000
   });
 
   const results = [];
+
+  async function navigate(page, url) {
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
+        return true;
+      } catch (err) {
+        console.log(`   navigate retry ${attempt}/3 for ${url}: ${err.message.slice(0, 120)}`);
+        if (attempt === 3) throw err;
+        await new Promise(res => setTimeout(res, 2000));
+      }
+    }
+  }
 
   for (const [key, vp] of Object.entries(VIEWPORTS)) {
     const page = await browser.newPage();
@@ -78,7 +92,7 @@ async function main() {
     page.on('pageerror', (err) => consoleErrors.push(err.message.slice(0, 200)));
 
     // ---------- Homepage ----------
-    await page.goto(BASE_URL + '/', { waitUntil: 'domcontentloaded', timeout: 45000 });
+    await navigate(page, BASE_URL + '/');
     await page.waitForSelector('h1', { timeout: 15000 }).catch(() => {});
     await new Promise(res => setTimeout(res, 3000));
 
@@ -99,7 +113,7 @@ async function main() {
     console.log(`     H1: ${fonts.h1} @ ${fonts.h1Size}`);
 
     // ---------- Menu (SPA) ----------
-    await page.goto(BASE_URL + '/app.html#menu', { waitUntil: 'domcontentloaded', timeout: 45000 });
+    await navigate(page, BASE_URL + '/app.html#menu');
     await page.waitForSelector('#menuGrid article', { timeout: 20000 }).catch(() => {});
     await new Promise(res => setTimeout(res, 3000));
 

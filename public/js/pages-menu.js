@@ -9,17 +9,37 @@ const menuPage = {
   maxPrice: "",
 
   async init() {
-    const queryString = window.location.hash.split("?")[1] || "";
-    const params = new URLSearchParams(queryString);
-    const requestedCategory = params.get("category");
-    this.loadError = null;
-    await this.loadMenu();
-
-    if (requestedCategory) {
-      const exact = this.menuItems.some((item) => item.category === requestedCategory);
-      this.activeCategory = exact ? requestedCategory : requestedCategory;
+    const container = document.getElementById("app");
+    if (!container) {
+      console.error("menuPage.init: No #app container found");
+      return;
     }
-    this.render();
+    container.setAttribute("aria-busy", "true");
+    container.innerHTML = '<div class="flex min-h-[60vh] flex-col items-center justify-center"><div class="mb-4 h-10 w-10 animate-spin rounded-full border-2 border-[#B42318] border-t-transparent"></div><p class="text-sm text-[#B8B0A6]">Loading menu...</p></div>';
+
+    try {
+      this.loadError = null;
+      await this.loadMenu();
+
+      const queryString = window.location.hash.split("?")[1] || "";
+      const params = new URLSearchParams(queryString);
+      const requestedCategory = params.get("category");
+
+      if (requestedCategory) {
+        const exact = this.menuItems.some((item) => item.category === requestedCategory);
+        this.activeCategory = exact ? requestedCategory : requestedCategory;
+      }
+
+      this.render();
+    } catch (error) {
+      console.error("menuPage.init error:", error);
+      this.loadError = error.message || "Failed to initialize menu page";
+      this.render();
+    } finally {
+      if (container) {
+        container.setAttribute("aria-busy", "false");
+      }
+    }
   },
 
   async loadMenu() {
@@ -29,16 +49,19 @@ const menuPage = {
         throw new Error("Menu service is not available.");
       }
       const result = await window.api.getMenu();
-      if (!result || !result.success || !Array.isArray(result.data)) {
-        throw new Error((result && result.error) || "The menu is temporarily unavailable.");
+      // API returns raw array, not { success, data }
+      const data = Array.isArray(result) ? result : (result && result.data ? result.data : []);
+      if (!Array.isArray(data)) {
+        throw new Error("Invalid menu response format");
       }
-      this.menuItems = result.data.filter((item) =>
+      this.menuItems = data.filter((item) =>
         item && item.available !== false && item.available !== 0 && item.available !== "false"
       );
       this.itemsLoaded = true;
+      console.log("menuPage loaded:", this.menuItems.length, "items");
     } catch (error) {
       console.error("Unable to load menu:", error);
-      this.loadError = "The live menu could not be loaded. Check your connection and try again.";
+      this.loadError = error.message || "The live menu could not be loaded. Check your connections and try again.";
     }
   },
 
