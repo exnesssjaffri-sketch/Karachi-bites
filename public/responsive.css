@@ -334,7 +334,7 @@ body > main { padding-top:92px !important; }
 
 
 /* Urdu/English localization: readable Urdu type, true RTL flow, and safe mixed-direction values. */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap');
+
 html[lang="ur"], html[lang="ur"] body,
 html[lang="ur"] button, html[lang="ur"] input, html[lang="ur"] textarea, html[lang="ur"] select {
   font-family: "Noto Nastaliq Urdu", "Noto Naskh Arabic", serif !important;
