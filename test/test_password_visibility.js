@@ -1,0 +1,12 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const html = fs.readFileSync(path.join(__dirname, '..', 'public', 'login.html'), 'utf8');
+assert.match(html, /\.field\{[^}]*background:#000;color:#fff/);
+assert.match(html, /id="password" class="field" type="password"/);
+assert.match(html, /id="newPassword" class="field" type="password"/);
+assert.match(html, /data-password-toggle="password"/);
+assert.match(html, /data-password-toggle="newPassword"/);
+assert.match(html, /input\.type=show\?"text":"password"/);
+assert.match(html, /aria-pressed/);
+console.log('Password field contrast and show/hide accessibility checks passed.');
