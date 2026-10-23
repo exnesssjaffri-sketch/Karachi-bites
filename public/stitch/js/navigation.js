@@ -7,7 +7,7 @@
     "track-order": "/app.html#tracking",
     "order-confirmation": "/app.html#menu",
     "staff-portal": "/admin",
-    login: "/admin"
+    login: "/login.html"
   };
 
   // Load a shared, production-served responsive layer without duplicating CSS across Stitch exports.
