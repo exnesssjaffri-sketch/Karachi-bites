@@ -1,0 +1,25 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const read = (p) => fs.readFileSync(path.join(__dirname, '..', 'public', p), 'utf8');
+const home = read('index.html');
+const responsive = read('responsive.css');
+const auth = read('js/supabase-auth.js');
+const login = read('login.html');
+const loginJs = read('js/login.js');
+const account = read('js/account-header.js');
+const callbackHtml = read('auth-callback.html');
+const callbackJs = read('js/oauth-callback.js');
+
+assert.ok(home.includes('id="kb-account-login"'), 'Home header must have an account icon link');
+assert.ok(home.includes('id="kb-account-avatar"'), 'Account icon must include avatar image');
+assert.ok(!home.includes('Account / Login</a>'), 'Header must not show a text login link');
+assert.ok(responsive.includes('overflow-y:auto !important'), 'Mobile document must remain vertically scrollable');
+assert.ok(responsive.includes('body > main { padding-top:92px !important; }'), 'Fixed header must not cover homepage content');
+assert.ok(auth.includes('provider=google'), 'Auth helper must initiate Google OAuth');
+assert.ok(login.includes('id="googleSignInBtn"'), 'Login page must show Google sign-in under email/password');
+assert.ok(loginJs.includes('window.KBAuth.signInWithGoogle()'), 'Google button must be wired');
+assert.ok(account.includes('avatar_url') && account.includes('kb-account-avatar'), 'Account icon must render Google profile avatar');
+assert.ok(callbackHtml.includes('/js/oauth-callback.js'), 'OAuth callback page must load callback handler');
+assert.ok(callbackJs.includes('karachi_bites_customer_token') && callbackJs.includes('avatar_url'), 'OAuth callback must persist session and avatar');
+console.log('Mobile scroll, account icon, Google OAuth and avatar contract checks passed.');
