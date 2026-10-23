@@ -1,0 +1,17 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.join(__dirname, '..');
+const i18n = fs.readFileSync(path.join(root, 'public/js/i18n.js'), 'utf8');
+const navbar = fs.readFileSync(path.join(root, 'public/js/navbar.js'), 'utf8');
+const css = fs.readFileSync(path.join(root, 'public/responsive.css'), 'utf8');
+const app = fs.readFileSync(path.join(root, 'public/app.html'), 'utf8');
+assert.ok(i18n.includes("'tracking.inProgress': 'جاری ہے'"), 'Urdu in-progress label must be correct');
+assert.ok(i18n.includes("'cart.promoInvalid': 'پرومو کوڈ درست نہیں ہے'"), 'Urdu promo error must be correct');
+assert.ok(i18n.includes("'cart.instructionsPlaceholder': 'کھانے کی تیاری یا ڈیلیوری سے متعلق کوئی خاص ہدایت لکھیں...'"), 'Urdu instructions placeholder must be corrected');
+assert.ok(i18n.includes('replace(/^./, (ch) => ch.toUpperCase())'), 'Missing keys must use readable fallback, not raw i18n key');
+assert.ok(navbar.includes('data-i18l-text="nav.home"') && navbar.includes('data-i18l-text="nav.menu"') && navbar.includes('data-i18l-text="nav.cart"'), 'Navigation links must use supported translation attributes');
+assert.ok(navbar.includes('data-i18l-text="cart.checkout"'), 'Checkout action must use translation system');
+assert.ok(css.includes('html[dir="rtl"]') && css.includes('Noto Nastaliq Urdu'), 'RTL layout and Urdu typography must be supported');
+assert.ok(app.includes('Noto+Nastaliq+Urdu'), 'Urdu font stylesheet must be loaded');
+console.log('Urdu/English translation and RTL contract checks passed.');

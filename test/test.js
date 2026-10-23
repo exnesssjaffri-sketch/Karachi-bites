@@ -13,6 +13,7 @@ const files = [
   'test_cart_store.js',
   'test_cart_total_property.js',
   'test_account_google_mobile.js',
+  'test_i18n_rtl.js',
 ];
 
 let allPassed = true;

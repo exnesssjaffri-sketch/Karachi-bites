@@ -54,8 +54,8 @@ const navbar = {
 
           <!-- Desktop Navigation -->
           <div class="hidden md:flex items-center gap-1">
-            <a href="/" class="nav-link px-4 py-2 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link>Home</a>
-            <a href="#menu" class="nav-link px-4 py-2 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link>Menu</a>
+            <a href="/" class="nav-link px-4 py-2 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link data-i18l-text="nav.home">Home</a>
+            <a href="#menu" class="nav-link px-4 py-2 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link data-i18l-text="nav.menu">Menu</a>
             <a href="#cart" class="nav-link px-4 py-2 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label relative" data-link>
               Cart
               <span data-cart-count-badge class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#B42318] text-white text-xs flex items-center justify-center hidden">0</span>
@@ -77,8 +77,8 @@ const navbar = {
         <!-- Mobile Navigation -->
         <div id="mobile-menu" class="hidden md:hidden bg-[#2A2622] border-t border-[#3A342E]">
           <div class="px-4 py-3 space-y-1">
-            <a href="/" class="block px-4 py-3 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link>Home</a>
-            <a href="#menu" class="block px-4 py-3 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link>Menu</a>
+            <a href="/" class="block px-4 py-3 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link data-i18l-text="nav.home">Home</a>
+            <a href="#menu" class="block px-4 py-3 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link data-i18l-text="nav.menu">Menu</a>
             <a href="#cart" class="block px-4 py-3 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label relative" data-link>
               Cart
               <span data-cart-count-badge class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#B42318] text-white text-xs flex items-center justify-center hidden">0</span>
@@ -102,7 +102,7 @@ const navbar = {
           </div>
           <div class="flex items-center gap-6">
             <div class="text-center">
-              <div class="text-xs text-[#B8B0A6] uppercase tracking-wider font-label">Total</div>
+              <div class="text-xs text-[#B8B0A6] uppercase tracking-wider font-label" data-i18l-text="common.total">Total</div>
               <div class="font-price text-[#B42318]">${cartStore.formatPrice(cart.total)}</div>
             </div>
             <button id="checkout-btn" class="flex items-center gap-2 bg-[#2A2622] hover:bg-[#3A342E] border border-[#3A342E] text-[#F7F3EC] px-6 py-3 rounded-lg font-title shadow-lg transition-all">
