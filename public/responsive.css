@@ -331,3 +331,18 @@ body > main { padding-top:92px !important; }
   body > header > div > div:last-child > a[data-path="order-now"] { padding:9px 10px !important; font-size:12px !important; white-space:nowrap; }
   body > main { padding-top:80px !important; }
 }
+
+
+/* Urdu/English localization: readable Urdu type, true RTL flow, and safe mixed-direction values. */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap');
+html[lang="ur"], html[lang="ur"] body,
+html[lang="ur"] button, html[lang="ur"] input, html[lang="ur"] textarea, html[lang="ur"] select {
+  font-family: "Noto Nastaliq Urdu", "Noto Naskh Arabic", serif !important;
+}
+html[dir="rtl"] body { direction: rtl; text-align: right; }
+html[dir="rtl"] nav, html[dir="rtl"] header, html[dir="rtl"] footer { direction: rtl; }
+html[dir="rtl"] input, html[dir="rtl"] textarea, html[dir="rtl"] select { text-align: right; }
+html[dir="rtl"] [dir="ltr"], html[dir="rtl"] .font-price, html[dir="rtl"] [data-cart-count-badge] {
+  direction: ltr; unicode-bidi: isolate;
+}
+html[dir="rtl"] .material-symbols-outlined { direction: ltr; }
