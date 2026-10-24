@@ -194,7 +194,7 @@ const checkoutPage = {
         const result = await window.api.createOrder({
           customer: { name, phone, address },
           branch: 'Clifton',
-          items: cart.items,
+          items: cart.items.map(item => ({ id: item.id, qty: item.quantity })),
         });
 
         if (result.success && result.data && result.data.orderId) {
