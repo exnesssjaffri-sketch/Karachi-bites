@@ -23,6 +23,18 @@ const I18N = (() => {
       'nav.cart': 'Cart',
       'nav.switchToUrdu': 'اردو',
       'nav.switchToEnglish': 'English',
+      'nav.trackOrder': 'Track Order',
+      'nav.staffPortal': 'Staff Portal',
+      'nav.login': 'Login',
+      'stats.reviews': '14,000+ Reviews',
+      'stats.produce': 'Fresh Daily Produce',
+      'stats.delivery': 'Avg Delivery Speed',
+      'home.eyebrow': 'Authentic Burns Road Flavors • Fast Delivery 30–45 Mins',
+      'home.headline': 'Charcoal, Clay & Slow Spice.',
+      'home.spirit': 'The Pure Spirit',
+      'home.food': 'of Karachi Food.',
+      'home.description': "From dum-pukht Sindhi Biryani and 8-hour braised Nihari to melt-in-mouth Bihari boti, experience Karachi's finest culinary craft delivered hot to your doorstep.",
+      'home.exploreMenu': 'Explore Menu',
       'Order Now':'Order Now',
       'common.items': '{count} item(s)',
       'common.loading': 'Loading order details...',
@@ -121,6 +133,18 @@ const I18N = (() => {
       'nav.cart': 'کارٹ',
       'nav.switchToUrdu': 'اردو',
       'nav.switchToEnglish': 'English',
+      'nav.trackOrder': 'آرڈر ٹریک کریں',
+      'nav.staffPortal': 'اسٹاف پورٹل',
+      'nav.login': 'لاگ اِن',
+      'stats.reviews': '14,000+ تبصرے',
+      'stats.produce': 'روزانہ تازہ اجناس',
+      'stats.delivery': 'ڈیلیوری کا اوسط وقت',
+      'home.eyebrow': 'برنس روڈ کے مستند ذائقے • تیز ڈیلیوری، 30 سے 45 منٹ',
+      'home.headline': 'کوئلے، مٹی اور دھیمی آنچ کے مصالحے۔',
+      'home.spirit': 'کراچی کی اصل پہچان',
+      'home.food': 'کا ذائقہ۔',
+      'home.description': 'دم پر تیار سندھی بریانی، آٹھ گھنٹے پکی نہاری اور منہ میں گھل جانے والی بہاری بوٹی — کراچی کے بہترین ذائقے گرم گرم آپ کے دروازے تک۔',
+      'home.exploreMenu': 'مینیو دیکھیں',
       'Order Now':'ابھی آرڈر کریں',
       'common.items': '{count} اشیاء',
       'common.loading': 'آرڈر کی تفصیلات لوڈ ہو رہی ہیں...',
@@ -155,11 +179,11 @@ const I18N = (() => {
       'tracking.step.preparing': 'بنایا جا رہا ہے',
       'tracking.step.out-for-delivery': 'ڈیلیوری کے لیے نکلا',
       'tracking.step.delivered': 'پہنچا دیا گیا',
-      'tracking.inProgress': 'ماری ہے',
+      'tracking.inProgress': 'جاری ہے',
       'tracking.completed': 'مکمل',
       'tracking.pending': 'زیرِ التوا',
       'tracking.summary': 'آرڈر کا خلاصہ',
-      'tracking.notes': 'آرڈر کی نوٹس',
+      'tracking.notes': 'آرڈر کے نوٹس',
       'placed.title': 'آرڈر کی تصدیق ہو گئی!',
       'placed.subtitle': 'آپ کے آرڈر کے لیے شکریہ۔ ہم اسے تیار کر رہے ہیں۔',
       'placed.orderAgain': 'دوبارہ آرڈر کریں',
@@ -176,10 +200,10 @@ const I18N = (() => {
       'cart.total': 'کل رقم',
       'cart.orderSummary': 'آرڈر کا خلاصہ',
       'cart.instructions': 'خاص ہدایات',
-      'cart.instructionsPlaceholder': 'کوئ بھی کچنگ یا ڈیلیوری کی ترجیحات...',
+      'cart.instructionsPlaceholder': 'کھانے کی تیاری یا ڈیلیوری سے متعلق کوئی خاص ہدایت لکھیں...',
       'cart.kitchenStatus': 'کھلا اور بھاپ پا کر رہا ہے',
       'cart.promoApplied': '{code} لاگو ہو گیا — حتمی کل رقم ہمیشہ سرور کی جانب سے تصدیق ہوتا ہے۔',
-      'cart.promoInvalid': 'نافع پرومو کوڈ',
+      'cart.promoInvalid': 'پرومو کوڈ درست نہیں ہے',
       'cart.checkout': 'چیک آؤٹ کے لیے آگے بڑھیں',
       'checkout.title': 'چیک آؤٹ',
       'checkout.contactInfo': 'رابطے کی معلومات',
@@ -248,7 +272,7 @@ const I18N = (() => {
     const d = dict();
     let str = Object.prototype.hasOwnProperty.call(d, key) ? d[key]
       : Object.prototype.hasOwnProperty.call(dictionaries.en, key) ? dictionaries.en[key]
-      : key;
+      : String(key).split('.').pop().replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[-_]/g, ' ').replace(/^./, (ch) => ch.toUpperCase());
     if (params) {
       for (const name of Object.keys(params)) {
         str = str.replace(new RegExp('\\{' + name + '\\}', 'g'), String(params[name]));
@@ -261,7 +285,8 @@ const I18N = (() => {
   function applyI18n(root) {
     const scope = root || document;
     scope.querySelectorAll('[data-i18l-text]').forEach((el) => {
-      el.textContent = t(el.getAttribute('data-i18l-text'));
+      const translated = t(el.getAttribute('data-i18l-text'));
+      if (el.textContent !== translated) el.textContent = translated;
     });
     scope.querySelectorAll('[data-i18l-placeholder]').forEach((el) => {
       el.setAttribute('placeholder', t(el.getAttribute('data-i18l-placeholder')));
@@ -273,7 +298,8 @@ const I18N = (() => {
       el.setAttribute('title', t(el.getAttribute('data-i18l-title')));
     });
     scope.querySelectorAll('[data-i18l-lang-toggle]').forEach((el) => {
-      el.textContent = current === 'en' ? t('nav.switchToUrdu') : t('nav.switchToEnglish');
+      const translated = current === 'en' ? t('nav.switchToUrdu') : t('nav.switchToEnglish');
+      if (el.textContent !== translated) el.textContent = translated;
     });
   }
 
@@ -286,18 +312,43 @@ const I18N = (() => {
     current = next;
     try { localStorage.setItem(STORAGE_KEY, current); } catch (_) { /* ignore */ }
     applyDocAttributes();
+    ensureUrduFont();
     applyI18n();
     window.dispatchEvent(new CustomEvent('kb:language-changed', { detail: { language: current } }));
   }
 
+  // Load Urdu font only after Urdu is selected so English startup stays light.
+  function ensureUrduFont() {
+    if (current !== 'ur' || document.getElementById('kb-urdu-font')) return;
+    const link = document.createElement('link');
+    link.id = 'kb-urdu-font'; link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap';
+    document.head.appendChild(link);
+  }
   // Boot: apply saved language to the static shell as soon as possible.
   applyDocAttributes();
+  ensureUrduFont();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => applyI18n());
   } else {
     applyI18n();
   }
 
+  // Observe dynamically rendered app sections so translations survive menu/cart rerenders.
+  if (typeof MutationObserver !== 'undefined' && document.documentElement) {
+    const observer = new MutationObserver((records) => {
+      records.forEach((record) => record.addedNodes.forEach((node) => {
+        if (node.nodeType !== 1) return;
+        if (node.matches && node.matches('[data-i18l-text],[data-i18l-placeholder],[data-i18l-aria],[data-i18l-title],[data-i18l-lang-toggle]')) applyI18n(node.parentNode || document);
+        else if (node.querySelector && node.querySelector('[data-i18l-text],[data-i18l-placeholder],[data-i18l-aria],[data-i18l-title],[data-i18l-lang-toggle]')) applyI18n(node);
+      }));
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+  }
+  document.addEventListener('click', (event) => {
+    const toggle = event.target.closest && event.target.closest('[data-i18l-lang-toggle]');
+    if (toggle) setLanguage(current === 'en' ? 'ur' : 'en');
+  });
   return { t, setLanguage, getCurrentLanguage, applyI18n, dictionaries };
 })();
 

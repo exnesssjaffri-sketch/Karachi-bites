@@ -12,6 +12,10 @@ const files = [
   'test_frontend_wiring.js',
   'test_cart_store.js',
   'test_cart_total_property.js',
+  'test_account_google_mobile.js',
+  'test_live_translation_performance.js',
+  'test_mobile_header_translation.js',
+  'test_mobile_responsive_layout.js',
 ];
 
 let allPassed = true;

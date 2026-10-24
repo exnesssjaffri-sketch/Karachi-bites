@@ -24,4 +24,5 @@ jobs:
       - name: Run database, API, failure and persistence tests
         env:
           JWT_SECRET: ci-only-not-a-production-secret-value
+          USE_SQLITE: "true"
         run: npm test
