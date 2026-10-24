@@ -7,6 +7,10 @@
   const $ = (selector) => document.querySelector(selector);
   const loginPanel = $('#loginPanel');
   const dashboardPanel = $('#dashboardPanel');
+  const otpPanel = $('#otpPanel');
+  const otpForm = $('#otpForm');
+  const verifyOtpBtn = $('#verifyOtpBtn');
+  let pendingPreAuthToken = null;
   const loginForm = $('#loginForm');
   const loginBtn = $('#loginBtn');
   const logoutBtn = $('#logoutBtn');
@@ -77,12 +81,14 @@
 
   function showLogin() {
     loginPanel.classList.remove('hidden');
+    otpPanel.classList.add('hidden');
     dashboardPanel.classList.add('hidden');
     logoutBtn.classList.add('hidden');
   }
 
   function showDashboard() {
     loginPanel.classList.add('hidden');
+    otpPanel.classList.add('hidden');
     dashboardPanel.classList.remove('hidden');
     logoutBtn.classList.remove('hidden');
   }
@@ -127,11 +133,21 @@
         headers: {},
         body: JSON.stringify({ username, password })
       });
+      $('#password').value = '';
+      if (response.requiresOtp === true && typeof response.preAuthToken === 'string') {
+        pendingPreAuthToken = response.preAuthToken;
+        $('#otpDescription').textContent = 'A verification code was sent to ' + (response.maskedDestination || 'your registered email') + '. It expires in 5 minutes.';
+        loginPanel.classList.add('hidden');
+        otpPanel.classList.remove('hidden');
+        $('#otpCode').value = '';
+        $('#otpCode').focus();
+        showNotice('Verification code sent. Check your inbox and spam folder.');
+        return;
+      }
       if (!response.token) throw new Error('The login API did not return a token.');
       clearToken();
       saveToken(response.token);
       await loadOrders();
-      $('#password').value = '';
     } catch (error) {
       clearToken();
       showLogin();
@@ -483,12 +499,43 @@ cell.appendChild(kitchenBtn);
     }
   }
 
+  otpForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!pendingPreAuthToken) {
+      showLogin();
+      showNotice('Your verification attempt expired. Please sign in again.', true);
+      return;
+    }
+    clearNotice();
+    setBusy(verifyOtpBtn, true, 'Verifying…');
+    try {
+      const result = await requestJson('/api/auth/verify-otp', {
+        method: 'POST',
+        body: JSON.stringify({ preAuthToken: pendingPreAuthToken, code: $('#otpCode').value.trim() })
+      });
+      if (!result.token) throw new Error('The verification API did not return a session.');
+      pendingPreAuthToken = null;
+      saveToken(result.token);
+      await loadOrders();
+    } catch (error) {
+      showNotice(error.message || 'Verification failed. Check the code and try again.', true);
+    } finally {
+      setBusy(verifyOtpBtn, false);
+    }
+  });
+  $('#backToLoginBtn').addEventListener('click', () => {
+    pendingPreAuthToken = null;
+    $('#otpCode').value = '';
+    showLogin();
+    clearNotice();
+  });
   loginForm.addEventListener('submit', login);
   $('#emailAuthForm').addEventListener('submit', emailAuthLogin);
   $('#sendOtpBtn').addEventListener('click', sendStaffOtp);
   $('#verifyOtpBtn').addEventListener('click', verifyStaffOtp);
   logoutBtn.addEventListener('click', () => {
     clearToken();
+    pendingPreAuthToken = null;
     showLogin();
     clearNotice();
     emptyTable('Sign in to load orders.');

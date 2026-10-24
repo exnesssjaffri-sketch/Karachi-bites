@@ -37,3 +37,16 @@ The frontend uses `/api/menu`, `/api/orders`, `/api/auth/login`, and the existin
 
 ## Important
 The first schema and menu were applied directly to the connected Supabase project and are mirrored in the migration files. The initial admin still needs to be provisioned using the secure one-time flow above. Before using real customer orders, perform a non-production/test order through the API and verify it from a fresh database connection.
+
+
+## Staff/admin email OTP rollout (staged)
+
+The branch `feature/staff-email-2fa` contains the Edge Function source and frontend OTP form. Before deploying the new function, configure these values in Supabase Dashboard → Edge Functions → Secrets:
+
+- `RESEND_API_KEY`: a Resend API key with email-send permission.
+- `AUTH_EMAIL_FROM`: a sender address on a domain verified in Resend, for example `Karachi Bites <auth@your-verified-domain.example>` (replace with your actual verified domain).
+- `OTP_HASH_SECRET`: a random secret of at least 32 characters. Generate one locally; never commit it or paste it into chat.
+
+The email OTP is 6 digits, expires after 5 minutes, and is limited to 5 verification attempts. The login route fails closed (503) if the email provider or hash secret is missing. SMS is intentionally not offered until an SMS provider is configured.
+
+**Deployment warning:** do not deploy the updated function until the three secrets are set and the existing admin account has a valid email address. The current live function has not been replaced by this branch. The new login flow still uses the existing admin-only console authorization; staff-role access policy should be defined before extending dashboard permissions.

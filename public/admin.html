@@ -113,6 +113,21 @@
       </form>
     </section>
 
+
+    <section id="otpPanel" class="hidden max-w-md mx-auto bg-[#2A2622] border border-[#3A342E] rounded-2xl p-6 sm:p-8">
+      <p class="text-xs uppercase tracking-[.2em] text-[#B42318] font-semibold mb-2">Two-step verification</p>
+      <h1 class="text-3xl mb-2">Check your email</h1>
+      <p id="otpDescription" class="text-[#B8B0A6] text-sm mb-6">Enter the 6-digit code sent to your email. The code expires in 5 minutes.</p>
+      <form id="otpForm" class="space-y-4">
+        <div>
+          <label for="otpCode" class="block text-sm mb-2">6-digit verification code</label>
+          <input id="otpCode" name="otpCode" class="field text-center tracking-[.4em] text-xl" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" required>
+        </div>
+        <button id="verifyOtpBtn" class="btn btn-primary w-full" type="submit">Verify and sign in</button>
+        <button id="backToLoginBtn" class="btn btn-muted w-full" type="button">Back to sign in</button>
+      </form>
+    </section>
+
     <section id="dashboardPanel" class="hidden">
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
         <div>
