@@ -44,38 +44,44 @@ const navbar = {
   // Template
   render() {
     return `
-      <nav class="fixed top-0 left-0 right-0 z-50 bg-[#211E1B] border-b border-[#3A342E] shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
-        <div class="h-20 max-w-7xl mx-auto px-6 flex items-center justify-between">
+      <header class="fixed top-0 left-0 right-0 z-50 bg-[#181614] border-b border-[#3A342E] shadow-[0_2px_12px_rgba(0,0,0,0.35)]">
+        <div class="h-20 w-full px-margin-desktop flex items-center justify-between gap-space-md">
           <!-- Logo -->
-          <a href="/" class="flex items-center gap-2" data-link aria-label="Karachi Bites home">
-            <img src="/logo.svg" alt="Karachi Bites logo" class="w-10 h-10 object-contain shrink-0" width="40" height="40" decoding="async" />
-            <span class="font-headline text-[#F7F3EC] font-semibold text-xl">Karachi Bites</span>
+          <a href="/" class="flex items-center gap-space-md shrink-0" data-link aria-label="Karachi Bites home">
+            <img src="/logo.svg" alt="Karachi Bites logo" class="h-9 w-9 object-contain shrink-0" width="36" height="36" decoding="async" loading="eager" />
+            <span class="flex flex-col">
+              <span class="font-headline-sm text-headline-sm text-[#F7F3EC] tracking-tight font-semibold">Karachi Bites</span>
+              <span class="font-label-sm text-label-sm text-[#B8B0A6] tracking-wider uppercase">Burns Road Kitchen</span>
+            </span>
           </a>
 
           <!-- Desktop Navigation -->
-          <div class="hidden md:flex items-center gap-1">
-            <a href="/" class="nav-link px-4 py-2 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link>Home</a>
-            <a href="#menu" class="nav-link px-4 py-2 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link>Menu</a>
-            <a href="#cart" class="nav-link px-4 py-2 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label relative" data-link>
-              Cart
-              <span data-cart-count-badge class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#B42318] text-white text-xs flex items-center justify-center hidden">0</span>
+          <nav class="hidden xl:flex items-center gap-space-lg" data-active-classes="text-[#F7F3EC] font-semibold border-b-2 border-[#B42318]">
+            <a href="/" class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors" data-link>Home</a>
+            <a href="#menu" class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors" data-link>Menu</a>
+            <a href="#cart" class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors relative flex items-center gap-space-xs" data-link>
+              <span>Cart</span>
+              <span data-cart-count-badge class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#B42318] text-[#F7F3EC] font-label-sm text-label-sm font-semibold hidden">0</span>
             </a>
-          </div>
+            <a href="#tracking" class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors" data-link>Track Order</a>
+          </nav>
 
-          <!-- Language toggle + Mobile Menu Button -->
-          <div class="flex items-center gap-1">
-            <button id="lang-toggle-btn" type="button" class="px-3 py-2 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label text-sm flex items-center gap-1" aria-label="Switch language">
-              <span class="material-symbols-outlined text-base" aria-hidden="true">translate</span>
-              <span data-i18l-lang-toggle>اردو</span>
+          <!-- Right Actions -->
+          <div class="flex items-center gap-space-md shrink-0">
+            <button aria-label="Search menu items" class="w-10 h-10 flex items-center justify-center rounded-lg border border-[#3A342E] bg-[#211E1B] text-[#B8B0A6] hover:bg-[#2A2622] hover:text-[#F7F3EC] transition-colors" type="button">
+              <span class="material-symbols-outlined text-[20px]">search</span>
             </button>
-            <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-[#2A2622] text-[#B8B0A6]" aria-label="Open navigation menu">
+            <button id="lang-toggle-btn" type="button" class="hidden sm:flex items-center justify-center w-10 h-10 rounded-lg border border-[#3A342E] bg-[#211E1B] text-[#B8B0A6] hover:bg-[#2A2622] hover:text-[#F7F3EC] transition-colors" aria-label="Switch language">
+              <span class="material-symbols-outlined text-[20px]">translate</span>
+            </button>
+            <button id="mobile-menu-btn" class="xl:hidden p-2 rounded-lg hover:bg-[#2A2622] text-[#B8B0A6]" aria-label="Open navigation menu">
               <span class="material-symbols-outlined">menu</span>
             </button>
           </div>
         </div>
 
         <!-- Mobile Navigation -->
-        <div id="mobile-menu" class="hidden md:hidden bg-[#2A2622] border-t border-[#3A342E]">
+        <div id="mobile-menu" class="hidden xl:hidden bg-[#2A2622] border-t border-[#3A342E]">
           <div class="px-4 py-3 space-y-1">
             <a href="/" class="block px-4 py-3 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link>Home</a>
             <a href="#menu" class="block px-4 py-3 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link>Menu</a>

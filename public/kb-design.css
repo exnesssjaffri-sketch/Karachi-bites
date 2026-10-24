@@ -172,6 +172,10 @@ body {
 .px-margin { padding-left: var(--kb-margin); padding-right: var(--kb-margin); }
 .px-margin-desktop { padding-left: var(--kb-margin); padding-right: var(--kb-margin); }
 .font-headline-sm { font-family: var(--kb-font-headline); font-size: 1.25rem; line-height: 1.75rem; font-weight: 600; }
+.font-headline-lg { font-family: var(--kb-font-headline); font-size: 2rem; line-height: 2.5rem; font-weight: 600; }
+.font-headline-lg-mobile { font-family: var(--kb-font-headline); font-size: 2.25rem; line-height: 1.2; font-weight: 500; }
+.font-display-lg { font-family: var(--kb-font-display); font-size: 3rem; line-height: 1.1; font-weight: 500; letter-spacing: -0.01em; }
+.font-display-lg-mobile { font-family: var(--kb-font-display); font-size: 2.25rem; line-height: 1.2; font-weight: 500; letter-spacing: -0.01em; }
 
 /* Vertical padding (section-level inner breathing room) */
 .py-space-xs { padding-top: var(--kb-space-xs); padding-bottom: var(--kb-space-xs); }
