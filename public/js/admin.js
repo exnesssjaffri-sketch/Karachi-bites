@@ -12,6 +12,17 @@
   const verifyOtpBtn = $('#verifyOtpBtn');
   let pendingPreAuthToken = null;
   const loginForm = $('#loginForm');
+  const registerForm = $('#registerForm');
+  const enrollForm = $('#enrollForm');
+  const otpForm = $('#otpForm');
+  const otpPanel = $('#otpPanel');
+  const otpMethods = $('#otpMethods');
+  const otpInstructions = $('#otpInstructions');
+  let pendingChallengeId = null;
+  let pendingPurpose = null;
+  let pendingMethods = [];
+  let selectedMethod = null;
+  let pendingUsername = '';
   const loginBtn = $('#loginBtn');
   const logoutBtn = $('#logoutBtn');
   const notice = $('#notice');
@@ -79,9 +90,17 @@
     try { sessionStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem(REFRESH_TOKEN_KEY); } catch (_) {}
   }
 
-  function showLogin() {
+  function setAuthStage(stage) {
     loginPanel.classList.remove('hidden');
-    otpPanel.classList.add('hidden');
+    [loginForm, registerForm, enrollForm, otpPanel].forEach((element) => element && element.classList.add('hidden'));
+    if (stage === 'login') loginForm && loginForm.classList.remove('hidden');
+    if (stage === 'register') registerForm && registerForm.classList.remove('hidden');
+    if (stage === 'enroll') enrollForm && enrollForm.classList.remove('hidden');
+    if (stage === 'otp') otpPanel && otpPanel.classList.remove('hidden');
+  }
+
+  function showLogin() {
+    setAuthStage('login');
     dashboardPanel.classList.add('hidden');
     logoutBtn.classList.add('hidden');
   }
@@ -121,14 +140,93 @@
     return body;
   }
 
+  function clearPendingChallenge() {
+    pendingChallengeId = null;
+    pendingPurpose = null;
+    pendingMethods = [];
+    selectedMethod = null;
+    otpMethods.replaceChildren();
+    otpForm.classList.add('hidden');
+    $('#otpCode').value = '';
+  }
+
+  function showOtpStage(challenge, alreadySent = false) {
+    pendingChallengeId = challenge.challengeId;
+    pendingPurpose = challenge.purpose;
+    pendingMethods = Array.isArray(challenge.methods) ? challenge.methods : [];
+    selectedMethod = alreadySent ? 'email' : null;
+    otpInstructions.textContent = challenge.purpose === 'register' || challenge.purpose === 'enroll'
+      ? 'Enter the code sent to ' + (challenge.maskedEmail || 'your registered email') + '.'
+      : 'Choose where to receive your one-time code.';
+    otpMethods.replaceChildren();
+    otpMethods.classList.toggle('hidden', alreadySent);
+    pendingMethods.forEach((method) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'btn btn-muted w-full';
+      button.textContent = method === 'email'
+        ? 'Send code to email ' + (challenge.maskedEmail || '')
+        : 'Send SMS ' + (challenge.maskedPhone || '');
+      button.addEventListener('click', () => sendOtp(method));
+      otpMethods.appendChild(button);
+    });
+    if (!alreadySent && !pendingMethods.includes('sms')) {
+      const smsUnavailable = document.createElement('button');
+      smsUnavailable.type = 'button';
+      smsUnavailable.disabled = true;
+      smsUnavailable.className = 'btn btn-muted w-full opacity-60 cursor-not-allowed';
+      smsUnavailable.textContent = 'SMS unavailable — provider not configured';
+      otpMethods.appendChild(smsUnavailable);
+    }
+    if (!alreadySent && !pendingMethods.includes('email')) {
+      const emailUnavailable = document.createElement('button');
+      emailUnavailable.type = 'button';
+      emailUnavailable.disabled = true;
+      emailUnavailable.className = 'btn btn-muted w-full opacity-60 cursor-not-allowed';
+      emailUnavailable.textContent = 'Email unavailable — administrator setup required';
+      otpMethods.appendChild(emailUnavailable);
+    }
+    if (!pendingMethods.length) {
+      otpInstructions.textContent = 'No verification delivery method is configured. The site administrator must configure Resend email delivery; SMS also requires an SMS provider.';
+    }
+    otpForm.classList.toggle('hidden', !alreadySent);
+    setAuthStage('otp');
+  }
+
+  async function sendOtp(method) {
+    if (!pendingChallengeId) return;
+    clearNotice();
+    const buttons = Array.from(otpMethods.querySelectorAll('button'));
+    buttons.forEach((button) => { button.disabled = true; });
+    try {
+      await requestJson('/auth/send-otp', {
+        method: 'POST',
+        body: JSON.stringify({ challengeId: pendingChallengeId, method })
+      });
+      selectedMethod = method;
+      otpMethods.classList.add('hidden');
+      otpInstructions.textContent = method === 'email'
+        ? 'Enter the six-digit code sent to your email. It expires in 5 minutes.'
+        : 'Enter the six-digit SMS code. It expires in 5 minutes.';
+      otpForm.classList.remove('hidden');
+      $('#otpCode').focus();
+      showNotice('Verification code sent.');
+    } catch (error) {
+      showNotice(error.message || 'Could not send verification code.', true);
+    } finally {
+      buttons.forEach((button) => { button.disabled = false; });
+    }
+  }
+
   async function login(event) {
     event.preventDefault();
     clearNotice();
-    setBusy(loginBtn, true, 'Signing in…');
+    setBusy(loginBtn, true, 'Checking…');
     try {
       const username = $('#username').value.trim();
       const password = $('#password').value;
-      const response = await requestJson('/api/auth/login', {
+      pendingUsername = username;
+      const response = await requestJson('/auth/login', {
         method: 'POST',
         headers: {},
         body: JSON.stringify({ username, password })
@@ -136,12 +234,25 @@
       $('#password').value = '';
       if (response.requiresOtp === true && typeof response.preAuthToken === 'string') {
         pendingPreAuthToken = response.preAuthToken;
-        $('#otpDescription').textContent = 'A verification code was sent to ' + (response.maskedDestination || 'your registered email') + '. It expires in 5 minutes.';
-        loginPanel.classList.add('hidden');
-        otpPanel.classList.remove('hidden');
+        const otpDesc = $('#otpDescription');
+        if (otpDesc) {
+          otpDesc.textContent = 'A verification code was sent to ' + (response.maskedDestination || 'your registered email') + '. It expires in 5 minutes.';
+        }
+        setAuthStage('otp');
         $('#otpCode').value = '';
         $('#otpCode').focus();
         showNotice('Verification code sent. Check your inbox and spam folder.');
+        return;
+      }
+      if (response.enrollmentRequired) {
+        $('#enrollUsername').value = username;
+        $('#enrollPassword').value = '';
+        setAuthStage('enroll');
+        showNotice('This account needs email and phone setup before two-factor sign-in can be enabled.');
+        return;
+      }
+      if (response.challengeId) {
+        showOtpStage(response, false);
         return;
       }
       if (!response.token) throw new Error('The login API did not return a token.');
@@ -151,11 +262,9 @@
     } catch (error) {
       clearToken();
       showLogin();
-      showNotice(error.status === 403
-        ? 'This account can sign in, but it does not have the admin role.'
-        : error.status === 401
-          ? 'Username or password is incorrect.'
-          : (error.message || 'Unable to sign in.'), true);
+      showNotice(error.status === 401
+        ? 'Username or password is incorrect.'
+        : (error.message || 'Unable to sign in.'), true);
     } finally {
       setBusy(loginBtn, false);
     }
@@ -186,7 +295,7 @@
   async function sendStaffOtp() {
     clearNotice();
     const phone = $('#authPhone').value.trim();
-    if (!/^\\+[1-9][0-9]{7,14}$/.test(phone)) {
+    if (!/^\+[1-9][0-9]{7,14}$/.test(phone)) {
       showNotice('Enter the phone number in international format, for example +923001234567.', true);
       return;
     }
@@ -206,7 +315,7 @@
     clearNotice();
     const phone = $('#authPhone').value.trim();
     const otp = $('#authOtp').value.trim();
-    if (!/^\\+[1-9][0-9]{7,14}$/.test(phone) || !/^[0-9]{6}$/.test(otp)) {
+    if (!/^\+[1-9][0-9]{7,14}$/.test(phone) || !/^[0-9]{6}$/.test(otp)) {
       showNotice('Enter a valid international phone number and the 6-digit OTP.', true);
       return;
     }
@@ -225,6 +334,102 @@
     } finally {
       setBusy($('#verifyOtpBtn'), false);
     }
+  }
+
+  async function register(event) {
+    event.preventDefault();
+    clearNotice();
+    const button = $('#registerBtn');
+    setBusy(button, true, 'Creating account…');
+    try {
+      pendingUsername = $('#registerUsername').value.trim();
+      const response = await requestJson('/auth/register', {
+        method: 'POST',
+        headers: {},
+        body: JSON.stringify({
+          username: pendingUsername,
+          password: $('#registerPassword').value,
+          email: $('#registerEmail').value.trim(),
+          phone: $('#registerPhone').value.trim()
+        })
+      });
+      $('#registerPassword').value = '';
+      showOtpStage(response, true);
+      showNotice('Account created. Enter the email code to verify it.');
+    } catch (error) {
+      showNotice(error.message || 'Could not create the staff ID.', true);
+    } finally {
+      setBusy(button, false);
+    }
+  }
+
+  async function enroll(event) {
+    event.preventDefault();
+    clearNotice();
+    const button = $('#enrollBtn');
+    setBusy(button, true, 'Sending verification…');
+    try {
+      pendingUsername = $('#enrollUsername').value.trim();
+      const response = await requestJson('/auth/enroll', {
+        method: 'POST',
+        headers: {},
+        body: JSON.stringify({
+          username: pendingUsername,
+          password: $('#enrollPassword').value,
+          email: $('#enrollEmail').value.trim(),
+          phone: $('#enrollPhone').value.trim()
+        })
+      });
+      $('#enrollPassword').value = '';
+      showOtpStage(response, true);
+      showNotice('A verification code has been sent to your email.');
+    } catch (error) {
+      showNotice(error.message || 'Could not secure this account.', true);
+    } finally {
+      setBusy(button, false);
+    }
+  }
+
+  async function verifyOtp(event) {
+    event.preventDefault();
+    clearNotice();
+    const button = $('#verifyOtpBtn');
+    setBusy(button, true, 'Verifying…');
+    try {
+      const response = await requestJson('/auth/verify-otp', {
+        method: 'POST',
+        headers: {},
+        body: JSON.stringify({ challengeId: pendingChallengeId, code: $('#otpCode').value.trim() })
+      });
+      if (response.token) {
+        saveToken(response.token);
+        clearPendingChallenge();
+        $('#password').value = '';
+        await loadOrders();
+        showNotice('Identity verified. Staff portal unlocked.');
+        return;
+      }
+      if (response.accountReady) {
+        clearPendingChallenge();
+        showLogin();
+        $('#username').value = pendingUsername;
+        showNotice('Email verified. Sign in with your username and password.');
+        return;
+      }
+      throw new Error('Verification completed without a valid session.');
+    } catch (error) {
+      showNotice(error.message || 'The code could not be verified.', true);
+    } finally {
+      setBusy(button, false);
+    }
+  }
+
+  async function resendOtp() {
+    if (!pendingChallengeId || !selectedMethod) {
+      showNotice('Choose email or SMS first.', true);
+      return;
+    }
+    await sendOtp(selectedMethod);
   }
 
   function makeCell(value) {
@@ -486,9 +691,9 @@ cell.appendChild(kitchenBtn);
       if (error.status === 401 || error.status === 403) {
         clearToken();
         showLogin();
-        emptyTable('Sign in with an admin account to view orders.');
+        emptyTable('Sign in with a verified staff account to view orders.');
         showNotice(error.status === 403
-          ? 'This user is not authorized to manage orders. A staff or admin account is required.'
+          ? 'This account is not authorized to manage staff orders.'
           : 'Your session has expired. Please sign in again.', true);
         return;
       }
@@ -533,8 +738,19 @@ cell.appendChild(kitchenBtn);
   $('#emailAuthForm').addEventListener('submit', emailAuthLogin);
   $('#sendOtpBtn').addEventListener('click', sendStaffOtp);
   $('#verifyOtpBtn').addEventListener('click', verifyStaffOtp);
-  logoutBtn.addEventListener('click', () => {
+  registerForm.addEventListener('submit', register);
+  enrollForm.addEventListener('submit', enroll);
+  otpForm.addEventListener('submit', verifyOtp);
+  $('#showRegisterBtn').addEventListener('click', () => { clearNotice(); setAuthStage('register'); });
+  $('#showEnrollBtn').addEventListener('click', () => { clearNotice(); setAuthStage('enroll'); });
+  $('#backToLoginFromRegister').addEventListener('click', () => { clearNotice(); showLogin(); });
+  $('#backToLoginFromEnroll').addEventListener('click', () => { clearNotice(); showLogin(); });
+  $('#cancelOtpBtn').addEventListener('click', () => { clearPendingChallenge(); showLogin(); clearNotice(); });
+  $('#resendOtpBtn').addEventListener('click', resendOtp);
+  logoutBtn.addEventListener('click', async () => {
+    try { await requestJson('/auth/logout', { method: 'POST' }); } catch (_) {}
     clearToken();
+    clearPendingChallenge();
     pendingPreAuthToken = null;
     showLogin();
     clearNotice();

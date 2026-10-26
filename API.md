@@ -134,39 +134,54 @@ GET /api/orders/KB-20261002-ABC123
 
 ---
 
-### 4. POST /api/auth/login
-Authenticate admin/staff user and obtain JWT token.
+### 4. Staff authentication and two-factor verification
 
-**Request**
+The Staff Console calls the Supabase Edge Function at `/auth/*`. The login endpoint never issues a session token directly after a password check.
+
+#### POST /auth/register
+Creates a staff-only account. Requires `username`, a password of at least 12 characters, `email`, and a Pakistani mobile number. Sends an email verification code. The account cannot sign in until email verification succeeds.
+
+#### POST /auth/enroll
+For an existing unverified account (including the initial admin), verifies the existing username/password and adds email/phone contact details. Sends an email verification code. This endpoint cannot change a verified account's contact details.
+
+#### POST /auth/login
+Request:
+```json
+{ "username": "staff-user", "password": "your-password" }
 ```
-POST /api/auth/login
-Content-Type: application/json
-```
+
+A valid password returns a short-lived pending challenge and available delivery methods, not an access token:
 ```json
 {
-  "username": "admin",
-  "password": "admin123"
+  "challengeId": "uuid",
+  "purpose": "login",
+  "methods": ["email"],
+  "maskedEmail": "s••••@example.com",
+  "maskedPhone": "0301•••••23"
 }
 ```
 
-**Response**
-- Status: 200 OK
-- Body:
+The SMS method is returned only when Twilio server secrets are configured. Unverified accounts receive `enrollmentRequired: true` and must complete contact setup first.
+
+#### POST /auth/send-otp
+Request:
 ```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
+{ "challengeId": "uuid", "method": "email" }
 ```
+Supported methods are `email` and `sms`, but only configured providers are offered. Codes expire after 5 minutes, resend is throttled, and each challenge has a bounded number of sends and verification attempts.
 
-**Error Responses**
-- 400 Bad Request: `{ "error": "Username and password are required" }`
-- 401 Unauthorized: `{ "error": "Invalid credentials" }`
-- 500 Internal Server Error: `{ "error": "Internal server error" }`
+#### POST /auth/verify-otp
+Request:
+```json
+{ "challengeId": "uuid", "code": "123456" }
+```
+For a login challenge, a valid code is consumed once and returns `{ "verified": true, "token": "..." }`. Registration/enrollment verification returns `{ "verified": true, "accountReady": true }` and does not create a session. OTPs are hashed in the database and are never returned by the API or written to logs.
 
----
+#### POST /auth/logout
+Requires `Authorization: Bearer <token>`; revokes the server-side session.
 
 ### 5. GET /api/admin/orders
-Retrieve orders with optional filtering (admin only).
+Retrieve orders with optional filtering (verified staff/admin session required).
 
 **Request**
 ```
@@ -200,13 +215,13 @@ Authorization: Bearer <token>
 
 **Error Responses**
 - 401 Unauthorized: `{ "error": "Authentication required" }` or `{ "error": "Invalid or expired token" }`
-- 403 Forbidden: `{ "error": "Admin access required" }`
+- 403 Forbidden: `{ "error": "Staff access required" }`
 - 500 Internal Server Error: `{ "error": "Internal server error" }`
 
 ---
 
 ### 6. PATCH /api/admin/orders/:id/status
-Update order status (admin only).
+Update order status (verified staff/admin session required).
 
 **Request**
 ```

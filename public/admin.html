@@ -70,17 +70,16 @@
     <section id="loginPanel" class="max-w-md mx-auto bg-[#2A2622] border border-[#3A342E] rounded-2xl p-6 sm:p-8">
       <p class="text-xs uppercase tracking-[.2em] text-[#B42318] font-semibold mb-2">Restricted access</p>
       <h1 class="text-3xl mb-2">Staff sign in</h1>
-      <p class="text-[#B8B0A6] text-sm mb-6">Sign in with your assigned Karachi Bites staff account. Admin features require the admin role.</p>
+      <p class="text-[#B8B0A6] text-sm mb-6">Sign in with your staff account. Every sign-in requires a one-time verification code.</p>
+
       <form id="loginForm" class="space-y-4">
-        <div>
-          <label for="username" class="block text-sm mb-2">Username</label>
-          <input id="username" name="username" class="field" autocomplete="username" required maxlength="100">
+        <div><label for="username" class="block text-sm mb-2">Username</label><input id="username" name="username" class="field" autocomplete="username" required maxlength="50"></div>
+        <div><label for="password" class="block text-sm mb-2">Password</label><input id="password" name="password" class="field" type="password" autocomplete="current-password" required maxlength="200"></div>
+        <button id="loginBtn" class="btn btn-primary w-full" type="submit">Continue securely</button>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <button id="showRegisterBtn" class="btn btn-muted w-full" type="button">Create staff ID</button>
+          <button id="showEnrollBtn" class="btn btn-muted w-full" type="button">Set up existing ID</button>
         </div>
-        <div>
-          <label for="password" class="block text-sm mb-2">Password</label>
-          <input id="password" name="password" class="field" type="password" autocomplete="current-password" required>
-        </div>
-        <button id="loginBtn" class="btn btn-primary w-full" type="submit" data-i18l-text="signIn">Sign in</button>
       </form>
       <div class="my-5 border-t border-[#3A342E]"></div>
       <h2 class="text-lg font-semibold mb-2">Email and password</h2>
@@ -102,7 +101,7 @@
       <form id="phoneAuthForm" class="space-y-3">
         <div>
           <label for="authPhone" class="block text-sm mb-2">Phone number (international format)</label>
-          <input id="authPhone" name="phone" class="field" type="tel" autocomplete="tel" placeholder="+923001234567" required pattern="\\+[1-9][0-9]{7,14}">
+          <input id="authPhone" name="phone" class="field" type="tel" autocomplete="tel" placeholder="+923001234567" required pattern="\+[1-9][0-9]{7,14}">
         </div>
         <button id="sendOtpBtn" class="btn btn-muted w-full" type="button">Send OTP</button>
         <div id="otpEntry" class="hidden">
@@ -111,21 +110,41 @@
           <button id="verifyOtpBtn" class="btn btn-primary w-full mt-3" type="button">Verify and sign in</button>
         </div>
       </form>
-    </section>
 
-
-    <section id="otpPanel" class="hidden max-w-md mx-auto bg-[#2A2622] border border-[#3A342E] rounded-2xl p-6 sm:p-8">
-      <p class="text-xs uppercase tracking-[.2em] text-[#B42318] font-semibold mb-2">Two-step verification</p>
-      <h1 class="text-3xl mb-2">Check your email</h1>
-      <p id="otpDescription" class="text-[#B8B0A6] text-sm mb-6">Enter the 6-digit code sent to your email. The code expires in 5 minutes.</p>
-      <form id="otpForm" class="space-y-4">
-        <div>
-          <label for="otpCode" class="block text-sm mb-2">6-digit verification code</label>
-          <input id="otpCode" name="otpCode" class="field text-center tracking-[.4em] text-xl" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" required>
-        </div>
-        <button id="verifyOtpBtn" class="btn btn-primary w-full" type="submit">Verify and sign in</button>
-        <button id="backToLoginBtn" class="btn btn-muted w-full" type="button">Back to sign in</button>
+      <form id="registerForm" class="hidden space-y-4">
+        <h2 class="text-xl font-semibold">Create staff ID</h2>
+        <p class="text-sm text-[#B8B0A6]">New accounts receive staff permissions only. Verify your email before signing in.</p>
+        <div><label for="registerUsername" class="block text-sm mb-2">Username</label><input id="registerUsername" class="field" autocomplete="username" required minlength="3" maxlength="50" pattern="[A-Za-z0-9_.-]+"></div>
+        <div><label for="registerPassword" class="block text-sm mb-2">Password (12+ characters)</label><input id="registerPassword" class="field" type="password" autocomplete="new-password" required minlength="12" maxlength="200"></div>
+        <div><label for="registerEmail" class="block text-sm mb-2">Gmail / email address</label><input id="registerEmail" class="field" type="email" autocomplete="email" required maxlength="254"></div>
+        <div><label for="registerPhone" class="block text-sm mb-2">Mobile number</label><input id="registerPhone" class="field" type="tel" autocomplete="tel" placeholder="03XXXXXXXXX" required pattern="(?:03[0-9]{9}|\\+923[0-9]{9})"></div>
+        <button id="registerBtn" class="btn btn-primary w-full" type="submit">Create ID and send code</button>
+        <button id="backToLoginFromRegister" class="btn btn-muted w-full" type="button">Back to sign in</button>
       </form>
+
+      <form id="enrollForm" class="hidden space-y-4">
+        <h2 class="text-xl font-semibold">Secure existing staff ID</h2>
+        <p class="text-sm text-[#B8B0A6]">Use your existing username and password, then add an email and mobile number. Your email must be verified before sign-in is enabled.</p>
+        <div><label for="enrollUsername" class="block text-sm mb-2">Existing username</label><input id="enrollUsername" class="field" autocomplete="username" required maxlength="50"></div>
+        <div><label for="enrollPassword" class="block text-sm mb-2">Existing password</label><input id="enrollPassword" class="field" type="password" autocomplete="current-password" required maxlength="200"></div>
+        <div><label for="enrollEmail" class="block text-sm mb-2">Gmail / email address</label><input id="enrollEmail" class="field" type="email" autocomplete="email" required maxlength="254"></div>
+        <div><label for="enrollPhone" class="block text-sm mb-2">Mobile number</label><input id="enrollPhone" class="field" type="tel" autocomplete="tel" placeholder="03XXXXXXXXX" required pattern="(?:03[0-9]{9}|\\+923[0-9]{9})"></div>
+        <button id="enrollBtn" class="btn btn-primary w-full" type="submit">Verify email and secure ID</button>
+        <button id="backToLoginFromEnroll" class="btn btn-muted w-full" type="button">Back to sign in</button>
+      </form>
+
+      <section id="otpPanel" class="hidden space-y-4">
+        <h2 class="text-xl font-semibold">Verify your identity</h2>
+        <p id="otpInstructions" class="text-sm text-[#B8B0A6]">Choose where to receive your one-time code.</p>
+        <div id="otpMethods" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+        <form id="otpForm" class="hidden space-y-3">
+          <label for="otpCode" class="block text-sm">Six-digit verification code</label>
+          <input id="otpCode" class="field text-center tracking-[.4em] text-xl" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" required>
+          <button id="verifyOtpBtn" class="btn btn-primary w-full" type="submit">Verify and continue</button>
+          <button id="resendOtpBtn" class="btn btn-muted w-full" type="button">Resend code</button>
+        </form>
+        <button id="cancelOtpBtn" class="btn btn-muted w-full" type="button">Cancel and return to sign in</button>
+      </section>
     </section>
 
     <section id="dashboardPanel" class="hidden">

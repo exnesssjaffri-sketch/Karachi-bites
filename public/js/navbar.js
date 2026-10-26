@@ -110,7 +110,7 @@ const navbar = {
               <div class="text-xs text-[#B8B0A6] uppercase tracking-wider font-label" data-i18l-text="common.total">Total</div>
               <div class="font-price text-[#B42318]">${cartStore.formatPrice(cart.total)}</div>
             </div>
-            <button id="checkout-btn" class="flex items-center gap-2 bg-[#2A2622] hover:bg-[#3A342E] border border-[#3A342E] text-[#F7F3EC] px-6 py-3 rounded-lg font-title shadow-lg transition-all">
+            <button id="checkout-btn" data-i18l-text="cart.checkout" class="flex items-center gap-2 bg-[#2A2622] hover:bg-[#3A342E] border border-[#3A342E] text-[#F7F3EC] px-6 py-3 rounded-lg font-title shadow-lg transition-all">
               Proceed to Checkout
               <span class="material-symbols-outlined">arrow_forward</span>
             </button>

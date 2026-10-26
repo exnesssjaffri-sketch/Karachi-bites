@@ -11,6 +11,8 @@ A lightweight Karachi restaurant ordering project built with vanilla HTML/CSS/Ja
 
 **Important:** the root homepage (`/`) now loads featured dishes from `GET /api/menu` and connects its live add-to-cart controls to the shared cart used by `/app.html`. Use `/app.html` for the complete API-backed menu, checkout, confirmation and phone-verified tracking flow. Other standalone exports under `/stitch/` remain visual previews unless specifically wired. Automated frontend wiring and cart persistence tests are included; real-browser E2E, real mobile-device testing and the performance target still require separate verification.
 
+**Production backend note:** the deployed Staff Console currently calls the Supabase Edge Function `karachi-bites-api` and its PostgreSQL database. The local Express/SQLite API is a separate development path; do not assume changing `src/routes.js` changes production staff authentication. See [the 2FA rollout guide](./docs/STAFF_PORTAL_2FA.md) before deploying the new authentication flow.
+
 ## Requirements
 
 - Node.js 24.x (the package currently declares `>=24 <25`)
@@ -102,6 +104,8 @@ Base URL: `/api`
 Allowed transitions: `Received → Preparing → Out for Delivery → Delivered`. The server calculates totals using item prices from the database plus the configured delivery fee.
 
 See [API.md](./API.md) for requests, responses and error cases, and [DECISIONS.md](./DECISIONS.md) for design decisions.
+
+Staff portal 2FA implementation and release prerequisites are documented in [docs/STAFF_PORTAL_2FA.md](./docs/STAFF_PORTAL_2FA.md). The new flow requires Resend secrets and a database migration before the Edge Function can be safely deployed; do not deploy it with missing email configuration.
 
 ## Run tests
 
