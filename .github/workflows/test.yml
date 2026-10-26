@@ -20,7 +20,40 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Check syntax of every frontend JavaScript file
-        run: find public src test -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+        run: |
+          set -euo pipefail
+          find public src test -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+          node -e '
+          const fs = require("fs");
+          const cp = require("child_process");
+          function walk(d) {
+            let out = [];
+            for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+              const p = d + "/" + e.name;
+              if (e.isDirectory()) out = out.concat(walk(p));
+              else if (e.name.endsWith(".js")) out.push(p);
+            }
+            return out;
+          }
+          const files = [].concat(walk("public"), walk("src"), walk("test"));
+          let problems = 0;
+          for (const f of files) {
+            const b = fs.readFileSync(f);
+            const head = b.slice(0, 3);
+            const isUTF8BOM = head[0] === 0xEF && head[1] === 0xBB && head[2] === 0xBF;
+            const isUTF16LEBOM = b[0] === 0xFF && b[1] === 0xFE;
+            const isUTF16BEBOM = b[0] === 0xFE && b[1] === 0xFF;
+            const stripped = b.toString("utf8").replace(/\s/g, "");
+            if (isUTF8BOM || isUTF16LEBOM || isUTF16BEBOM || stripped.length === 0) {
+              console.log("BOM_OR_EMPTY " + f + " len=" + b.length +
+                " BOM=" + (isUTF8BOM ? "utf8" : isUTF16LEBOM ? "utf16le" : isUTF16BEBOM ? "utf16be" : "no") +
+                " empty=" + (stripped.length === 0));
+              problems++;
+            }
+          }
+          if (problems) { console.error(problems + " tracked JS file(s) are BOM-only or empty"); process.exit(1); }
+          console.log("BOM/empty check passed for " + files.length + " files");
+          '
       - name: Run database, API, failure and persistence tests
         env:
           JWT_SECRET: ci-only-not-a-production-secret-value

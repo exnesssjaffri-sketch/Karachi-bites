@@ -123,8 +123,8 @@ jobs:
             sleep 10
           done
           echo "ready=false" >> "$GITHUB_OUTPUT"
-          echo "::warning::Production is still serving an older deployment. Live Lighthouse was skipped; deploy main to Vercel and rerun."
-          exit 0
+          echo "::error::Production is still serving an older deployment after 120s. Live Lighthouse cannot run. Deploy main to Vercel and rerun this workflow."
+          exit 1
 
       - name: Run Lighthouse against the live production site at 360px
         if: steps.deployment.outputs.ready == 'true'
