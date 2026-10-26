@@ -250,13 +250,9 @@ Deno.serve(async (req: Request) => {
       if (!challenge || challenge.consumed_at || new Date(challenge.expires_at).getTime() <= Date.now() ||
           challenge.attempts >= challenge.max_attempts) return fail(req, 401, "Invalid or expired verification code");
       const expectedHash = await sha256(challenge.id + ":" + body.code + ":" + otpPepper);
-      if (expectedHash !== challenge.code_hash) {
-        const nextAttempts = Number(challenge.attempts) + 1;
-        const update: Record<string, unknown> = { attempts: nextAttempts };
-        if (nextAttempts >= Number(challenge.max_attempts)) update.consumed_at = new Date().toISOString();
-        await db.from("auth_challenges").update(update).eq("id", challenge.id).is("consumed_at", null);
-        return fail(req, 401, "Invalid or expired verification code");
-      }
+      // The database RPC locks the challenge row and handles BOTH correct and incorrect
+      // codes atomically. Never read/increment attempts in application code: concurrent
+      // requests could otherwise overwrite each other's counters.
       const { data: consumed, error: consumeError } = await db.rpc("consume_auth_challenge", {
         p_preauth_token_hash: preAuthHash, p_code_hash: expectedHash
       });
