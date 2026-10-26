@@ -35,6 +35,18 @@ const I18N = (() => {
       'home.food': 'of Karachi Food.',
       'home.description': "From dum-pukht Sindhi Biryani and 8-hour braised Nihari to melt-in-mouth Bihari boti, experience Karachi's finest culinary craft delivered hot to your doorstep.",
       'home.exploreMenu': 'Explore Menu',
+      'nav.account': 'Account',
+      'cart.edit': 'Edit Cart',
+      'nav.signIn': 'Sign in',
+      'nav.language': 'Language',
+      'common.error': 'Something went wrong. Please try again.',
+      'common.retry': 'Try again',
+      'common.cancel': 'Cancel',
+      'common.save': 'Save',
+      'common.close': 'Close',
+      'common.required': 'Required',
+      'common.optional': 'Optional',
+      'common.currency': 'PKR',
       'Order Now':'Order Now',
       'common.items': '{count} item(s)',
       'common.loading': 'Loading order details...',
@@ -145,6 +157,18 @@ const I18N = (() => {
       'home.food': 'کا ذائقہ۔',
       'home.description': 'دم پر تیار سندھی بریانی، آٹھ گھنٹے پکی نہاری اور منہ میں گھل جانے والی بہاری بوٹی — کراچی کے بہترین ذائقے گرم گرم آپ کے دروازے تک۔',
       'home.exploreMenu': 'مینیو دیکھیں',
+      'nav.account': 'اکاؤنٹ',
+      'cart.edit': 'کارٹ میں تبدیلی کریں',
+      'nav.signIn': 'سائن اِن',
+      'nav.language': 'زبان',
+      'common.error': 'کچھ غلط ہو گیا ہے۔ دوبارہ کوشش کریں۔',
+      'common.retry': 'دوبارہ کوشش کریں',
+      'common.cancel': 'منسوخ کریں',
+      'common.save': 'محفوظ کریں',
+      'common.close': 'بند کریں',
+      'common.required': 'ضروری',
+      'common.optional': 'اختیاری',
+      'common.currency': 'روپے',
       'Order Now':'ابھی آرڈر کریں',
       'common.items': '{count} اشیاء',
       'common.loading': 'آرڈر کی تفصیلات لوڈ ہو رہی ہیں...',
@@ -168,7 +192,7 @@ const I18N = (() => {
       'tracking.title': 'اپنا آرڈر ٹریک کریں',
       'tracking.breadcrumb': 'آرڈر ٹریکنگ',
       'tracking.notFound': 'آرڈر نہیں ملا',
-      'tracking.notFoundHint': 'اپنی تصدیقی پیغام میں دی گئی آرڈر آئی ڈی اور فون نمبر درج کریں تاکہ تازہ ترین حیثیت دیکھ سکے۔',
+      'tracking.notFoundHint': 'تازہ ترین صورتحال دیکھنے کے لیے تصدیقی پیغام میں دی گئی آرڈر آئی ڈی اور فون نمبر درج کریں۔',
       'tracking.trackOrder': 'آرڈر ٹریک کریں',
       'tracking.status.delivered': 'آرڈر پہنچ گیا',
       'tracking.status.out-for-delivery': 'راستے میں ہے',
@@ -201,8 +225,8 @@ const I18N = (() => {
       'cart.orderSummary': 'آرڈر کا خلاصہ',
       'cart.instructions': 'خاص ہدایات',
       'cart.instructionsPlaceholder': 'کھانے کی تیاری یا ڈیلیوری سے متعلق کوئی خاص ہدایت لکھیں...',
-      'cart.kitchenStatus': 'کھلا اور بھاپ پا کر رہا ہے',
-      'cart.promoApplied': '{code} لاگو ہو گیا — حتمی کل رقم ہمیشہ سرور کی جانب سے تصدیق ہوتا ہے۔',
+      'cart.kitchenStatus': 'کھلا ہے، تازہ کھانا تیار ہو رہا ہے',
+      'cart.promoApplied': '{code} لاگو ہو گیا — حتمی رقم کی تصدیق سرور کرے گا۔',
       'cart.promoInvalid': 'پرومو کوڈ درست نہیں ہے',
       'cart.checkout': 'چیک آؤٹ کے لیے آگے بڑھیں',
       'checkout.title': 'چیک آؤٹ',
@@ -220,7 +244,7 @@ const I18N = (() => {
       'admin.signOut': 'سائن آؤٹ',
       'admin.operations': 'آپریشنز',
       'admin.orderDashboard': 'آرڈر ڈیش بورڈ',
-      'admin.dashboardHint': 'آرڈر API سے لوڈ ہوتے ہیں۔ حالت کی تبدیلیاں سرور کی اجازت دہ قواعد کے مطابق ہوتی ہیں۔',
+      'admin.dashboardHint': 'آرڈرز API سے حاصل کیے جاتے ہیں۔ اسٹیٹس کی تبدیلیاں سرور کے مقرر کردہ اصولوں کے مطابق ہوتی ہیں۔',
       'admin.refreshOrders': 'آرڈر تازہ کریں',
       'admin.loadingOrders': 'آرڈر لوڈ ہو رہے ہیں…',
       'admin.loadingKitchenTicket': 'کچن ٹکٹ لوڈ ہو رہا ہے...',
@@ -270,6 +294,9 @@ const I18N = (() => {
 
   function t(key, params) {
     const d = dict();
+    // Never expose untranslated implementation keys in the UI. If a key is
+    // missing from the active locale, fall back to English; if it is missing
+    // from both dictionaries, show a readable label instead of "cart.someKey".
     let str = Object.prototype.hasOwnProperty.call(d, key) ? d[key]
       : Object.prototype.hasOwnProperty.call(dictionaries.en, key) ? dictionaries.en[key]
       : String(key).split('.').pop().replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[-_]/g, ' ').replace(/^./, (ch) => ch.toUpperCase());

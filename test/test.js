@@ -17,6 +17,7 @@ const files = [
   'test_mobile_header_translation.js',
   'test_mobile_responsive_layout.js',
   'test_staff_2fa_contract.js',
+  'test_i18n_rtl.js',
 ];
 
 let allPassed = true;

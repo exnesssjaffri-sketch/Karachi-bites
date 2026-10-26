@@ -1,4 +1,4 @@
-/* Karachi Bites responsive layer — shared by Stitch previews, ordering app and staff console. */
+﻿/* Karachi Bites responsive layer â€” shared by Stitch previews, ordering app and staff console. */
 :root { color-scheme: dark; }
 *, *::before, *::after { box-sizing: border-box; }
 html, body { width: 100%; max-width: 100%; overflow-x: clip; }
@@ -387,8 +387,9 @@ header.kb-stitch-header #kb-mobile-nav-panel > a {
   body > header.kb-stitch-header > .kb-stitch-inner > div:last-child > a[data-path="staff-portal"],
   body > header.kb-stitch-header > .kb-stitch-inner > div:last-child > button:has(span[data-i18l-text="nav.cart"]) { display:none !important; }
   body > header.kb-stitch-header > .kb-stitch-inner > div:last-child > a[data-path="order-now"],
-  body > header.kb-stitch-header > .kb-stitch-inner > div:last-child > a.kb-order-now { display:none !important; }
-  body > header.kb-stitch-header #kbMobileMenuToggle { display:inline-flex !important; width:42px !important; height:42px !important; flex:0 0 42px !important; }
+  body > header.kb-stitch-header > .kb-stitch-inner > div:last-child
+  > button[data-path="order-now"] { display:flex !important; width:100% !important; max-width:100% !important; box-sizing:border-box !important; gap:4px !important; justify-content:flex-end !important; }
+  body > header.kb-stitch-header > .kb-stitch-inner > div:last-child > button#kbMobileMenuToggle { display:flex !important; width:42px !important; height:42px !important; flex:0 0 42px !important; }
   body > header.kb-stitch-header #kb-mobile-nav-panel { left:0 !important; right:0 !important; width:100% !important; max-width:100vw !important; box-sizing:border-box !important; padding:10px 12px 14px !important; }
   body > header.kb-stitch-header #kb-mobile-nav-panel > a { min-height:46px !important; padding:12px 14px !important; font-size:15px !important; line-height:1.35 !important; }
   body > main { padding-top:76px !important; }
@@ -418,3 +419,17 @@ header.kb-stitch-header #kb-mobile-nav-panel > a {
   body > header.kb-stitch-header > .kb-stitch-inner { padding-left:20px !important; padding-right:20px !important; }
   body > header.kb-stitch-header > .kb-stitch-inner > div:first-child { flex:1 1 180px !important; min-width:0 !important; }
 }
+
+/* Urdu/English localization: readable Urdu type, true RTL flow, and safe mixed-direction values. */
+
+html[lang="ur"], html[lang="ur"] body,
+html[lang="ur"] button, html[lang="ur"] input, html[lang="ur"] textarea, html[lang="ur"] select {
+  font-family: "Noto Nastaliq Urdu", "Noto Naskh Arabic", serif !important;
+}
+html[dir="rtl"] body { direction: rtl; text-align: right; }
+html[dir="rtl"] nav, html[dir="rtl"] header, html[dir="rtl"] footer { direction: rtl; }
+html[dir="rtl"] input, html[dir="rtl"] textarea, html[dir="rtl"] select { text-align: right; }
+html[dir="rtl"] [dir="ltr"], html[dir="rtl"] .font-price, html[dir="rtl"] [data-cart-count-badge] {
+  direction: ltr; unicode-bidi: isolate;
+}
+html[dir="rtl"] .material-symbols-outlined { direction: ltr; }

@@ -1,4 +1,4 @@
-/* Apply shared mobile/tablet layout fixes to the API-backed customer app. */
+﻿/* Apply shared mobile/tablet layout fixes to the API-backed customer app. */
 if (!document.querySelector('link[data-kb-responsive]')) {
   const responsiveStyles = document.createElement("link");
   responsiveStyles.rel = "stylesheet";
@@ -57,12 +57,11 @@ const navbar = {
 
           <!-- Desktop Navigation -->
           <nav class="hidden xl:flex items-center gap-space-lg" data-active-classes="text-[#F7F3EC] font-semibold border-b-2 border-[#B42318]">
-            <a href="/" class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors" data-link>Home</a>
-            <a href="#menu" class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors" data-link>Menu</a>
+            <a href="/" class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors" data-link data-i18l-text="nav.home">Home</a>
+            <a href="#menu" class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors" data-link data-i18l-text="nav.menu">Menu</a>
             <a href="#cart" class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors relative flex items-center gap-space-xs" data-link>
-              <span>Cart</span>
-              <span data-cart-count-badge class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#B42318] text-[#F7F3EC] font-label-sm text-label-sm font-semibold hidden">0</span>
-            </a>
+              <span data-i18l-text="nav.cart">Cart</span>
+              <span data-cart-count-badge class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#B42318] text-[#F7F3EC] font-label-sm text-label-sm font-semibold hidden">0</span>            </a>`n            
             <a href="#tracking" class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors" data-link>Track Order</a>
           </nav>
 
@@ -83,8 +82,8 @@ const navbar = {
         <!-- Mobile Navigation -->
         <div id="mobile-menu" class="hidden xl:hidden bg-[#2A2622] border-t border-[#3A342E]">
           <div class="px-4 py-3 space-y-1">
-            <a href="/" class="block px-4 py-3 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link>Home</a>
-            <a href="#menu" class="block px-4 py-3 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link>Menu</a>
+            <a href="/" class="block px-4 py-3 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link data-i18l-text="nav.home">Home</a>
+            <a href="#menu" class="block px-4 py-3 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label" data-link data-i18l-text="nav.menu">Menu</a>
             <a href="#cart" class="block px-4 py-3 rounded-lg text-[#B8B0A6] hover:text-[#F7F3EC] hover:bg-[#2A2622] transition-all font-label relative" data-link>
               Cart
               <span data-cart-count-badge class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#B42318] text-white text-xs flex items-center justify-center hidden">0</span>
@@ -108,7 +107,7 @@ const navbar = {
           </div>
           <div class="flex items-center gap-6">
             <div class="text-center">
-              <div class="text-xs text-[#B8B0A6] uppercase tracking-wider font-label">Total</div>
+              <div class="text-xs text-[#B8B0A6] uppercase tracking-wider font-label" data-i18l-text="common.total">Total</div>
               <div class="font-price text-[#B42318]">${cartStore.formatPrice(cart.total)}</div>
             </div>
             <button id="checkout-btn" class="flex items-center gap-2 bg-[#2A2622] hover:bg-[#3A342E] border border-[#3A342E] text-[#F7F3EC] px-6 py-3 rounded-lg font-title shadow-lg transition-all">
