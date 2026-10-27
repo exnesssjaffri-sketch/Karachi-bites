@@ -1,0 +1,47 @@
+      if ("error" in auth) return fail(req, auth.status, auth.error);
+      let query = db.from("orders").select("public_order_id, status, total, branch, customer_name, customer_phone, customer_address, created_at");
+      const branch = url.searchParams.get("branch");
+      const date = url.searchParams.get("date");
+      if (branch) {
+        if (!validBranches.has(branch)) return fail(req, 400, "Invalid branch filter");
+        query = query.eq("branch", branch);
+      }
+      if (date) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return fail(req, 400, "Invalid date filter");
+        const start = new Date(date + "T00:00:00+05:00");
+        if (Number.isNaN(start.getTime())) return fail(req, 400, "Invalid date filter");
+        const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+        query = query.gte("created_at", start.toISOString()).lt("created_at", end.toISOString());
+      }
+      const { data, error } = await query.order("created_at", { ascending: false }).limit(500);
+      if (error) throw error;
+      return response(req, (data || []).map((row) => ({
+        orderId: row.public_order_id, status: row.status, total: row.total, branch: row.branch,
+        customer: { name: row.customer_name, phone: row.customer_phone, address: row.customer_address },
+        createdAt: row.created_at,
+      })));
+    }
+
+    const statusMatch = route.match(/^\/admin\/orders\/([A-Za-z0-9-]+)\/status$/);
+    if (req.method === "PATCH" && statusMatch) {
+      const auth = await authenticatedUser(req);
+      if ("error" in auth) return fail(req, auth.status, auth.error);
+      const body = await jsonBody(req);
+      if (!body || !validStatuses.has(body.status)) return fail(req, 400, "Invalid status");
+      const { data, error } = await db.rpc("update_order_status", {
+        p_public_order_id: statusMatch[1], p_new_status: body.status,
+      });
+      if (error) {
+        if (error.code === "22023") return fail(req, 400, "Invalid order status transition");
+        throw error;
+      }
+      if (!data) return fail(req, 404, "Order not found");
+      return response(req, data);
+    }
+
+    return fail(req, 404, "Not found");
+  } catch (error) {
+    console.error("Karachi Bites API error:", error instanceof Error ? error.message : "unknown error");
+    return fail(req, 500, "Internal server error");
+  }
+});

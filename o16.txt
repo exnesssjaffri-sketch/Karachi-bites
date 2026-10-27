@@ -1,0 +1,5 @@
+﻿248f59e Use additive 2FA migration matching existing Supabase schema
+d0a64ba Remove conflicting 2FA migration that does not match deployed schema
+ebbdd36 Use atomic database RPC for every OTP verification attempt
+c18b605 Run staged staff 2FA contract checks in test suite
+a660ed5 Stage reviewed staff 2FA implementation without switching production UI

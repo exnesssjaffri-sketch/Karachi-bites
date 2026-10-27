@@ -1,0 +1,5 @@
+﻿e1494b6 Document email OTP secrets and staged rollout
+cee0bdb Fix strict TypeScript typing in OTP attempt handling
+a825d67 Implement email OTP challenge and verification UI
+9cf3bf2 Add email OTP verification screen to staff console
+323e2f3 Add atomic one-time OTP verification RPC
