@@ -1,5 +1,0 @@
-﻿bbaa072 Keep test runner independent of untracked test file
-4f85027 Include password visibility regression test
-6ac03c8 Add black password fields and accessible show/hide controls
-ea7262c Improve mobile responsive layout
-9eb0b27 Fix mobile header menu overflow and Urdu labels

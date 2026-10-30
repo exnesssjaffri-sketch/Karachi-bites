@@ -61,7 +61,8 @@ const navbar = {
             <a href="#menu" class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors" data-link data-i18l-text="nav.menu">Menu</a>
             <a href="#cart" class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors relative flex items-center gap-space-xs" data-link>
               <span data-i18l-text="nav.cart">Cart</span>
-              <span data-cart-count-badge class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#B42318] text-[#F7F3EC] font-label-sm text-label-sm font-semibold hidden">0</span>            </a>`n            
+              <span data-cart-count-badge class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#B42318] text-[#F7F3EC] font-label-sm text-label-sm font-semibold hidden">0</span>
+            </a>
             <a href="#tracking" class="font-label-md text-label-md text-[#B8B0A6] hover:text-[#F7F3EC] py-2 transition-colors" data-link>Track Order</a>
           </nav>
 

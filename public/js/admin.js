@@ -14,8 +14,6 @@
   const loginForm = $('#loginForm');
   const registerForm = $('#registerForm');
   const enrollForm = $('#enrollForm');
-  const otpForm = $('#otpForm');
-  const otpPanel = $('#otpPanel');
   const otpMethods = $('#otpMethods');
   const otpInstructions = $('#otpInstructions');
   let pendingChallengeId = null;

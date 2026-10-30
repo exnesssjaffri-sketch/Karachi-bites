@@ -1,5 +1,0 @@
-﻿d827708 Document staff role access for dispatch endpoints
-d62c549 Update staff dashboard authorization messages
-0cabff8 Avoid logging provider error details that may contain recipient data
-ad10205 Show SMS as unavailable until a provider is configured
-d8ecf49 Avoid rate-limit table writes for unknown OTP challenges
