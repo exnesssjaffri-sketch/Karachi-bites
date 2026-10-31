@@ -1,4 +1,4 @@
-﻿/* Apply shared mobile/tablet layout fixes to the API-backed customer app. */
+/* Apply shared mobile/tablet layout fixes to the API-backed customer app. */
 if (!document.querySelector('link[data-kb-responsive]')) {
   const responsiveStyles = document.createElement("link");
   responsiveStyles.rel = "stylesheet";
