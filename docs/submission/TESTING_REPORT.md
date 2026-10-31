@@ -6,7 +6,7 @@ This report documents the automated test suite, current GitHub Actions status, a
 
 # 1. Automated Test Suite
 
-The project includes 17 test suites under `test/`, run via `npm test`.
+The repository testing document lists 16 test files in the table below. The latest GitHub Actions log (run 41189800713, commit 2496846b) executed those 16 suites and reported All test suites passed. The earlier introductory count of 17 was incorrect and is corrected here.
 
 ## Test Summary
 
@@ -45,18 +45,27 @@ All 16 suites pass when run locally against a temporary SQLite database.
 - Runs on push to `main` and on PRs touching frontend files.
 - Starts the app with an isolated SQLite database, runs Lighthouse at 360\u00d7800 mobile viewport, enforces Performance \u2265 85 and Accessibility \u2265 85.
 
-## Latest Run Evidence (as of 2026-10-30)
+## Latest Run Evidence (verified 2026-10-31)
 
 | Run ID | Workflow | Conclusion | Commit | URL |
 |--------|----------|-----------|--------|-----|
-| 41035876169 | Tests | **failure** | 90dd0bce3c | https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/41035876169 |
-| 41035876147 | Lighthouse and Accessibility Audit | **success** | 90dd0bce3c | https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/41035876147 |
+| 41189800713 | Tests | **success** | 2496846bfa | https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/41189800713 |
+| 41189800852 | Lighthouse and Accessibility Audit | **success** | 2496846bfa | https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/41189800852 |
 
-**Important:** The most recent Tests run (41035876169) failed. Earlier passing runs (e.g., run 107) must not be cited as current evidence. The cause of the failure should be investigated before submission.
+The Tests job completed JavaScript syntax checks, reported **BOM/empty check passed for 55 files**, ran the 16 test files listed above, and ended with **All test suites passed**.
 
-The latest Lighthouse run succeeded, confirming that the optimized homepage code scores well on performance and accessibility at the target 360\u00d7800 mobile viewport.
+The Lighthouse workflow ran both against the exact repository code with an isolated SQLite database and against the live production URL at a 360x800 mobile viewport.
 
----
+| Category | Exact code / isolated CI | Live production |
+|---|---:|---:|
+| Performance | 98/100 | 94/100 |
+| Accessibility | 100/100 | 100/100 |
+| Best Practices | 100/100 | 100/100 |
+| SEO | 100/100 | 100/100 |
+
+Both Lighthouse jobs passed. The workflow enforces minimum 85-point thresholds for Performance and Accessibility.
+
+**Historical failure resolved:** Run 41042621005 on commit 02d05a90 failed at the BOM/empty check because public/js/navbar.js began with a UTF-8 BOM. Commit 2496846 removes that BOM, and the latest 55-file check passes. Run 41035876169 is an earlier failure and is not the latest status.
 
 # 3. Visual QA Results
 
