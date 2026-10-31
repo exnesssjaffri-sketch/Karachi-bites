@@ -17,10 +17,10 @@ This folder contains the academic, technical, installation, user and testing doc
 
 ## Latest verified GitHub evidence (31 October 2026)
 
-- Main commit: `2496846bfa2fe6aad8a216382b0ea52977118a36`
-- Tests workflow: [41189800713 - success](https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/41189800713)
+- Current main branch head: `60a659e251549c56ba58ee127d7039c1d2804828` (documentation corrections); application/source evidence baseline: `2496846bfa2fe6aad8a216382b0ea52977118a36`
+- Tests workflow: [41191211956 - success](https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/41191211956)
 - Lighthouse workflow: [41189800852 - success](https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/41189800852)
-- The CI log executed 16 named test suites and reported all suites passed.
+- The latest CI log (41191211956) executed 16 named test suites and reported all suites passed; the BOM/empty check passed for 55 JavaScript files.
 - The BOM/empty scan passed for 55 JavaScript files.
 - Production Lighthouse at 360x800: Performance 94, Accessibility 100, Best Practices 100, SEO 100.
 

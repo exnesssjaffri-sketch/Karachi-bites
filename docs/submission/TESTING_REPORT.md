@@ -1,4 +1,4 @@
-﻿# Karachi Bites — Testing Report
+# Karachi Bites — Testing Report
 
 This report documents the automated test suite, current GitHub Actions status, and remaining manual testing gaps.
 
@@ -49,12 +49,13 @@ All 16 suites pass when run locally against a temporary SQLite database.
 
 | Run ID | Workflow | Conclusion | Commit | URL |
 |--------|----------|-----------|--------|-----|
-| 41189800713 | Tests | **success** | 2496846bfa | https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/41189800713 |
+| 41191211956 | Tests | **success** | 60a659e2 | https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/41191211956 |
+| 41189800713 | Tests (application/source baseline) | **success** | 2496846bfa | https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/41189800713 |
 | 41189800852 | Lighthouse and Accessibility Audit | **success** | 2496846bfa | https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/41189800852 |
 
-The Tests job completed JavaScript syntax checks, reported **BOM/empty check passed for 55 files**, ran the 16 test files listed above, and ended with **All test suites passed**.
+The latest Tests job (41191211956) completed JavaScript syntax checks, reported **BOM/empty check passed for 55 files**, ran all 16 test files listed above, and ended with **All test suites passed**.
 
-The Lighthouse workflow ran both against the exact repository code with an isolated SQLite database and against the live production URL at a 360x800 mobile viewport.
+The Lighthouse workflow ran both against the exact application/source commit using isolated SQLite and against the live production URL at a 360x800 mobile viewport.
 
 | Category | Exact code / isolated CI | Live production |
 |---|---:|---:|
@@ -65,7 +66,7 @@ The Lighthouse workflow ran both against the exact repository code with an isola
 
 Both Lighthouse jobs passed. The workflow enforces minimum 85-point thresholds for Performance and Accessibility.
 
-**Historical failure resolved:** Run 41042621005 on commit 02d05a90 failed at the BOM/empty check because public/js/navbar.js began with a UTF-8 BOM. Commit 2496846 removes that BOM, and the latest 55-file check passes. Run 41035876169 is an earlier failure and is not the latest status.
+**Historical failure resolved:** Run 41042621005 on commit 02d05a90 failed at the BOM/empty check because public/js/navbar.js began with a UTF-8 BOM. Commit 2496846 removes that BOM, and the current 55-file check passes. Run 41035876169 is an earlier failure, not the latest status.
 
 # 3. Visual QA Results
 

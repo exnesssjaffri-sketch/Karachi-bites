@@ -111,22 +111,25 @@ Latest workflow 41189800852 reported exact-code CI scores of 98/100 Performance 
 Production order write/persistence round-trip, human Supabase signup, provider-backed email/SMS OTP, physical-device review, keyboard navigation and screen-reader checks remain separate validation tasks.
 
 ### 30. Conclusion and Next Steps
-The latest main commit has green automated tests and Lighthouse checks. The project is best described as automated-test passing with documented production verification gaps, not as fully production-complete.
+The main branch has green automated tests after the documentation corrections. The source-code baseline Lighthouse workflow and live production Lighthouse job passed on 31 October 2026. The project is best described as automated-test passing with documented production verification gaps, not as fully production-complete.
 
 ## Current GitHub Evidence
 
 | Evidence | Current result |
 |---|---|
-| Main commit | 2496846bfa2fe6aad8a216382b0ea52977118a36 |
+| Current main branch head | 60a659e251549c56ba58ee127d7039c1d2804828 (documentation correction) |
+| Application/source evidence baseline | 2496846bfa2fe6aad8a216382b0ea52977118a36 |
 | Pull requests | 18 merged, 4 closed without merge, 0 open |
-| Tests run | 41189800713 - success |
+| Latest Tests run | 41191211956 - success (main docs head 60a659e2) |
+| Earlier application-code Tests run | 41189800713 - success |
 | Lighthouse run | 41189800852 - success |
 | BOM scan | 55 files passed |
 | Test suites | 16 named suites passed |
 | Production Lighthouse | 94 / 100 / 100 / 100 |
 
-- Commit: https://github.com/exnesssjaffri-sketch/Karachi-bites/commit/2496846bfa2fe6aad8a216382b0ea52977118a36
-- Tests: https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/41189800713
+- Current main: https://github.com/exnesssjaffri-sketch/Karachi-bites/commit/60a659e251549c56ba58ee127d7039c1d2804828
+- Application/source evidence commit: https://github.com/exnesssjaffri-sketch/Karachi-bites/commit/2496846bfa2fe6aad8a216382b0ea52977118a36
+- Latest Tests: https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/41191211956
 - Lighthouse: https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/41189800852
 
 ## Historical Source Reports and Appendices
