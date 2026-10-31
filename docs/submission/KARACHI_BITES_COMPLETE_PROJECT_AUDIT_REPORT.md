@@ -1,90 +1,151 @@
 # Karachi Bites Complete Project Audit Report
 
-**Document Version:** 1.0
-**Date:** 2026-10-31
-**Repository:** https://github.com/exnesssjaffri-sketch/Karachi-bites
-**Production URL:** https://karachi-bites.vercel.app/
-
----
+**Document version:** 1.1  
+**Evidence cut-off:** 31 October 2026  
+**Repository:** https://github.com/exnesssjaffri-sketch/Karachi-bites  
+**Production URL:** https://karachi-bites.vercel.app/  
+**Verified main commit:** 2496846bfa2fe6aad8a216382b0ea52977118a36
 
 ## Student Information
-- **Student Name:** [To be filled by student]
-- **Student ID:** [To be filled by student]
-- **Program:** [To be filled by student]
-- **Department:** [To be filled by student]
-- **Institution:** [To be filled by student]
-- **Supervisor:** [To be filled by student]
-- **Academic Year:** [To be filled by student]
-
----
+- Student name: [To be completed]
+- Student ID: [To be completed]
+- Program / course: [To be completed]
+- Department / institution: [To be completed]
+- Supervisor: [To be completed]
+- Academic year: [To be completed]
 
 ## Executive Summary
-Karachi Bites is a full-stack restaurant ordering system with vanilla HTML/CSS/JavaScript frontend and Node.js/Express backend. The project demonstrates complete customer ordering, staff management, admin controls, bilingual support (Urdu/English RTL), and deployment to Vercel with Supabase PostgreSQL. Current status shows all functional requirements met, with the latest GitHub Actions test run (41035876169) failing due to unresolved test timing issues, while Lighthouse audits pass with Performance 97/100 and Accessibility 100/100.
+Karachi Bites is a full-stack restaurant ordering and management application. Its frontend uses vanilla HTML, CSS and JavaScript. Its backend uses Node.js and Express. The application includes a customer menu/cart/checkout and tracking experience, staff order management, admin-only menu management, Urdu/English language support and right-to-left layout. Local and CI tests use an isolated SQLite database; Supabase PostgreSQL is the production persistence target.
 
----
+The current repository main branch is commit 2496846bfa2fe6aad8a216382b0ea52977118a36, pushed on 31 October 2026. On that commit, the latest GitHub Actions Tests run (41189800713) succeeded. The workflow checked JavaScript syntax, passed the BOM/empty scan for 55 files, ran 16 named test suites and ended with “All test suites passed”. The latest Lighthouse workflow (41189800852) also succeeded. Live production scores at 360x800 were Performance 94, Accessibility 100, Best Practices 100 and SEO 100.
 
-## Project Background
-Karachi Bites began as a student project for a Karachi-based restaurant ordering system. Development started with a simple SQLite prototype and evolved to include Supabase PostgreSQL for production persistence, staff 2FA authentication, and comprehensive test coverage.
+**Important:** Passing CI and a successful production Lighthouse run do not prove that production order writes/persistence, real Supabase signup, provider-backed OTP delivery or physical-device accessibility have been fully verified.
 
-## Repository State and GitHub Baseline
-- **Latest Main Commit:** 02d05a90700ceb0eaf8b8ee424f189c549bbee4e (2026-10-30)
-- **Working Tree Status:** Clean, up-to-date with origin/main
-- **Branches:** main only
-- **GitHub Actions:** 18/22 PRs merged, 4 closed without merge
+## 30-Section Report Map
 
-## Development History and Decisions
-- Backend split between local Express (SQLite) and production Supabase Edge Function
-- JWT authentication with 24-hour expiry
-- Rs.150 fixed delivery fee calculated server-side
-- Three-branch support (Clifton, Gulshan-e-Iqbal, North Nazimabad)
-- Urdu/English toggle with RTL layout
-- Staff 2FA via email OTP (Resend integration pending)
+### 1. Project Background
+Karachi Bites was built as a student project to demonstrate an online restaurant ordering and management workflow for a Karachi restaurant.
 
-## Bug Discovery and Repair Timeline
-- **BOM Issue (public/js/navbar.js):** UTF-8 BOM caused CI failure. Fixed by stripping BOM (9011→9008 bytes).
-- **Duplicate Declarations:** 17 duplicate variable declarations in admin.js identified (local scope, acceptable).
-- **Template Literal Validation:** No malformed template literals found in current code.
-- **Test Runner:** Fixed module resolution issues in test runner.
+### 2. Problem Statement
+The project addresses manual ordering, inconsistent price calculations, limited order visibility and the absence of a central staff order-management interface.
 
-## Previous Audit Findings
-- **Audit Findings.md:** Dual-backend architecture identified; Express adopted as primary backend with PostgreSQL migration planned.
-- **Requirements Audit.md:** All functional requirements (F1-F12) verified; security requirements (S1-S4) implemented.
-- **Staff Portal 2FA:** Email OTP flow implemented; SMS pending provider configuration.
-- **Supabase Auth Setup:** Email/password signup working; phone OTP needs Twilio setup.
+### 3. Objectives
+Provide menu browsing, persistent cart behavior, server-calculated checkout totals, order tracking, staff/admin tools, localization and automated quality checks.
 
-## Testing Evidence
-- **Automated Tests:** 16/17 test suites pass locally (TESTING_REPORT.md shows current suite count).
-- **Lighthouse:** Performance 97/100, Accessibility 100/100 at 360×800 mobile viewport.
-- **Visual QA:** 55/55 checks passed across 5 viewports.
-- **GitHub Actions:** Latest Lighthouse run (41035876169) failed tests; earlier run (41035876147) passed.
+### 4. Project Scope
+Customer ordering, staff operations, admin menu controls, REST API, database storage, authentication and bilingual web UX are in scope. Online payments, native mobile apps and live SMS delivery without provider configuration are not verified deliverables.
 
-## Current Limitations
-- Test suite timing issues causing CI failures
-- Production homepage not yet deployed (Vercel quota limit)
-- Real SMS OTP not configured
-- Physical mobile device testing pending
-- PostgreSQL migration from SQLite not fully verified
+### 5. Stakeholders and Roles
+Customers place and track orders; staff manage orders and print kitchen tickets; administrators additionally manage menu data and export orders.
 
-## Project Status
-✅ **Complete** - All core functionality implemented and documented
-⚠️ **Issues** - Test runner timing, production deployment pending
-🔄 **Outstanding** - SMS OTP configuration, mobile device verification
+### 6. Functional Requirements
+The historical requirements audit covers F1-F12. Local/automated evidence exists for menu, search, cart, checkout validation, tracking, status transitions and staff/admin restrictions. Production persistence and some live account flows remain partial or pending.
 
----
+### 7. Technology Stack
+Vanilla HTML/CSS/JavaScript, Node.js 24.x, Express 5, SQLite for local/CI, Supabase PostgreSQL for production, Vercel hosting, JWT, bcrypt and Supabase Auth.
 
-## Appendices
-- [Appendix A] AI_LOG.md - AI-assisted development history
-- [Appendix B] DECISIONS.md - Technical decisions and rationale
-- [Appendix C] docs/AUDIT_FINDINGS.md - Original audit findings
-- [Appendix D] docs/REQUIREMENTS_AUDIT.md - Requirements compliance matrix
-- [Appendix E] docs/BACKEND_HANDOVER.md - Backend documentation
-- [Appendix F] docs/STAFF_PORTAL_2FA.md - 2FA implementation guide
-- [Appendix G] docs/SUPABASE_AUTH_SETUP.md - Auth configuration
-- [Appendix H] docs/WALKTHROUGH_SCRIPT.md - Recording script
-- [Appendix I] API.md - Current API documentation
-- [Appendix J] screenshots/ - Visual QA evidence
+### 8. System Architecture
+Browser frontend calls backend API routes. The historical audit identified both Express and Supabase Edge Function implementations; current production routing must be assessed separately from isolated CI tests.
 
----
+### 9. Frontend Modules
+The repository includes a Stitch-inspired homepage, a preserved API-backed customer application, staff/admin pages, kitchen ticket printing, shared cart logic and localization scripts.
 
-**Report Generated:** 2026-10-31
-**Generated By:** Automated Documentation Pipeline
+### 10. Backend Responsibilities
+Express handles middleware, route registration, input validation, authentication, database access and order-management services.
+
+### 11. Database Design
+The documented model separates menu items, branches, users, orders and order items. Order items preserve historical name/price snapshots. SQLite data is not automatically migrated to PostgreSQL.
+
+### 12. API Documentation
+The technical documentation describes 16 endpoints across health, menu, orders, tracking, reorder, authentication, staff/admin order management, menu administration and CSV export. Consult API.md for exact contracts.
+
+### 13. Customer Ordering Workflow
+Browse menu, add items to cart, select branch, enter customer details, submit validated checkout, receive generated order ID and track the order.
+
+### 14. Cart and Checkout
+The canonical delivery fee is Rs.150 per order. The backend calculates totals from trusted menu prices; client-supplied totals must not be trusted.
+
+### 15. Order Tracking and Privacy
+Public lookup omits customer PII. Detailed tracking and reorder require matching phone-number verification.
+
+### 16. Staff and Admin Portal
+Staff can view/filter orders, update valid statuses and print kitchen tickets. Menu CRUD and CSV export are restricted to administrators.
+
+### 17. Authentication
+The project retains JWT/bcrypt staff/admin authentication and adds Supabase Auth for customer identities. Application roles are enforced server-side.
+
+### 18. Staff Two-Factor Authentication
+A challenge-based email OTP flow is documented. Real email delivery, required secrets, migration state and production rollout still require controlled verification. SMS requires a configured phone provider/Twilio credentials.
+
+### 19. Urdu/English and RTL
+The interface supports bilingual labels and RTL direction. Automated localization contracts pass; native-reader review remains advisable.
+
+### 20. Responsive Design and Accessibility
+The testing report records 55/55 visual QA checks over 360, 390, 768, 1024 and 1280 pixel widths. Physical device, keyboard-only and screen-reader checks remain outstanding.
+
+### 21. Security
+Documented controls include server-side validation, JWT roles, bcrypt, parameterized SQL, rate limiting, Helmet/CSP, safe public order lookup and CSV formula-injection protection.
+
+### 22. Deployment and Production Readiness
+The application is hosted at the production URL above. Latest production Lighthouse is green; this does not prove that an order-write transaction persists correctly in the live database.
+
+### 23. AI-Assisted Development History
+AI_LOG.md contains summaries of work on Stitch assets/CSP/navigation, API-backed UI preservation, admin tools, branch validation, deployment evidence, credentials, auth/privacy and Lighthouse optimization. It explicitly states that full historical prompt transcripts are unavailable; no verbatim prompts are invented here.
+
+### 24. Technical Decisions
+DECISIONS.md records server-authoritative validation/totals, Rs.150 delivery, JWT/bcrypt, role separation, three branches, local SQLite versus production PostgreSQL, manual migrations and test strategy.
+
+### 25. Bug Discovery and Repair
+The history includes Stitch static-path/CSP/navigation defects, admin/branch gaps, totals/privacy risks, backend parity concerns, mobile/RTL issues, password visibility/contrast and PDF-generation problems.
+
+### 26. Current BOM Repair
+GitHub run 41042621005 failed because public/js/navbar.js had a UTF-8 BOM. Commit 2496846 removes it. Latest CI reports the BOM/empty check passed for 55 JavaScript files.
+
+### 27. Automated Testing
+Latest run 41189800713 executed 16 named suites: database, API, failure cases, persistence, admin menu, CSV export, frontend wiring, cart store, cart totals, account/Google/mobile, translation performance, mobile header translation, mobile responsive layout, staff 2FA source contract and i18n/RTL. All passed.
+
+### 28. Lighthouse and Visual QA
+Latest workflow 41189800852 reported exact-code CI scores of 98/100 Performance and 100/100 in Accessibility, Best Practices and SEO. Live production scores were 94/100 Performance and 100/100 in the other three categories.
+
+### 29. Outstanding Limitations
+Production order write/persistence round-trip, human Supabase signup, provider-backed email/SMS OTP, physical-device review, keyboard navigation and screen-reader checks remain separate validation tasks.
+
+### 30. Conclusion and Next Steps
+The latest main commit has green automated tests and Lighthouse checks. The project is best described as automated-test passing with documented production verification gaps, not as fully production-complete.
+
+## Current GitHub Evidence
+
+| Evidence | Current result |
+|---|---|
+| Main commit | 2496846bfa2fe6aad8a216382b0ea52977118a36 |
+| Pull requests | 18 merged, 4 closed without merge, 0 open |
+| Tests run | 41189800713 - success |
+| Lighthouse run | 41189800852 - success |
+| BOM scan | 55 files passed |
+| Test suites | 16 named suites passed |
+| Production Lighthouse | 94 / 100 / 100 / 100 |
+
+- Commit: https://github.com/exnesssjaffri-sketch/Karachi-bites/commit/2496846bfa2fe6aad8a216382b0ea52977118a36
+- Tests: https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/41189800713
+- Lighthouse: https://github.com/exnesssjaffri-sketch/Karachi-bites/actions/runs/41189800852
+
+## Historical Source Reports and Appendices
+The full source records remain in the repository and should be consulted for original wording, dates and detailed evidence:
+- AI_LOG.md
+- DECISIONS.md
+- docs/AUDIT_FINDINGS.md
+- docs/REQUIREMENTS_AUDIT.md
+- docs/BACKEND_HANDOVER.md
+- docs/STAFF_PORTAL_2FA.md
+- docs/SUPABASE_AUTH_SETUP.md
+- docs/WALKTHROUGH_SCRIPT.md
+- docs/submission/KARACHI_BITES_PROJECT_REPORT.md
+- docs/submission/TECHNICAL_DOCUMENTATION.md
+- docs/submission/INSTALLATION_GUIDE.md
+- docs/submission/USER_MANUAL.md
+- docs/submission/TESTING_REPORT.md
+- docs/submission/DIAGRAMS.md
+
+**AI transcript limitation:** AI_LOG.md states that complete historical Cline/ChatGPT transcripts were not provided. The decision and AI sections are evidence-based summaries, not fabricated verbatim chat logs.
+
+**PDF status:** The PDF binary was not present in the GitHub docs/submission directory when checked on 31 October 2026. The Puppeteer-core generator in scripts/generate-pdf-fixed.js had not been verified as working. A separate corrected 18-page PDF was generated for the user from the verified source and CI evidence; it is delivered separately and is not claimed to be committed to this repository.
