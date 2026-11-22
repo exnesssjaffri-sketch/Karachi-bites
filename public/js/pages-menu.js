@@ -45,7 +45,17 @@ const menuPage = {
   async loadMenu() {
     if (this.itemsLoaded) return;
     try {
-      if (!window.api || typeof window.api.getMenu !== "function") {
+      // Use the existing API client
+const result = await window.api.getMenu();
+if (result.success) {
+  this.menuItems = result.data;
+  this.itemsLoaded = true;
+  this.render();
+} else {
+  console.error('Failed to fetch menu:', result.error);
+  this.loadError = result.error || 'Failed to load menu items';
+  this.render();
+}
         throw new Error("Menu service is not available.");
       }
       const result = await window.api.getMenu();
